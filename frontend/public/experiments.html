@@ -1,0 +1,75 @@
+<!doctype html>
+<!--
+  科普實驗影片頁：影片清單與播放器獨立於首頁，互動由 experiments.js 處理。
+  experiments-grid 是動態卡片容器；experiment-player 只在點擊卡片後建立 Drive iframe。
+  這些 id 同時被 JavaScript 與無障礙屬性引用，重新命名前必須同步搜尋對應程式。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#experiments" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>科普實驗影片｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/experiments.css" />
+    <script type="module" src="assets/js/experiments.js"></script>
+  </head>
+  <body class="page-shell" data-page="experiments">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+      <nav class="page-nav" aria-label="主要導覽">
+        <a href="experiments.html" data-page-link="experiments">實驗影片</a>
+        <a href="resources.html" data-page-link="resources">教材下載</a>
+        <a href="quiz.html" data-page-link="quiz">知識小學堂</a>
+        <a href="ai-qa.html" data-page-link="ai-qa">AI 問答</a>
+        <a href="about.html" data-page-link="about">關於我們</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <div class="page-introduction">
+        <span class="section-kicker">WATCH · OBSERVE · DISCOVER</span>
+        <h1>科普實驗影片</h1>
+        <p>跟著影片觀察現象、提出猜想，從土、風、水的變化中找出科學線索。</p>
+      </div>
+      <!-- 搜尋只過濾已載入的公開影片，不會把關鍵字送到伺服器。 -->
+      <section id="experiments-content">
+        <div class="experiments-toolbar">
+          <div>
+            <label for="experiment-search">尋找實驗</label>
+            <input
+              id="experiment-search"
+              type="search"
+              placeholder="輸入影片名稱"
+              autocomplete="off"
+            />
+          </div>
+          <p id="experiments-count" role="status"></p>
+        </div>
+        <p id="experiments-message" role="status">正在載入影片…</p>
+        <button id="experiments-retry" type="button" class="experiment-button" hidden>
+          重新載入
+        </button>
+        <div id="experiments-grid" class="experiments-grid"></div>
+      </section>
+    </main>
+    <!-- 關閉 dialog 時 experiments.js 會移除 iframe，確保影片停止播放。 -->
+    <dialog id="experiment-player" class="experiment-player" aria-labelledby="player-title">
+      <div class="player-heading">
+        <h2 id="player-title"></h2>
+        <button id="player-close" class="experiment-button" type="button" aria-label="關閉影片">
+          關閉 ✕
+        </button>
+      </div>
+      <div id="player-frame" class="player-frame"></div>
+      <p class="player-help">若影片無法播放，可改至 Google Drive 觀看。</p>
+      <a id="player-link" class="experiment-button" target="_blank" rel="noopener noreferrer">
+        在 Google Drive 開啟 ↗
+      </a>
+    </dialog>
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

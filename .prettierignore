@@ -1,0 +1,6 @@
+node_modules/
+frontend/.data/
+backend/.wrangler/
+frontend/public/assets/images/
+backend/package-lock.json
+.env

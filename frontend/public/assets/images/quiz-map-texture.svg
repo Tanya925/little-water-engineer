@@ -1,0 +1,18 @@
+<!-- 主要功能：提供小學堂場景的裝飾背景。
+viewBox 定義圖形座標與比例，path／shape 的填色決定圖層；顯示尺寸與動畫由引用它的 CSS／JavaScript 控制。
+這是網站直接使用的靜態 SVG，可修改圖形，無需產生工具；純裝飾不承擔按鈕或文字資訊功能。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" preserveAspectRatio="none">
+ <defs>
+  <linearGradient id="far" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c8dce4" stop-opacity=".6"/><stop offset=".72" stop-color="#c8dce4" stop-opacity=".5"/><stop offset="1" stop-color="#c8dce4" stop-opacity="0"/></linearGradient>
+  <linearGradient id="near" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#bbd5cf" stop-opacity=".6"/><stop offset=".65" stop-color="#bbd5cf" stop-opacity=".5"/><stop offset="1" stop-color="#bbd5cf" stop-opacity="0"/></linearGradient>
+  <linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dcebe7" stop-opacity=".1"/><stop offset=".55" stop-color="#d4e7d4" stop-opacity=".65"/><stop offset="1" stop-color="#c9dfbd" stop-opacity="0"/></linearGradient>
+  <g id="pine"><path d="M0 0 23 55H9L28 84H6V101H-6V84H-28L-9 55H-23Z" fill="#a6c5b1"/><path d="M0 13V84" stroke="#91b49f" stroke-width="2"/></g>
+  <g id="home"><path d="M-25 0H25V36H-25Z" fill="#f8efda" stroke="#b6c6b6" stroke-width="2"/><path d="M-32 0 0-28 32 0Z" fill="#c7b6a4"/><path d="M-5 36V15H7V36M-18 11H-10V20H-18M13 11H21V20H13" fill="#a6c5cb"/></g>
+ </defs>
+ <!-- Larger, softly colored ridges frame the valley. --><g transform="translate(-160 -100) scale(1.2 1.25)">
+ <path d="M0 330 145 180 255 250 450 80 630 255 755 170 950 325 1130 135 1310 270 1460 120 1600 270V570H0Z" fill="url(#far)"/>
+ <path d="m355 163 95-83 102 101-65-19-36-42-40 44Z" fill="#fff" opacity=".55"/>
+ <path d="m1070 195 60-60 78 82-48-18-29-35-26 30Z" fill="#fff" opacity=".5"/>
+ <path d="M0 410 180 290 340 390 520 245 740 430 915 310 1110 410 1300 275 1600 430V690H0Z" fill="url(#near)"/>
+ </g><path d="M0 495Q240 405 490 500T965 486T1400 475T1600 510V1100H0Z" fill="url(#land)"/>
+</svg>

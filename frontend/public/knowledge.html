@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  科普知識頁保留獨立網址與內容容器，避免未來文章功能重新塞回 index.html。
+  knowledge-page.js 是本頁唯一程式入口；未來接文章 API 時只需擴充該檔案。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#knowledge" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>科普知識專區｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/knowledge.css" />
+    <script type="module" src="assets/js/knowledge-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="knowledge">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+    </header>
+
+    <main class="page-main">
+      <!-- knowledge-page.js 會在此建立科普知識內容。 -->
+      <div id="content-page-root"></div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

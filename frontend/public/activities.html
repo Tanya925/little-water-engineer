@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  活動紀錄由 activities-page.js 呼叫 /api/updates 載入，只顯示老師已發布的活動。
+  日期、說明與外部連結都由程式建立純文字節點；外部連結會加上 noopener。
+  本頁擁有獨立程式與樣式入口，未來擴充活動篩選時不會影響其他介紹頁。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#activities" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>活動紀錄｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/activities.css" />
+    <script type="module" src="assets/js/activities-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="activities">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+    </header>
+
+    <main class="page-main">
+      <div class="page-introduction">
+        <span class="section-kicker">ACTIVITY ARCHIVE</span>
+        <h1>活動紀錄</h1>
+        <p>看看大家在活動中觀察、動手做與分享發現的過程。</p>
+      </div>
+      <div id="content-page-root" aria-live="polite"></div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

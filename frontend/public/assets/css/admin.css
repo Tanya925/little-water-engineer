@@ -1,0 +1,1141 @@
+/* 主要功能：定義老師管理區的側邊欄、統計、資料表、編輯視窗、表單與手機版排版。 */
+/*
+ * 老師管理介面：側欄、清單、編輯視窗、訊息與行動版配置。
+ * 表單或表格的 disabled／error／hidden 狀態由 admin.js 控制。
+ * 此樣式本身不提供權限保護；管理頁及管理 API 均由 server.mjs 驗證登入。
+ */
+:root {
+  --ink: #294945;
+  --muted: #6b807a;
+  --green: #287762;
+  --line: #dee7df;
+  --paper: #f5f7f2;
+}
+
+/* 側欄項目較多時允許獨立捲動，避免最下方的管理功能超出視窗。 */
+.sidebar {
+  overflow-y: auto;
+}
+
+/* AI 教材管理區：卡片清單和全文編輯器共用一般後台表單元件，
+ * 這裡只補上教材特有的垂直間距、按鈕換行與長文字輸入高度。 */
+.ai-admin {
+  display: grid;
+  gap: 22px;
+}
+
+.ai-admin-list {
+  display: grid;
+  gap: 16px;
+}
+
+.ai-material-card h3 {
+  margin-top: 0;
+}
+
+.ai-material-card .actions {
+  flex-wrap: wrap;
+}
+
+.ai-material-editor textarea {
+  min-height: 300px;
+  line-height: 1.8;
+}
+
+.ai-character-count {
+  color: var(--muted);
+  text-align: right;
+}
+
+/* 全站基礎規則：統一盒模型、鍵盤焦點與表單字型。
+ * hidden 必須優先隱藏元素，因為 admin.js 會用這個屬性切換不同管理畫面。 */
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #b58f37;
+  outline-offset: 4px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #79ad96;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: fixed;
+  top: -80px;
+  z-index: 20;
+  padding: 12px;
+  background: white;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* 左側固定導覽：桌面版固定在視窗左側，aria-current 標示目前功能；
+ * 手機版的覆寫規則位於檔案後方，會改成橫向且不再固定。 */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 248px;
+  padding: 33px 22px;
+  background: #fffef9;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 48px;
+  border-radius: 15px;
+  background: #e4f0e7;
+  font-size: 27px;
+}
+
+.brand small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 3px;
+  font-weight: 400;
+}
+
+.sidebar-label {
+  color: #8b9b8f;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 44px 13px 13px;
+}
+
+.sidebar nav {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 15px;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #667e73;
+}
+
+.sidebar nav a span {
+  font-size: 19px;
+}
+
+.sidebar nav a:hover {
+  background: #f1f5ed;
+}
+
+.sidebar nav a[aria-current] {
+  color: #246650;
+  background: #e5efe3;
+  box-shadow: inset 3px 0 #4b8d71;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 28px 10px 5px;
+  font-size: 11px;
+  color: #6d8376;
+}
+
+.sidebar-bottom p {
+  padding-left: 12px;
+  margin: 5px 0;
+  color: #8b9a8e;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #67a37c;
+  margin-right: 6px;
+}
+
+/* 右側工作區：左邊距必須與側欄寬度 248px 一致。
+ * topbar 放登入資訊與登出按鈕，main 則限制內容最大寬度。 */
+.workspace {
+  margin-left: 248px;
+}
+
+.topbar {
+  min-height: 76px;
+  padding: 18px 42px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  background: #ffffffb3;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.topbar div {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.text-button {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+}
+
+main {
+  max-width: 1440px;
+  margin: auto;
+  padding: 40px 42px 18px;
+}
+
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #7b957f;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 30px;
+  letter-spacing: 1px;
+  margin: 0 0 9px;
+  line-height: 1.4;
+}
+
+#admin-description {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary,
+.danger,
+.table-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 10px 17px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.primary {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.primary:hover {
+  background: #205e4e;
+}
+
+.secondary {
+  background: #fffefb;
+  color: #49695b;
+  border-color: #d1ddd1;
+}
+
+.secondary:hover {
+  background: #edf3e9;
+}
+
+.danger {
+  color: #934e40;
+  border-color: #e8c9bd;
+  background: #fff5ee;
+}
+
+/* 總覽首頁：歡迎區、三張統計卡與快速連結都屬於唯讀摘要；
+ * 實際數字由 admin.js 取得 API 後填入，CSS 只控制呈現。 */
+.welcome {
+  position: relative;
+  background: #315e50;
+  color: #fffdf4;
+  padding: 30px 34px;
+  border-radius: 18px;
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+.welcome::after {
+  content: "🌱";
+  position: absolute;
+  right: 38px;
+  bottom: 2px;
+  font-size: 86px;
+  opacity: 0.24;
+  rotate: 12deg;
+}
+
+.welcome .eyebrow {
+  color: #b9d7bb;
+}
+
+.welcome h2 {
+  font-size: 24px;
+  margin: 5px 0 12px;
+}
+
+.welcome p {
+  margin: 0;
+  max-width: 75%;
+  color: #c9ddd1;
+  font-size: 13px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+
+.stat {
+  padding: 23px;
+  border-radius: 15px;
+  border: 1px solid var(--line);
+  background: #fffefa;
+}
+
+.stat:nth-child(2) {
+  background: #fff9e9;
+}
+
+.stat:nth-child(3) {
+  background: #f0edf8;
+}
+
+.stat-heading {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.stat-heading span {
+  font-size: 23px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 38px;
+  margin: 8px 0 2px;
+  line-height: 1.3;
+}
+
+.stat small {
+  color: var(--muted);
+}
+
+.stat a {
+  display: block;
+  color: #427759;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 22px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: #fffefa;
+  border-radius: 15px;
+  padding: 25px;
+}
+
+.panel h2 {
+  font-size: 17px;
+  margin: 0 0 20px;
+}
+
+.panel p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 11px 0;
+  border-bottom: 1px solid #edf0e8;
+}
+
+.topic-row:last-child {
+  border: 0;
+}
+
+.topic-row span {
+  flex: 1;
+}
+
+.topic-row strong {
+  font-size: 13px;
+  color: #62846c;
+}
+
+.quick-link {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #edf0e8;
+  font-weight: 700;
+}
+
+.quick-link:last-child {
+  border: 0;
+}
+
+.quick-link span {
+  color: #80a081;
+}
+
+/* 清單工具列與資料表：搜尋欄允許縮放，表格在窄畫面採水平捲動，
+ * 避免為了塞入所有欄位而壓縮標題及操作按鈕。 */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px 14px 0 0;
+  background: #fffefa;
+}
+
+.toolbar input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid #cfdacf;
+  color: var(--ink);
+  background: white;
+  border-radius: 8px;
+  padding: 10px 12px;
+  max-width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.7;
+}
+
+.toolbar select {
+  max-width: 190px;
+}
+
+.table-wrap {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+th {
+  font-size: 11px;
+  color: #7d8f7d;
+  background: #f7f9f3;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+th,
+td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf0e8;
+}
+
+td:first-child {
+  max-width: 430px;
+  min-width: 240px;
+}
+
+td strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+td small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.table-action {
+  padding: 5px 9px;
+  border-color: #dce6d8;
+  background: #fff;
+  color: #52715d;
+  font-size: 12px;
+  margin: 3px;
+  white-space: nowrap;
+}
+
+.table-action:hover {
+  background: #eef4e9;
+}
+
+.table-action.archive {
+  color: #9a7058;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 20px;
+  padding: 4px 11px;
+  font-size: 11px;
+  white-space: nowrap;
+  background: #edf0ea;
+  color: #7c8978;
+}
+
+.badge.published {
+  color: #367754;
+  background: #e6f2e4;
+}
+
+.badge.draft {
+  color: #977b36;
+  background: #fbf0d2;
+}
+
+.pagination {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 19px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pagination div {
+  display: flex;
+  gap: 9px;
+}
+
+.empty {
+  padding: 50px 25px;
+  color: var(--muted);
+  text-align: center;
+  background: #fffefa;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.message {
+  background: #e8f3e6;
+  border: 1px solid #c4dbbb;
+  color: #386843;
+  padding: 12px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.message.error {
+  color: #8b423b;
+  background: #fff1ed;
+  border-color: #efc8be;
+}
+
+/* 工作區頁尾與編輯對話框：dialog 的最大高度以動態視窗單位計算，
+ * 內容過長時由對話框內部捲動，確保關閉和儲存按鈕仍可操作。 */
+.workspace-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  border-top: 1px solid var(--line);
+  padding: 22px 0 0;
+  margin-top: 45px;
+  color: #91a08e;
+  font-size: 10px;
+}
+
+dialog {
+  width: min(760px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  border: 1px solid #dce7d8;
+  border-radius: 18px;
+  padding: 28px 32px 20px;
+  color: var(--ink);
+  background: #fffefa;
+}
+
+dialog::backdrop {
+  background: #1e3936a8;
+  backdrop-filter: blur(3px);
+}
+
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.dialog-heading h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.icon-button {
+  background: #f0f4ec;
+  border: 0;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  color: #5c7865;
+}
+
+.form-hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 14px 0 22px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 19px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.field.wide {
+  grid-column: 1 / -1;
+}
+
+.field small {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.field input[readonly] {
+  background: #f1f4ef;
+  color: #7a8b7b;
+}
+
+.option-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: 1 / -1;
+  gap: 15px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  position: sticky;
+  bottom: -20px;
+  padding: 22px 0;
+  margin-top: 10px;
+  background: #fffefa;
+  border-top: 1px solid var(--line);
+}
+
+.cover-preview {
+  width: 170px;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #e5eee4;
+}
+
+details {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+
+#preview-content {
+  padding-top: 15px;
+}
+
+@media (min-width: 1600px) {
+  main {
+    padding-top: 50px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 210px;
+    padding: 28px 15px;
+  }
+
+  .workspace {
+    margin-left: 210px;
+  }
+
+  main {
+    padding: 30px 25px;
+  }
+
+  .topbar {
+    padding: 18px 25px;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+  }
+
+  .stats {
+    gap: 12px;
+  }
+
+  .stat {
+    padding: 18px;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar-label,
+  .sidebar-bottom {
+    display: none;
+  }
+
+  .sidebar nav {
+    display: flex;
+    gap: 6px;
+    margin-top: 18px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .sidebar nav a {
+    padding: 9px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .sidebar nav a span {
+    font-size: 15px;
+  }
+
+  .workspace {
+    margin-left: 0;
+  }
+
+  .topbar {
+    padding: 14px 22px;
+    min-height: 60px;
+  }
+
+  .topbar div {
+    gap: 15px;
+  }
+
+  main {
+    padding: 26px 20px;
+  }
+
+  .page-heading {
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat strong {
+    font-size: 32px;
+  }
+
+  .welcome {
+    padding: 25px;
+  }
+
+  .welcome p {
+    max-width: 87%;
+  }
+
+  .welcome h2 {
+    font-size: 21px;
+  }
+
+  .toolbar {
+    padding: 14px;
+  }
+
+  .toolbar select {
+    max-width: 100%;
+    flex: 1 1 100px;
+  }
+
+  .workspace-footer {
+    flex-direction: column;
+  }
+
+  dialog {
+    padding: 22px 20px 15px;
+  }
+
+  .form-grid,
+  .option-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .field {
+    grid-column: 1;
+  }
+
+  .dialog-footer {
+    bottom: -15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .table-wrap table,
+  .table-wrap tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .table-wrap thead {
+    display: none;
+  }
+
+  .table-wrap tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+  }
+
+  .table-wrap td {
+    display: block;
+    border: 0;
+    padding: 7px 14px;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .table-wrap td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .table-wrap td:nth-child(2) {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .table-wrap td:nth-child(3) {
+    text-align: right;
+  }
+
+  .table-wrap td:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+/* 導覽共有多個前台功能對應項目，因此使用較緊湊的間距；
+ * 這組規則刻意放在基礎側欄之後，用來覆寫桌面版的預設尺寸。 */
+.sidebar {
+  overflow-y: auto;
+}
+
+.sidebar nav {
+  gap: 5px;
+}
+
+.sidebar nav a {
+  padding: 10px 12px;
+  font-size: 12px;
+  gap: 10px;
+}
+
+.sidebar nav a span {
+  font-size: 18px;
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    overflow: visible;
+  }
+}
+
+/* 頁面內容編輯器：每個 details 是一個可收合區塊，內部依序放段落與卡片欄位。
+ * 儲存列固定在視窗底部，長頁面捲動時仍能看見版本衝突或成功訊息。 */
+.page-editor {
+  max-width: 1050px;
+}
+
+.page-editor-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 18px 24px;
+}
+
+.page-editor-top h2,
+.page-editor-top > p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.page-editor-top > p {
+  line-height: 1.9;
+}
+
+.page-editor-top > a {
+  justify-self: start;
+}
+
+.page-edit-section {
+  background: #fff;
+  padding: 0;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.page-edit-section > summary {
+  padding: 22px 24px;
+  background: #f0f5ed;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.page-edit-fields {
+  padding: 24px;
+  display: grid;
+  gap: 22px;
+}
+
+.page-edit-fields textarea {
+  min-height: 130px;
+  line-height: 1.9;
+  resize: vertical;
+}
+
+.page-edit-items {
+  display: grid;
+  gap: 22px;
+}
+
+.page-edit-item {
+  min-width: 0;
+  border: 1px solid #d6e1d2;
+  border-radius: 14px;
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.page-edit-item legend {
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  max-width: 100%;
+  line-height: 1.8;
+}
+
+.page-save-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  background: #f7faf1f5;
+  border: 1px solid #c6d4bf;
+  padding: 18px 24px;
+  border-radius: 14px;
+  z-index: 3;
+  margin-top: 24px;
+}
+
+.page-save-message {
+  margin: 0;
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+.page-save-bar button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .page-editor-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-edit-fields {
+    padding: 18px;
+  }
+
+  .page-edit-item {
+    padding: 18px;
+  }
+
+  .page-save-bar {
+    padding: 14px;
+  }
+}

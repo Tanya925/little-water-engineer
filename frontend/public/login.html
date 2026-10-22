@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- 主要功能：定義老師首次設定帳號與後續登入的表單、訊息及頁面結構。 -->
+<!--
+  只定義登入／首次設定表單，login.js 查詢帳號狀態再決定呈現方式。
+  欄位 id 對應 JavaScript；真正的帳號驗證、密碼雜湊與 Cookie 建立在 server.mjs。
+  表單不保存密碼；成功後由伺服器設定 HttpOnly Cookie，再導向受保護的 admin.html。
+  body 不含後台資料，即使直接開啟此檔也無法略過管理 API 的 session 檢查。
+-->
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>老師登入｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/login.css" />
+    <script src="assets/js/login.js" defer></script>
+  </head>
+  <body>
+    <div class="floating-background" aria-hidden="true">
+      <span>💧</span>
+      <span>☁</span>
+      <span>🧪</span>
+      <span>⛰</span>
+      <span>🌬️</span>
+      <span>💧</span>
+      <span>☁</span>
+      <span>⚗</span>
+      <span>🌱</span>
+      <span>💧</span>
+      <span>🌬️</span>
+      <span>☁</span>
+      <span>🍃</span>
+      <span>🧪</span>
+      <span>💧</span>
+      <span>🌱</span>
+    </div>
+    <div class="site-header">
+      <header class="header">
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">💧</span>
+          <span>
+            小小水利工程師
+            <small>養成計畫</small>
+          </span>
+        </a>
+        <a class="menu-button" href="index.html">回到首頁 ↗</a>
+      </header>
+    </div>
+    <main class="login-page">
+      <div class="login-card">
+        <span class="section-kicker">老師管理區</span>
+        <h1 id="login-title">老師登入</h1>
+        <p id="login-description">請登入後進入後台。</p>
+        <form id="login-form" class="login-form" hidden>
+          <label for="username">老師帳號</label>
+          <input
+            id="username"
+            name="username"
+            autocomplete="username"
+            minlength="3"
+            maxlength="40"
+            pattern="[a-zA-Z0-9_.\-]{3,40}"
+            required
+          />
+          <label for="password">密碼</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            minlength="8"
+            maxlength="256"
+            required
+          />
+          <div id="confirm-field" hidden>
+            <label for="confirm-password">確認密碼</label>
+            <input
+              id="confirm-password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              maxlength="256"
+            />
+          </div>
+          <p class="login-message" id="login-message" role="status" aria-live="polite"></p>
+          <button class="login-submit" id="login-submit" type="submit">登入</button>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

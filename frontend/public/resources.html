@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  教材下載中心只保留本頁必要容器，資料由 resources-page.js 向 /api/resources 取得。
+  API 只回傳已發布教材；AI 使用的完整教材文字不會送到這個公開頁面。
+  resources-status 同時是載入狀態與錯誤訊息區，resources-retry 只在失敗時顯示。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#resources" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>教材下載中心｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/resources.css" />
+    <script type="module" src="assets/js/resources-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="resources">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+      <nav class="page-nav" aria-label="主要導覽">
+        <a href="experiments.html" data-page-link="experiments">實驗影片</a>
+        <a href="resources.html" data-page-link="resources">教材下載</a>
+        <a href="quiz.html" data-page-link="quiz">知識小學堂</a>
+        <a href="ai-qa.html" data-page-link="ai-qa">AI 問答</a>
+        <a href="about.html" data-page-link="about">關於我們</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <div class="page-introduction">
+        <span class="section-kicker">LEARN AT YOUR PACE</span>
+        <h1>教材下載中心</h1>
+        <p>選擇老師整理的教材，依自己的步調閱讀、列印或和同學一起討論。</p>
+      </div>
+      <!-- aria-busy 會由程式加在清單上，讓輔助技術知道內容仍在更新。 -->
+      <p id="resources-status" role="status">正在載入教材…</p>
+      <button id="resources-retry" class="experiment-button" type="button" hidden>
+        重新載入教材
+      </button>
+      <div id="resources-list" class="resources-list"></div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

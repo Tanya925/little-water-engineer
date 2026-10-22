@@ -1,0 +1,430 @@
+/* 主要功能：定義獨立 AI 教材問答頁的對話紀錄、來源引用、輸入表單與手機版排版。 */
+/*
+ * 本檔只服務 ai-qa.html 及 ai-qa-page.js 實際建立的元素。
+ * 學生與模型文字可能很長，因此訊息必須允許換行，紀錄區則限制高度並可獨立捲動。
+ * 顯示與送出狀態由 ai-qa-page.js 控制；CSS 不負責判斷教材來源是否有效。
+ */
+
+/* 問答頁限制最大閱讀寬度，避免長回答在大螢幕上形成難以追蹤的超長文字行。 */
+.ai-qa-page {
+  max-width: 900px;
+  margin: 24px auto 60px;
+}
+
+/* Page introduction is deliberately separate from the chat log, so students
+ * understand the answer source before they start a conversation. */
+.ai-intro {
+  padding: 8px 24px 22px;
+  text-align: center;
+}
+
+.ai-intro-icon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto;
+  place-items: center;
+  border: 2px solid #b9ddd8;
+  border-radius: 50%;
+  background: #effaf7;
+  font-size: 32px;
+  box-shadow: 3px 4px 0 #69928a18;
+}
+
+.ai-intro h2 {
+  margin: 12px 0 10px;
+  color: #286c73;
+  font-size: clamp(25px, 3vw, 34px);
+}
+
+.ai-intro p {
+  max-width: 720px;
+  margin: auto;
+  line-height: 1.9;
+}
+
+.ai-note {
+  margin: 0 0 18px;
+  color: #576b75;
+  font-size: 14px;
+  line-height: 1.9;
+  text-align: center;
+}
+
+.ai-chat-toolbar {
+  display: flex;
+  align-items: center;
+  /* 工具列目前只有「重新對話」，固定放到右側避免留在左邊。 */
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 12px 8px;
+  color: #3d6474;
+}
+
+.ai-secondary,
+.ai-launcher,
+.ai-tutor-header button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ai-secondary {
+  padding: 9px 15px;
+  border: 2px solid #c9bed8;
+  border-radius: 10px;
+  background: #eae4f1;
+  color: #6d5b7c;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 3px 0 #b7a8c7;
+}
+
+.ai-secondary:hover {
+  translate: 0 1px;
+  background: #ddd3e9;
+  box-shadow: 0 2px 0 #b7a8c7;
+}
+
+/* 對話紀錄擁有自己的捲動區域；overscroll-behavior 防止捲到頂部或底部後帶動整頁。 */
+.ai-chat-log {
+  position: relative;
+  height: 430px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  scroll-padding: 16px;
+}
+
+/* 空紀錄先顯示提問提示；第一則訊息加入後，:has() 會自動隱藏提示。 */
+.ai-chat-log::before {
+  display: none;
+  padding: 150px 20px 0;
+  color: #66807f;
+  text-align: center;
+  content: "可以從教材內容開始提問喔！";
+}
+
+.ai-chat-log:has(.ai-message)::before {
+  display: none;
+}
+
+/* 每則訊息是一張純文字卡片。學生靠右、教材小幫手靠左，位置本身也能區分角色。 */
+.ai-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(100%, 680px);
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+
+.ai-message-user {
+  flex-direction: row-reverse;
+  margin-left: auto;
+}
+
+.ai-avatar {
+  display: grid;
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  margin-top: 4px;
+  place-items: center;
+  border: 3px solid #7caeaa;
+  border-radius: 50%;
+  background: #e0f1ed;
+  font-size: 31px;
+  box-shadow: 2px 3px 0 #6e9b981f;
+}
+
+.ai-avatar-user {
+  border-color: #caa77a;
+  background: #f2dfbf;
+}
+
+.ai-message-paper {
+  min-width: 0;
+  flex: 1;
+  padding: 14px 18px 15px;
+  border: 1px solid #b8d2cc;
+  border-radius: 30px;
+  background: #e5f3ed;
+  box-shadow: 3px 4px 0 #69928a22;
+}
+
+.ai-message-user .ai-message-paper {
+  border-color: #caa77a;
+  background: #f6ecdc;
+}
+
+.ai-message-paper > strong {
+  color: #326d6e;
+  font-size: 13px;
+}
+
+.ai-message-user .ai-message-paper > strong {
+  color: #7c5a37;
+}
+
+.ai-message-paper > p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  line-height: 1.85;
+}
+
+/* 每個 details 代表一份伺服器驗證過的教材來源；blockquote 保留教材原文換行。 */
+.ai-message details {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #b8d2cc;
+}
+
+.ai-message-paper .ai-sources {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #c8dcd7;
+  font-size: 14px;
+}
+
+.ai-message summary {
+  cursor: pointer;
+  color: #405f64;
+  font-weight: 700;
+}
+
+.ai-message details > a {
+  display: inline-block;
+  margin-top: 9px;
+  color: #116576;
+  font-weight: 700;
+}
+
+.ai-message blockquote {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  white-space: pre-wrap;
+  border-left: 3px solid #8ebfad;
+  background: #ffffff99;
+  line-height: 1.8;
+}
+
+/* 輸入區維持 textarea 與送出按鈕並排；textarea 可加高但不會擠掉整個對話紀錄。 */
+.ai-chat-form {
+  margin-top: 18px;
+}
+
+.ai-chat-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #375568;
+  font-weight: 700;
+}
+
+.ai-input-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.ai-input-row textarea {
+  flex: 1;
+  width: 0;
+  min-height: 70px;
+  max-height: 160px;
+  padding: 12px;
+  resize: vertical;
+  color: #243f50;
+  border: 1px solid #aec8cd;
+  border-radius: 15px;
+  background: white;
+  font: inherit;
+}
+
+.ai-send {
+  padding: 12px 22px;
+  cursor: pointer;
+  color: white;
+  border: 0;
+  border-radius: 15px;
+  background: #347a80;
+  font: inherit;
+  font-weight: 700;
+}
+
+/* JavaScript 送出期間停用欄位；wait 游標與透明度讓等待狀態清楚可見。 */
+.ai-send:disabled,
+.ai-input-row textarea:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.ai-chat-status {
+  min-height: 24px;
+  margin: 8px 0 0;
+  color: #775024;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* The contextual tutor is only available while a quiz or game has an active
+ * learning context.  It stays above the page without changing page layout. */
+.ai-launcher {
+  position: fixed;
+  z-index: 50;
+  right: 26px;
+  bottom: 26px;
+  padding: 16px 22px;
+  border: 3px solid #e3f2eb;
+  border-radius: 999px;
+  background: #356c79;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 5px 20px #294c6433;
+}
+
+/* A quiz hint belongs beside the answer action, rather than over the page. */
+.quiz-answer-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.quiz-answer-actions .ai-launcher-inline {
+  position: static;
+  z-index: auto;
+  margin-left: auto;
+  padding: 12px 18px;
+  border-width: 2px;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.ai-tutor-window {
+  position: fixed;
+  z-index: 60;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  padding: 18px;
+  border: 1px solid #d1e2df;
+  border-radius: 24px;
+  background: #fffefa;
+  box-shadow: 0 12px 50px #294c6433;
+}
+
+.ai-tutor-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ai-tutor-header h2 {
+  margin: 0;
+  color: #336a74;
+  font-size: 20px;
+}
+
+.ai-tutor-header p {
+  margin: 6px 0 0;
+  color: #5c7379;
+  font-size: 13px;
+}
+
+.ai-tutor-header button {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eceaf4;
+  color: #56516f;
+}
+
+.ai-tutor-window .ai-chat-log {
+  height: 280px;
+  min-height: 100px;
+  flex: 1 1 auto;
+}
+
+.ai-tutor-window .ai-chat-toolbar {
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.ai-launcher[hidden],
+.ai-tutor-window[hidden],
+.ai-qa-page[hidden] {
+  display: none;
+}
+
+.ai-qa-page :focus-visible {
+  outline: 3px solid #a26a21;
+  outline-offset: 3px;
+}
+
+/* 手機版放寬訊息卡片並縮小周圍留白，保留足夠的對話閱讀空間。 */
+@media (max-width: 600px) {
+  .ai-chat-log {
+    height: 390px;
+    padding: 12px;
+  }
+
+  .ai-message {
+    max-width: 100%;
+  }
+
+  .ai-avatar {
+    flex-basis: 46px;
+    width: 46px;
+    height: 46px;
+    font-size: 25px;
+  }
+
+  .ai-message-paper {
+    padding: 12px 14px;
+  }
+
+  .ai-input-row {
+    gap: 8px;
+  }
+
+  .ai-send {
+    padding: 10px 13px;
+  }
+
+  .ai-intro {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .ai-launcher {
+    right: 14px;
+    bottom: 16px;
+    padding: 13px 16px;
+    font-size: 14px;
+  }
+
+  .quiz-answer-actions {
+    gap: 10px;
+  }
+
+  .quiz-answer-actions .ai-launcher-inline {
+    padding: 11px 13px;
+    font-size: 13px;
+  }
+
+  .ai-tutor-window {
+    right: 16px;
+    bottom: 16px;
+    padding: 14px;
+  }
+}

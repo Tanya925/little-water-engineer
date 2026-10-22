@@ -1,0 +1,33 @@
+<!-- 步驟二的三棵松樹背景：以地面為基準，樹冠向上延展。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" aria-hidden="true">
+  <defs>
+    <!-- 三棵樹共用同一個正常松樹外觀；只調整整體大小。 -->
+    <g id="pine-canopy">
+      <!-- 三層尖頂樹冠底部固定在 y=0。 -->
+      <path d="M0-300 60-215H30l62 80H44l74 82H52L126 0H-126l74-53h-66l74-82h-48l62-80H-60Z" fill="currentColor"/>
+    </g>
+    <g id="pine-trunk">
+      <rect x="-14" y="-10" width="28" height="182" fill="#c9aa7b"/>
+    </g>
+    <g id="pine">
+      <!-- 樹幹微微插入樹冠，保持自然連接。 -->
+      <use href="#pine-canopy"/>
+      <use href="#pine-trunk"/>
+    </g>
+  </defs>
+
+  <!-- 同一棵松樹以正常、最大、最小三種尺寸淡入草地，彼此保留空隙。 -->
+  <g color="#b9d6c5" opacity=".3">
+    <use href="#pine" transform="translate(360 490) rotate(-5) scale(1.55)"/>
+  </g>
+  <g color="#abcdbb" opacity=".2">
+    <!-- 中間樹冠加高，但維持相同三層松樹輪廓與既有樹幹比例。 -->
+    <g transform="translate(900 800) rotate(3) scale(2.05)">
+      <use href="#pine-canopy" transform="scale(1 1.28)"/>
+      <use href="#pine-trunk"/>
+    </g>
+  </g>
+  <g color="#c3dccd" opacity=".3">
+    <use href="#pine" transform="translate(1425 400) scale(1.25)"/>
+  </g>
+</svg>

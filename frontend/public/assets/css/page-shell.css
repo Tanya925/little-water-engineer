@@ -1,0 +1,95 @@
+/* 分頁架構的共用外觀：沿用原本網站的品牌列、漂浮背景與資訊式頁尾。 */
+.page-shell {
+  min-block-size: 100vh;
+  color: #24434b;
+  background: linear-gradient(145deg, #e1f0fa, #e9f3e7 55%, #f5eddd);
+}
+
+.page-header.site-header {
+  display: block;
+  padding: 0;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.page-header.site-header .header { width: auto; margin: auto; }
+.page-header.site-header .page-brand { color: inherit; text-decoration: none; }
+.page-header.site-header .page-nav { justify-content: normal; }
+.page-header.site-header .quick-nav a { border-radius: 0; color: inherit; font-size: 14px; }
+
+.page-main {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 0;
+}
+.page-introduction { margin-bottom: 1.4rem; }
+
+/* 每個功能頁只有一位引導者，持續走完整條橫線。 */
+.page-guide {
+  position: relative;
+  height: 154px;
+  margin: -0.6rem calc(50% - 50vw) 1.5rem;
+  overflow: hidden;
+}
+
+.page-guide::after {
+  position: absolute;
+  right: 5%;
+  bottom: 25px;
+  left: 5%;
+  border-top: 2px dashed #7da9ba88;
+  content: "";
+}
+
+.page-guide p {
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  margin: 0 auto;
+  padding: 0.65rem 1rem;
+  border: 1px solid #b1cfc5;
+  border-radius: 18px 18px 18px 4px;
+  background: #fffef4;
+  color: #476d67;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.site-guide {
+  position: absolute;
+  bottom: 19px;
+  left: 4%;
+  width: 92px;
+  height: 105px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  animation: guide-walk 26s linear infinite;
+}
+.guide-body { position: absolute; top: 2px; left: 12px; width: 68px; height: 78px; border: 3px solid #fff; border-radius: 58% 42% 48% 52% / 65% 61% 39% 35%; background: linear-gradient(140deg, #87e7ed, #55bde8 65%, #8ea7e9); box-shadow: inset -6px -5px 0 #5aadd929, 0 5px 0 #68a7c629; animation: guide-bob 3s ease-in-out infinite; }
+.site-guide-earth .guide-body { background: linear-gradient(140deg, #e5c37e, #bc8655 68%, #8c6951); }
+.site-guide-wind .guide-body { background: linear-gradient(140deg, #c6eccf, #78c3a6 65%, #5e9c9c); }
+.guide-body::before { position: absolute; top: 11px; left: 11px; width: 12px; height: 20px; border-radius: 50%; background: #ffffffa6; content: ""; transform: rotate(30deg); }
+.guide-eye { position: absolute; top: 34px; width: 6px; height: 9px; border-radius: 50%; background: #294b68; }
+.guide-eye-left { left: 20px; }
+.guide-eye-right { right: 18px; }
+.guide-smile { position: absolute; top: 48px; left: 28px; width: 13px; height: 8px; border-bottom: 3px solid #294b68; border-radius: 0 0 50% 50%; }
+.guide-shadow { position: absolute; bottom: 12px; left: 19px; width: 55px; height: 8px; border-radius: 50%; background: #5c9ebd35; }
+.guide-name { position: absolute; bottom: -2px; left: 0; width: 92px; color: #497069; font-size: 0.76rem; font-weight: 700; text-align: center; }
+
+@keyframes guide-walk { 0%, 100% { left: 4%; } 50% { left: calc(96% - 92px); } }
+@keyframes guide-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
+
+@media (max-width: 760px) {
+  .page-header.site-header .header { height: auto; min-height: 80px; padding: 14px 20px; flex-wrap: wrap; gap: 12px; }
+  .page-header.site-header .quick-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 3px;
+  }
+  .page-header.site-header .quick-nav a { flex: 0 0 auto; }
+  .page-guide { height: 138px; }
+}

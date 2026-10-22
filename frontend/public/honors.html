@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  榮譽榜保留獨立網址與動態內容容器，後續可在此擴充名單、篩選或成果卡片。
+  honors-page.js 是本頁唯一程式入口；未來接成果資料時只需擴充該檔案。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#honors" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>小小工程師榮譽榜｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/honors.css" />
+    <script type="module" src="assets/js/honors-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="honors">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+    </header>
+
+    <main class="page-main">
+      <!-- honors-page.js 會在此建立榮譽榜內容。 -->
+      <div id="content-page-root"></div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "little-water-engineer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix frontend start",
+    "dev": "npm --prefix frontend run dev",
+    "check": "npm --prefix frontend run check",
+    "lint:layout": "eslint frontend backend/src --fix && prettier --write . --ignore-unknown",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown"
+  },
+  "devDependencies": {
+    "eslint": "9.39.1",
+    "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

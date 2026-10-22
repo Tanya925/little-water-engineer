@@ -1,0 +1,39 @@
+<!-- 知識小學堂背包區專用背景：柔和小溪、草地與接到頁尾的花園。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -220 1600 920">
+  <defs>
+    <linearGradient id="creek" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfe5c3" stop-opacity="0" />
+      <stop offset=".2" stop-color="#cce5df" stop-opacity=".48" />
+      <stop offset=".5" stop-color="#91c9d7" stop-opacity=".78" />
+      <stop offset=".8" stop-color="#cce5df" stop-opacity=".48" />
+      <stop offset="1" stop-color="#cfe5c3" stop-opacity="0" />
+    </linearGradient>
+    <g id="flower">
+      <path d="M0 10v45M0 42C-20 18-26 26-15 42M0 34C18 16 25 25 12 39" fill="none" stroke="#6f9b6c" stroke-width="4" stroke-linecap="round" />
+      <g fill="currentColor"><ellipse cy="-10" rx="12" ry="18" /><ellipse cx="15" cy="-2" rx="18" ry="12" /><ellipse cx="10" cy="13" rx="12" ry="18" /><ellipse cx="-10" cy="13" rx="12" ry="18" /><ellipse cx="-15" cy="-2" rx="18" ry="12" /></g>
+      <circle r="8" fill="#efca6c" />
+    </g>
+  </defs>
+
+  <!-- 靠近背包的寬小溪：兩岸以透明色漸融，並在花園前收住。 -->
+  <!-- 擴充上方畫布後，只移動水面；完整曲線不會在右上方被裁成直線。 -->
+  <g transform="translate(0 -165) scale(1 1.16)">
+    <path d="M-80 350C166 315 355 270 540 196 737 117 1042 61 1690 10L1710 188C1214 244 946 294 761 367 574 441 316 472-80 486Z" fill="#a7d1d5" opacity=".22" />
+    <path d="M-80 365C164 327 351 285 548 209 746 133 1046 80 1690 31L1700 156C1222 209 956 257 772 329 579 404 320 436-80 452Z" fill="url(#creek)" opacity=".72" />
+  </g>
+  <!-- 河岸與花園底圖固定在原位。 -->
+    <path d="M0 322Q200 292 410 330T805 315T1215 337T1600 304V700H0Z" fill="#d2e6ce" opacity=".26" />
+    <path d="M0 430Q220 394 430 428T840 410T1240 435T1600 400V700H0Z" fill="#c5dfbd" opacity=".18" />
+
+  <!-- 兩排花帶延續到最底部，不保留純色草地空帶。 -->
+  <g opacity=".97">
+    <use href="#flower" transform="translate(18 505) scale(.9)" color="#fff9e8" /><use href="#flower" transform="translate(78 520) scale(1.08)" color="#edbc75" /><use href="#flower" transform="translate(146 500) scale(.96)" color="#b4a0d5" /><use href="#flower" transform="translate(213 518) scale(1.1)" color="#e7a3b6" /><use href="#flower" transform="translate(288 503) scale(.9)" color="#fff9e8" /><use href="#flower" transform="translate(350 517) scale(1.05)" color="#d6a5ce" /><use href="#flower" transform="translate(425 496) scale(1.12)" color="#edbc75" /><use href="#flower" transform="translate(500 518) scale(.92)" color="#b4a0d5" /><use href="#flower" transform="translate(565 502) scale(1.06)" color="#fff9e8" /><use href="#flower" transform="translate(638 518) scale(.96)" color="#e7a3b6" /><use href="#flower" transform="translate(710 495) scale(1.1)" color="#d6a5ce" /><use href="#flower" transform="translate(785 520) scale(.9)" color="#edbc75" /><use href="#flower" transform="translate(850 501) scale(1.08)" color="#fff9e8" /><use href="#flower" transform="translate(925 518) scale(.98)" color="#b4a0d5" /><use href="#flower" transform="translate(995 498) scale(1.12)" color="#e7a3b6" /><use href="#flower" transform="translate(1072 520) scale(.9)" color="#edbc75" /><use href="#flower" transform="translate(1140 503) scale(1.05)" color="#d6a5ce" /><use href="#flower" transform="translate(1215 517) scale(.96)" color="#fff9e8" /><use href="#flower" transform="translate(1282 497) scale(1.1)" color="#b4a0d5" /><use href="#flower" transform="translate(1360 520) scale(.9)" color="#e7a3b6" /><use href="#flower" transform="translate(1425 503) scale(1.06)" color="#edbc75" /><use href="#flower" transform="translate(1500 518) scale(.98)" color="#fff9e8" /><use href="#flower" transform="translate(1570 497) scale(1.1)" color="#d6a5ce" />
+  </g>
+  <!-- 花帶中間的蜿蜒小徑，讓頁尾看起來是花園而不是單純花牆。 -->
+  <path d="M-35 575C190 526 315 596 530 558S900 535 1110 578 1425 605 1635 550" fill="none" stroke="#c7b58d" stroke-width="52" stroke-linecap="round" opacity=".78" />
+  <path d="M-35 575C190 526 315 596 530 558S900 535 1110 578 1425 605 1635 550" fill="none" stroke="#fff0d1" stroke-width="43" stroke-linecap="round" opacity=".96" />
+  <g fill="#e8dcb9" opacity=".8"><ellipse cx="170" cy="550" rx="13" ry="4" /><ellipse cx="460" cy="570" rx="11" ry="4" /><ellipse cx="745" cy="544" rx="13" ry="4" /><ellipse cx="1040" cy="570" rx="12" ry="4" /><ellipse cx="1330" cy="568" rx="13" ry="4" /></g>
+  <g opacity=".98">
+    <use href="#flower" transform="translate(45 635) scale(.95)" color="#e7a3b6" /><use href="#flower" transform="translate(115 620) scale(1.08)" color="#fff9e8" /><use href="#flower" transform="translate(190 640) scale(.9)" color="#edbc75" /><use href="#flower" transform="translate(258 622) scale(1.1)" color="#b4a0d5" /><use href="#flower" transform="translate(335 638) scale(.96)" color="#d6a5ce" /><use href="#flower" transform="translate(405 619) scale(1.07)" color="#fff9e8" /><use href="#flower" transform="translate(482 640) scale(.9)" color="#e7a3b6" /><use href="#flower" transform="translate(550 621) scale(1.1)" color="#edbc75" /><use href="#flower" transform="translate(628 638) scale(.96)" color="#b4a0d5" /><use href="#flower" transform="translate(700 620) scale(1.08)" color="#fff9e8" /><use href="#flower" transform="translate(775 640) scale(.9)" color="#d6a5ce" /><use href="#flower" transform="translate(845 620) scale(1.1)" color="#e7a3b6" /><use href="#flower" transform="translate(922 638) scale(.96)" color="#edbc75" /><use href="#flower" transform="translate(995 621) scale(1.08)" color="#fff9e8" /><use href="#flower" transform="translate(1070 640) scale(.9)" color="#b4a0d5" /><use href="#flower" transform="translate(1140 620) scale(1.1)" color="#d6a5ce" /><use href="#flower" transform="translate(1218 638) scale(.96)" color="#e7a3b6" /><use href="#flower" transform="translate(1290 621) scale(1.08)" color="#fff9e8" /><use href="#flower" transform="translate(1365 640) scale(.9)" color="#edbc75" /><use href="#flower" transform="translate(1435 620) scale(1.1)" color="#b4a0d5" /><use href="#flower" transform="translate(1515 638) scale(.96)" color="#d6a5ce" />
+  </g>
+</svg>

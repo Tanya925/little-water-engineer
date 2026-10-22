@@ -1,0 +1,145 @@
+<!doctype html>
+<!--
+  知識小學堂的獨立頁面。
+  本頁保留完整的地圖、三位探險夥伴、選題背包、答題與回顧流程；不再轉址到 index.html。
+  所有帶有 quiz-* id 的節點均由 learning.js 使用，修改畫面結構時請同步確認該檔案。
+-->
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="小小水利工程師的土、風、水科學知識小學堂。" />
+    <title>知識小學堂｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="stylesheet" href="assets/css/learning.css" />
+    <link rel="stylesheet" href="assets/css/quiz-friends.css" />
+    <link rel="stylesheet" href="assets/css/pages.css" />
+    <script type="module" src="assets/js/quiz-page.js"></script>
+  </head>
+  <body data-page="quiz">
+    <main id="feature-page" class="feature-page">
+      <!-- 固定頁首：結構與其他功能頁一致，讓標題、回首頁與插圖保持同一套規則。 -->
+      <div class="feature-banner" data-scene="quiz">
+        <div class="feature-banner-backdrop" aria-hidden="true"></div>
+        <img class="feature-banner-scene" src="assets/images/page-scenes/quiz.svg" alt="" aria-hidden="true" />
+        <a class="back" href="index.html">← 回首頁</a>
+        <div class="page-heading">
+          <span id="page-icon" class="page-icon" aria-hidden="true">❔</span>
+          <span class="section-kicker">小小水利工程師養成計畫</span>
+          <h1 id="page-title">知識小學堂</h1>
+        </div>
+      </div>
+
+      <div id="quiz-content">
+        <div class="quiz-map-decor" aria-hidden="true">
+          <span>☁</span>
+          <span>🪁</span>
+          <span>🌿</span>
+          <span>✦</span>
+          <span>☁</span>
+          <span>🌼</span>
+        </div>
+
+        <!-- 起點地圖：三位夥伴可點擊說話，也會以 CSS 動畫在地圖上移動。 -->
+        <div class="quiz-welcome quiz-friends-grove">
+          <div class="quiz-friends-stage" aria-label="土風水探險夥伴">
+            <button id="quiz-earth-friend" class="quiz-walking-friend friend-earth" type="button" aria-label="和土土聊天" aria-pressed="false">
+              <span class="earth-character" aria-hidden="true">
+                <span class="earth-sprout">🌱</span>
+                <span class="character-eyes"><i></i><i></i></span>
+                <span class="character-smile"></span>
+                <span class="character-feet"><i></i><i></i></span>
+              </span>
+              <span class="friend-name">土土</span>
+            </button>
+            <button id="quiz-water-friend" class="quiz-walking-friend friend-water" type="button" aria-label="和小水滴聊天" aria-pressed="true">
+              <span id="quiz-buddy" class="quiz-buddy" data-mood="ready" aria-hidden="true">
+                <span class="buddy-spark buddy-spark-one">✦</span>
+                <span class="buddy-spark buddy-spark-two">✧</span>
+                <span class="buddy-drop">
+                  <span class="buddy-eyes"><i></i><i></i></span>
+                  <span class="buddy-smile"></span>
+                  <span class="buddy-cheek buddy-cheek-left"></span>
+                  <span class="buddy-cheek buddy-cheek-right"></span>
+                  <span class="buddy-arm buddy-arm-left"></span>
+                  <span class="buddy-arm buddy-arm-right"></span>
+                </span>
+                <span class="buddy-shadow"></span>
+              </span>
+              <span class="friend-name">小水滴</span>
+            </button>
+            <button id="quiz-wind-friend" class="quiz-walking-friend friend-wind" type="button" aria-label="和風咻咻聊天" aria-pressed="false">
+              <span class="wind-character" aria-hidden="true">
+                <span class="wind-cloud"></span>
+                <span class="character-eyes"><i></i><i></i></span>
+                <span class="character-smile"></span>
+                <span class="wind-breeze"></span>
+              </span>
+              <span class="friend-name">風咻咻</span>
+            </button>
+            <span class="grove-grass grove-grass-one" aria-hidden="true">🌿</span>
+            <span class="grove-grass grove-grass-two" aria-hidden="true">🌼</span>
+          </div>
+          <div class="quiz-friend-speech" role="status">
+            <strong id="quiz-speech-speaker">小水滴</strong>
+            <p id="quiz-buddy-message">我們是土、風、水探險隊！點點我們聊聊天，再挑幾個喜歡的主題吧！</p>
+          </div>
+        </div>
+
+        <p id="quiz-status" role="status">正在載入題庫…</p>
+        <button id="quiz-retry" class="experiment-button" type="button" hidden>重新載入題庫</button>
+
+        <!-- 設定階段：題目主題、玩法、難度和題數皆由伺服器已發布的題庫建立。 -->
+        <form id="quiz-setup" class="learning-panel" hidden>
+          <div class="quiz-topic-heading">
+            <h2><span class="quiz-step-number" aria-hidden="true">01</span>選好你的冒險世界</h2>
+            <span class="quiz-multi-badge">主題可複選！把想去的世界一起放進背包。</span>
+          </div>
+          <p id="quiz-bank-count" hidden></p>
+          <div id="quiz-topic-picks" class="quiz-topic-picks" role="group" aria-label="快速選擇探險主題"></div>
+          <div class="quiz-departure-area">
+            <div class="quiz-filters">
+              <div class="quiz-step-intro">
+                <h3 class="quiz-prep-title"><span class="quiz-step-number" aria-hidden="true">02</span>出發前最後準備</h3>
+                <p>選好玩法，安排今天的挑戰節奏。</p>
+              </div>
+              <fieldset class="quiz-prep-type">
+                <legend>🎲 選擇闖關玩法</legend>
+                <select id="quiz-type" hidden aria-label="題型"><option value="">全部題型</option></select>
+                <div class="quiz-setting-choices" data-setting="quiz-type"></div>
+              </fieldset>
+              <fieldset class="quiz-prep-difficulty">
+                <legend>⛰️ 挑個適合的難度</legend>
+                <select id="quiz-difficulty" hidden aria-label="難度"><option value="">全部難度</option></select>
+                <div class="quiz-setting-choices" data-setting="quiz-difficulty"></div>
+              </fieldset>
+              <fieldset class="quiz-prep-count">
+                <legend>🚩 決定挑戰題數</legend>
+                <select id="quiz-count" hidden aria-label="練習題數"><option value="5">5 題</option><option value="10" selected>10 題</option><option value="20">20 題</option><option value="all">全部符合的題目</option></select>
+                <div class="quiz-setting-choices" data-setting="quiz-count"></div>
+              </fieldset>
+              <p class="quiz-flow-next">準備完成，接著確認你的冒險背包 <span aria-hidden="true">↓</span></p>
+            </div>
+            <div class="quiz-launch-row">
+              <div class="quiz-step-intro"><h3 class="quiz-prep-title"><span class="quiz-step-number" aria-hidden="true">03</span>確認冒險背包</h3><p>看看目的地與挑戰設定，都準備好了嗎？</p></div>
+              <div class="quiz-backpack quiz-adventure-pass"><span class="quiz-bag-handle" aria-hidden="true"></span><span class="quiz-bag-strap quiz-bag-strap-left" aria-hidden="true"></span><span class="quiz-bag-strap quiz-bag-strap-right" aria-hidden="true"></span><div class="quiz-pass-content"><div class="quiz-bag-flap"><span class="quiz-pass-kicker">土・風・水 探險隊</span><h3>我的冒險背包</h3><span class="quiz-bag-buckle" aria-hidden="true"></span></div><div id="quiz-selection-note" aria-live="polite"></div></div></div>
+              <div class="quiz-final-step"><h3 class="quiz-prep-title"><span class="quiz-step-number" aria-hidden="true">04</span>準備好了，一起出發！</h3><p>帶上你的冒險背包，去發現新的科學秘密。</p><button id="quiz-start" class="learning-primary" type="submit" disabled>開始冒險 🚀</button></div>
+            </div>
+          </div>
+        </form>
+
+        <!-- 作答與結果階段會在學習流程開始後由 learning.js 顯示。 -->
+        <section id="quiz-session" class="learning-panel" aria-labelledby="quiz-question" hidden>
+          <div class="quiz-progress-row"><span id="quiz-progress"></span><span id="quiz-score"></span></div>
+          <progress id="quiz-progress-bar" value="0" max="10" aria-label="答題進度"></progress>
+          <p id="quiz-meta" class="learning-note"></p>
+          <form id="quiz-answer-form"><fieldset class="quiz-question-fieldset"><legend id="quiz-question" tabindex="-1"></legend><div id="quiz-options" class="quiz-options"></div></fieldset><p id="quiz-answer-error" role="alert"></p><div id="quiz-answer-actions" class="quiz-answer-actions"><button id="quiz-submit" class="learning-primary" type="submit">確認答案</button></div></form>
+          <div id="quiz-feedback" class="quiz-feedback" role="status" hidden></div><div id="quiz-next-actions" class="quiz-answer-actions quiz-next-actions"><button id="quiz-next" class="learning-primary" type="button" hidden>下一題 →</button></div>
+        </section>
+        <section id="quiz-results" class="learning-panel" aria-labelledby="quiz-result-title" hidden>
+          <div class="quiz-finish-medal" aria-hidden="true">🏅</div><h2 id="quiz-result-title" tabindex="-1">探險完成！給自己拍拍手！</h2><p id="quiz-result-score" class="quiz-result-score"></p><p id="quiz-result-message"></p><div class="quiz-result-actions"><button id="quiz-again" class="learning-primary" type="button">再練習一次</button><button id="quiz-reset" class="experiment-button" type="button">重新選題</button></div><h3>本次答題回顧</h3><div id="quiz-review" class="quiz-review"></div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

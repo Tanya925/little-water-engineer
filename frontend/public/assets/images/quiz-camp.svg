@@ -1,0 +1,117 @@
+<!-- 主要功能：提供小學堂場景的裝飾背景。
+viewBox 定義圖形座標與比例，path／shape 的填色決定圖層；顯示尺寸與動畫由引用它的 CSS／JavaScript 控制。
+這是網站直接使用的靜態 SVG，可修改圖形，無需產生工具；純裝飾不承擔按鈕或文字資訊功能。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580" preserveAspectRatio="none" fill="none">
+<defs>
+ <g id="bloom"><path d="M0 3V32M0 22Q-15 9-16 18Q-9 27 0 27M0 17Q14 5 17 13Q11 22 0 21" stroke="#6b9b6c" stroke-width="2.4" fill="#86b47d"/><g fill="currentColor"><ellipse cy="-9" rx="6" ry="8"/><ellipse cx="8" cy="-3" rx="8" ry="6" transform="rotate(-20 8 -3)"/><ellipse cx="6" cy="7" rx="6" ry="8" transform="rotate(-35 6 7)"/><ellipse cx="-6" cy="7" rx="6" ry="8" transform="rotate(35 -6 7)"/><ellipse cx="-8" cy="-3" rx="8" ry="6" transform="rotate(20 -8 -3)"/></g><circle r="4.5" fill="#efca6c"/></g>
+ <g id="tulip"><path d="M0 0V33M0 28Q-16 7-12 6Q-3 10 0 28M0 23Q17 4 14 5Q5 9 0 23" stroke="#739c6b" stroke-width="2" fill="#8bb47c"/><path d="M-11-13-5-7 0-17 5-7 11-13C14 8-14 8-11-13Z" fill="currentColor"/></g>
+</defs>
+<path d="M0 477Q170 435 370 480T800 472T1200 468V580H0Z" fill="#c3dfbf" opacity=".8"/>
+<path d="M0 517Q180 465 380 502T810 490T1200 498V580H0Z" fill="#a7cb9d" opacity=".75"/>
+<ellipse cx="0" cy="505" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="80" cy="510" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="160" cy="513" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="240" cy="512" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="320" cy="508" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="400" cy="502" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="480" cy="498" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="560" cy="497" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="640" cy="500" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="720" cy="505" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="800" cy="510" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="880" cy="513" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="960" cy="512" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="1040" cy="508" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="1120" cy="502" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<ellipse cx="1200" cy="498" rx="62" ry="32" fill="#90b987" opacity=".65"/>
+<use href="#tulip" transform="translate(0 467) scale(0.80)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(24 482) scale(0.94)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(48 494) scale(1.08)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(72 479) scale(1.22)" color="#edbc75"/>
+<use href="#tulip" transform="translate(96 481) scale(0.80)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(120 480) scale(0.94)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(144 458) scale(1.08)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(168 461) scale(1.22)" color="#fff9e8"/>
+<use href="#tulip" transform="translate(192 470) scale(0.80)" color="#edbc75"/>
+<use href="#bloom" transform="translate(216 462) scale(0.94)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(240 477) scale(1.08)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(264 491) scale(1.22)" color="#b4a0d5"/>
+<use href="#tulip" transform="translate(288 480) scale(0.80)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(312 485) scale(0.94)" color="#edbc75"/>
+<use href="#bloom" transform="translate(336 485) scale(1.08)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(360 463) scale(1.22)" color="#e7a3b6"/>
+<use href="#tulip" transform="translate(384 463) scale(0.80)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(408 468) scale(0.94)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(432 457) scale(1.08)" color="#edbc75"/>
+<use href="#bloom" transform="translate(456 471) scale(1.22)" color="#d6a5ce"/>
+<use href="#tulip" transform="translate(480 486) scale(0.80)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(504 478) scale(0.94)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(528 487) scale(1.08)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(552 490) scale(1.22)" color="#edbc75"/>
+<use href="#tulip" transform="translate(576 468) scale(0.80)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(600 467) scale(0.94)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(624 469) scale(1.08)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(648 454) scale(1.22)" color="#fff9e8"/>
+<use href="#tulip" transform="translate(672 466) scale(0.80)" color="#edbc75"/>
+<use href="#bloom" transform="translate(696 481) scale(0.94)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(720 475) scale(1.08)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(744 487) scale(1.22)" color="#b4a0d5"/>
+<use href="#tulip" transform="translate(768 493) scale(0.80)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(792 474) scale(0.94)" color="#edbc75"/>
+<use href="#bloom" transform="translate(816 473) scale(1.08)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(840 472) scale(1.22)" color="#e7a3b6"/>
+<use href="#tulip" transform="translate(864 454) scale(0.80)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(888 463) scale(0.94)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(912 476) scale(1.08)" color="#edbc75"/>
+<use href="#bloom" transform="translate(936 470) scale(1.22)" color="#d6a5ce"/>
+<use href="#tulip" transform="translate(960 484) scale(0.80)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(984 494) scale(0.94)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(1008 478) scale(1.08)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(1032 478) scale(1.22)" color="#edbc75"/>
+<use href="#tulip" transform="translate(1056 477) scale(0.80)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(1080 456) scale(0.94)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(1104 461) scale(1.08)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(1128 471) scale(1.22)" color="#fff9e8"/>
+<use href="#tulip" transform="translate(1152 464) scale(0.80)" color="#edbc75"/>
+<use href="#bloom" transform="translate(1176 479) scale(0.94)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(1200 492) scale(1.08)" color="#e7a3b6"/>
+<path d="M-40 543C170 594 320 494 535 538S875 579 1240 527" stroke="#c7b58d" stroke-width="45" stroke-linecap="round"/>
+<path d="M-40 543C170 594 320 494 535 538S875 579 1240 527" stroke="#fff0d1" stroke-width="39" stroke-linecap="round"/>
+<g fill="#eadfc2" opacity=".8"><ellipse cx="85" cy="554" rx="13" ry="4"/><ellipse cx="265" cy="546" rx="11" ry="4"/><ellipse cx="463" cy="529" rx="13" ry="4"/><ellipse cx="683" cy="558" rx="12" ry="4"/><ellipse cx="909" cy="560" rx="13" ry="4"/><ellipse cx="1100" cy="543" rx="11" ry="4"/></g>
+<path d="M0 579Q160 545 320 575T650 579T920 569T1200 572V580H0Z" fill="#91b982"/>
+<use href="#bloom" transform="translate(8 571) scale(0.60)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(44 576) scale(0.72)" color="#edbc75"/>
+<use href="#bloom" transform="translate(80 578) scale(0.84)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(116 576) scale(0.60)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(152 571) scale(0.72)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(188 566) scale(0.84)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(224 564) scale(0.60)" color="#edbc75"/>
+<use href="#bloom" transform="translate(260 567) scale(0.72)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(296 572) scale(0.84)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(332 577) scale(0.60)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(368 578) scale(0.72)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(404 575) scale(0.84)" color="#edbc75"/>
+<use href="#bloom" transform="translate(440 570) scale(0.60)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(476 565) scale(0.72)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(512 564) scale(0.84)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(548 567) scale(0.60)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(584 573) scale(0.72)" color="#edbc75"/>
+<use href="#bloom" transform="translate(620 577) scale(0.84)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(656 578) scale(0.60)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(692 574) scale(0.72)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(728 569) scale(0.84)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(764 565) scale(0.60)" color="#edbc75"/>
+<use href="#bloom" transform="translate(800 564) scale(0.72)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(836 568) scale(0.84)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(872 573) scale(0.60)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(908 577) scale(0.72)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(944 578) scale(0.84)" color="#edbc75"/>
+<use href="#bloom" transform="translate(980 574) scale(0.60)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(1016 568) scale(0.72)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(1052 564) scale(0.84)" color="#b4a0d5"/>
+<use href="#bloom" transform="translate(1088 565) scale(0.60)" color="#fff9e8"/>
+<use href="#bloom" transform="translate(1124 569) scale(0.72)" color="#edbc75"/>
+<use href="#bloom" transform="translate(1160 574) scale(0.84)" color="#d6a5ce"/>
+<use href="#bloom" transform="translate(1196 578) scale(0.60)" color="#e7a3b6"/>
+<use href="#bloom" transform="translate(1232 577) scale(0.72)" color="#b4a0d5"/>
+</svg>

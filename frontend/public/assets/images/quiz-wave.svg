@@ -1,0 +1,4 @@
+<!-- 主要功能：提供小學堂場景的裝飾背景。
+viewBox 定義圖形座標與比例，path／shape 的填色決定圖層；顯示尺寸與動畫由引用它的 CSS／JavaScript 控制。
+這是網站直接使用的靜態 SVG，可修改圖形，無需產生工具；純裝飾不承擔按鈕或文字資訊功能。 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="44" viewBox="0 0 160 44"><path d="M0 22C20 22 20 5 40 5S60 39 80 39 100 5 120 5 140 22 160 22V44H0Z" fill="#76bad0" fill-opacity=".42"/></svg>

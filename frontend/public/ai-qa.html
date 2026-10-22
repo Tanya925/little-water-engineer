@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  AI 問答是獨立的教材問答畫面；HTML 與瀏覽器程式不包含 AI 金鑰或未發布教材全文。
+  ai-qa-page.js 只呼叫本站 /api/ai/qa，檢索、生成、證據查核及來源驗證皆在伺服器完成。
+  ai-log 使用 role=log 呈現本次頁面對話；重新整理後前端紀錄自然清除。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#ai-qa" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 問答機器人｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/ai-qa.css" />
+    <script type="module" src="assets/js/ai-qa-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="ai-qa">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+      <nav class="page-nav" aria-label="主要導覽">
+        <a href="experiments.html" data-page-link="experiments">實驗影片</a>
+        <a href="resources.html" data-page-link="resources">教材下載</a>
+        <a href="quiz.html" data-page-link="quiz">知識小學堂</a>
+        <a href="ai-qa.html" data-page-link="ai-qa">AI 問答</a>
+        <a href="about.html" data-page-link="about">關於我們</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <div class="page-introduction">
+        <span class="section-kicker">ASK · TRACE · LEARN</span>
+        <h1>AI 問答機器人</h1>
+        <p>
+          提出問題後，小幫手會根據老師提供的教材回答，並顯示使用的教材來源。重新整理頁面會清除對話。
+        </p>
+      </div>
+      <!-- 模型文字與教材引文都由 JavaScript 以 textContent 插入，不允許模型輸出 HTML。 -->
+      <section class="ai-qa-page" aria-label="教材問答">
+        <div id="ai-log" class="ai-chat-log" role="log" aria-live="polite"></div>
+        <form id="ai-qa-form" class="ai-chat-form">
+          <label for="ai-question">你想知道什麼？</label>
+          <div class="ai-input-row">
+            <textarea
+              id="ai-question"
+              rows="3"
+              maxlength="1200"
+              required
+              placeholder="輸入你的問題…"
+            ></textarea>
+            <button class="ai-send" type="submit">送出問題 ↗</button>
+          </div>
+        </form>
+        <p id="ai-status" class="ai-chat-status" role="status"></p>
+      </section>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

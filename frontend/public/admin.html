@@ -1,0 +1,111 @@
+<!doctype html>
+<!-- 主要功能：定義老師管理區的側邊導覽、內容清單、編輯視窗、題庫匯入及登出介面。 -->
+<!--
+  老師管理區的固定框架，包含側欄、清單容器與編輯／匯入 dialog。
+  admin.js 動態建立各類資料欄位；頁面和其程式由伺服器驗證登入後才提供。
+  body 預設 hidden，admin.js 確認 authenticated 後才顯示，避免未登入時閃現管理介面。
+  editor 與 import-dialog 的 id 是事件綁定及無障礙標題關聯，重新命名須同步修改 admin.js。
+-->
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>內容總覽｜老師管理區</title>
+    <link rel="stylesheet" href="assets/css/admin.css" />
+    <script src="assets/js/admin.js" defer></script>
+  </head>
+  <body hidden>
+    <a class="skip-link" href="#admin-main">跳到管理內容</a>
+    <aside class="sidebar">
+      <a class="brand" href="admin.html">
+        <span class="brand-icon" aria-hidden="true">💧</span>
+        <span>
+          小小水利工程師
+          <small>網站內容管理</small>
+        </span>
+      </a>
+      <div class="sidebar-label">老師的工作空間</div>
+      <nav id="admin-menu" aria-label="管理功能選單"></nav>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <span id="signed-in-user">老師管理區</span>
+        <div>
+          <a href="index.html" target="_blank" rel="noopener">查看前台 ↗</a>
+          <button id="logout-button" class="text-button" type="button">登出</button>
+        </div>
+      </header>
+
+      <main id="admin-main" tabindex="-1">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">LITTLE WATER ENGINEER · 後台管理</p>
+            <h1 id="admin-title">內容總覽</h1>
+            <p id="admin-description"></p>
+          </div>
+          <div id="page-actions" class="actions"></div>
+        </div>
+        <p id="admin-message" class="message" role="status" aria-live="polite" hidden></p>
+        <div id="admin-view" aria-busy="true"></div>
+        <footer class="workspace-footer">
+          小小水利工程師養成計畫
+          <span>每一份好奇心，都從好的內容開始。</span>
+        </footer>
+      </main>
+    </div>
+    <dialog id="editor" aria-labelledby="editor-title">
+      <form id="editor-form">
+        <header class="dialog-heading">
+          <div>
+            <p class="eyebrow">內容編輯</p>
+            <h2 id="editor-title"></h2>
+          </div>
+          <button class="icon-button" type="button" id="editor-close" aria-label="關閉編輯視窗">
+            ✕
+          </button>
+        </header>
+        <p class="form-hint">選擇「發布」讓前台顯示，選擇「下架」則隱藏內容。</p>
+        <div id="editor-fields" class="form-grid"></div>
+        <details id="question-preview" hidden>
+          <summary>預覽題目與答案解析</summary>
+          <div id="preview-content"></div>
+        </details>
+        <p id="editor-message" class="message" role="status" hidden></p>
+        <div class="dialog-footer">
+          <button type="button" class="secondary" id="editor-cancel">取消</button>
+          <button type="submit" class="primary" id="editor-save">儲存內容</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="import-dialog" aria-labelledby="import-title">
+      <form id="import-form">
+        <header class="dialog-heading">
+          <div>
+            <p class="eyebrow">題庫工具</p>
+            <h2 id="import-title">匯入新題目</h2>
+          </div>
+          <button type="button" class="icon-button" id="import-close" aria-label="關閉匯入視窗">
+            ✕
+          </button>
+        </header>
+        <p class="form-hint">
+          選擇題庫 JSON 檔，一次最多 1000
+          題。只新增未使用的題號，不覆蓋原題；匯入後一律為下架狀態，檢查後再發布。
+        </p>
+        <label class="field">
+          題庫 JSON 檔
+          <input id="import-file" type="file" accept=".json,application/json" required />
+        </label>
+        <details>
+          <summary>查看格式範例</summary>
+          <pre id="import-example"></pre>
+        </details>
+        <p id="import-message" class="message" role="status" hidden></p>
+        <div class="dialog-footer">
+          <button type="button" class="secondary" id="import-check">檢查檔案</button>
+          <button type="submit" class="primary" id="import-submit" disabled>確認匯入</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

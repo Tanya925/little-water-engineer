@@ -1,0 +1,6 @@
+/* AI 問答頁唯一的 CSS 入口：基礎外觀、對話元件、共用頁首與頁尾。 */
+@import url("./styles.css");
+@import url("./ai.css");
+@import url("./page-shell.css");
+
+/* AI 問答頁新增的專屬畫面調整請寫在此處。 */

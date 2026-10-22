@@ -1,0 +1,1724 @@
+[
+  {
+    "id": "MC01",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "流體力學的柏努利原理說，流體流得越快，壓力會怎麼樣？",
+    "options": {
+      "A": "變大",
+      "B": "不變",
+      "C": "先變大再變小",
+      "D": "變小"
+    },
+    "answer": "D",
+    "answer_text": "變小",
+    "explanation": "在流動中，流速增加處的壓力會降低（動能與壓力能互相轉換）。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫CM03計畫書(20260115版)「8項基礎流力試驗」",
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "MC02",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "用吸管對著黏有紙條的一端吹氣（吹紙條實驗），紙條最後會怎麼樣？",
+    "options": {
+      "A": "向內收合",
+      "B": "被吹得向外散開",
+      "C": "變成紅色",
+      "D": "直接飛走"
+    },
+    "answer": "A",
+    "answer_text": "向內收合",
+    "explanation": "一般人以為紙條會被吹散，實際上氣流變快、壓力變小，紙條會向內收合。",
+    "basis": "教案/計畫書",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "本計畫CM03計畫書(20260115版)「8項基礎流力試驗」"
+    ]
+  },
+  {
+    "id": "MC03",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "兩個寶特瓶靠近放，中間留一點小縫，從縫中快速吹氣，兩個瓶子會？",
+    "options": {
+      "A": "分得更開",
+      "B": "互相靠攏",
+      "C": "一起飛起來",
+      "D": "完全不動"
+    },
+    "answer": "B",
+    "answer_text": "互相靠攏",
+    "explanation": "縫中氣流變快、壓力變小，外側相對高壓，把瓶子推向中間。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)",
+      "聯合新聞網月台氣流解說 https://udn.com/news/story/7266/9660598"
+    ]
+  },
+  {
+    "id": "MC04",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "柏努利原理可以用哪一個觀念來理解？",
+    "options": {
+      "A": "水會結冰",
+      "B": "能量守恆：動能和壓力能互相轉換",
+      "C": "磁鐵同性相斥",
+      "D": "光會折射"
+    },
+    "answer": "B",
+    "answer_text": "能量守恆：動能和壓力能互相轉換",
+    "explanation": "流體的動能與壓力能總和維持固定，一邊增加另一邊就減少。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "MC05",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "動壓力的公式是 ½ρv²。如果風速變成原來的2倍，動壓力大約變成幾倍？",
+    "options": {
+      "A": "4倍",
+      "B": "2倍",
+      "C": "8倍",
+      "D": "不變"
+    },
+    "answer": "A",
+    "answer_text": "4倍",
+    "explanation": "動壓力與速度的平方成正比，速度×2，壓力×4。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "MC06",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "水黽（水上溜冰的昆蟲）能站在水面上，主要和水的哪一個特性有關？",
+    "options": {
+      "A": "水會導電",
+      "B": "表面張力",
+      "C": "水是透明的",
+      "D": "水會結冰"
+    },
+    "answer": "B",
+    "answer_text": "表面張力",
+    "explanation": "水面分子向內的拉力形成表面張力，加上水黽的腿細長又疏水。",
+    "basis": "網路查證",
+    "sources": [
+      "USGS Surface tension and water https://www.usgs.gov/water-science-school/science/surface-tension-and-water",
+      "USGS water strider https://www.usgs.gov/media/images/surface-tension-allows-a-water-strider-walk-water"
+    ]
+  },
+  {
+    "id": "MC07",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "水分子之間互相吸引的力量（氫鍵造成），叫做什麼？",
+    "options": {
+      "A": "離心力",
+      "B": "內聚力",
+      "C": "摩擦力",
+      "D": "磁力"
+    },
+    "answer": "B",
+    "answer_text": "內聚力",
+    "explanation": "水分子是極性分子，氫鍵讓分子互相吸引，稱為內聚力，是表面張力的來源。",
+    "basis": "網路查證",
+    "sources": [
+      "USGS Surface tension and water https://www.usgs.gov/water-science-school/science/surface-tension-and-water",
+      "JoVE Cohesion and surface tension https://www.jove.com/t/10673"
+    ]
+  },
+  {
+    "id": "MC08",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "教案說，哪些自然事件可能讓山崩，進而形成堰塞湖？",
+    "options": {
+      "A": "月亮變圓",
+      "B": "大地震或颱風（豪雨）",
+      "C": "路燈亮起",
+      "D": "學校放假"
+    },
+    "answer": "B",
+    "answer_text": "大地震或颱風（豪雨）",
+    "explanation": "教案：一場大地震或颱風讓旁邊的山崩，土石堵住河道，就形成堰塞湖。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"
+    ]
+  },
+  {
+    "id": "MC09",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "虹吸管要成功把水從高處杯子移到低處杯子，下列哪一點必須做到？",
+    "options": {
+      "A": "管子一定要是金屬做的",
+      "B": "要一直用嘴巴吸",
+      "C": "出水口要比水源的水面更低",
+      "D": "水要先加熱"
+    },
+    "answer": "C",
+    "answer_text": "出水口要比水源的水面更低",
+    "explanation": "虹吸需要高低差，出水口低於水源水面；管子先裝滿水後即可自行流動。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "Britannica Siphon https://www.britannica.com/print/article/546445"
+    ]
+  },
+  {
+    "id": "MC10",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "高速列車通過月台時，候車民眾應該站在哪裡比較安全？",
+    "options": {
+      "A": "緊貼月台邊緣",
+      "B": "黃線或白線內側（靠近月台中央）",
+      "C": "黃線外側",
+      "D": "鐵軌旁"
+    },
+    "answer": "B",
+    "answer_text": "黃線或白線內側（靠近月台中央）",
+    "explanation": "列車經過會帶動強氣流，月台黃線或白線是提醒保持距離的安全線。",
+    "basis": "網路查證",
+    "sources": [
+      "聯合新聞網月台氣流解說 https://udn.com/news/story/7266/9660598",
+      "日本國土交通省 https://www.mlit.go.jp/tetudo/content/001978881.pdf"
+    ]
+  },
+  {
+    "id": "MC11",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "堰塞湖主要是怎麼形成的？",
+    "options": {
+      "A": "河水被太陽曬乾",
+      "B": "人們挖出來的水池",
+      "C": "海水倒灌",
+      "D": "山崩的土石堵住了河道"
+    },
+    "answer": "D",
+    "answer_text": "山崩的土石堵住了河道",
+    "explanation": "地震或豪雨造成山崩，土石堵住河谷，上游水位上升形成湖。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"
+    ]
+  },
+  {
+    "id": "MC12",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "教案用什麼生活比喻來說明堰塞湖？",
+    "options": {
+      "A": "山谷內的土石流大塞車（河流像高速公路、水像車子）",
+      "B": "河流像鉛筆盒",
+      "C": "水像棉花糖",
+      "D": "堰塞湖像冰淇淋"
+    },
+    "answer": "A",
+    "answer_text": "山谷內的土石流大塞車（河流像高速公路、水像車子）",
+    "explanation": "山崩像大車禍把高速公路堵住，水流被擋住，就是堰塞湖。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "MC13",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "堰塞湖主要有哪兩種威脅？",
+    "options": {
+      "A": "上游淹水、下游潰壩洪水",
+      "B": "地震與火山",
+      "C": "颱風與龍捲風",
+      "D": "大雪與霜凍"
+    },
+    "answer": "A",
+    "answer_text": "上游淹水、下游潰壩洪水",
+    "explanation": "水位上升會淹上游；壩體潰決時洪水衝向下游。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "MC14",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "在迷你堰塞湖實驗中，水漫過土石壩頂後，壩體會發生什麼事？",
+    "options": {
+      "A": "變得更堅硬",
+      "B": "被快速沖刷，可能瞬間崩塌",
+      "C": "變成鑽石",
+      "D": "不受影響"
+    },
+    "answer": "B",
+    "answer_text": "被快速沖刷，可能瞬間崩塌",
+    "explanation": "堰塞湖的土石壩很不穩定，水一漫過就可能快速沖刷崩塌，因此下游居民需緊急撤離。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "MC15",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "2025年9月馬太鞍溪堰塞湖發生溢流，與哪個颱風的外圍環流豪雨有關？",
+    "options": {
+      "A": "凱米颱風",
+      "B": "莫拉克颱風",
+      "C": "海葵颱風",
+      "D": "樺加沙颱風"
+    },
+    "answer": "D",
+    "answer_text": "樺加沙颱風",
+    "explanation": "2025年9月23日，樺加沙外圍環流帶來豪雨，湖水上升，下午2時50分壩頂開始溢流。",
+    "basis": "網路查證",
+    "sources": [
+      "TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888",
+      "中央社 https://www.cna.com.tw/news/ahel/202509245005.aspx"
+    ]
+  },
+  {
+    "id": "MC16",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "專家指出，馬太鞍溪堰塞湖的壩體風險高，是因為壩體主要由什麼堆積而成？",
+    "options": {
+      "A": "堅硬的混凝土",
+      "B": "整塊大岩石",
+      "C": "鋼筋與鋼板",
+      "D": "上游山崖崩落的碎石，結構鬆散"
+    },
+    "answer": "D",
+    "answer_text": "上游山崖崩落的碎石，結構鬆散",
+    "explanation": "台大地質系陳文山教授指出壩體為崩落碎石，結構鬆散不穩固。",
+    "basis": "網路查證",
+    "sources": ["TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"]
+  },
+  {
+    "id": "MC17",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "教案中的「安全溜滑梯」代表哪一種工程方法？",
+    "options": {
+      "A": "把壩體加高",
+      "B": "把水全部倒掉",
+      "C": "在壩體上開挖溢洪道，讓水穩定流出",
+      "D": "用大石頭砸壩"
+    },
+    "answer": "C",
+    "answer_text": "在壩體上開挖溢洪道，讓水穩定流出",
+    "explanation": "開挖一條緩而寬的溢洪道，水能穩定流出、水位不再上升。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "MC18",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "農業部林業保育署的研究報告提到，堰塞湖緊急處理中「最簡單且最常用」的是哪一類？",
+    "options": {
+      "A": "用炸藥炸掉整座山",
+      "B": "排水（開挖溢流水道或排水路）",
+      "C": "用水桶把湖水舀光",
+      "D": "用大布把湖蓋起來"
+    },
+    "answer": "B",
+    "answer_text": "排水（開挖溢流水道或排水路）",
+    "explanation": "若能建立溢流水道，就能逐步降低湖面、減少蓄水量。",
+    "basis": "網路查證",
+    "sources": [
+      "農業部林業保育署(原林務局)堰塞湖應變文件 https://taitung.forest.gov.tw/File.aspx?fno=63791",
+      "農業部林業保育署文件 https://nantou.forest.gov.tw/File.aspx?fno=18251"
+    ]
+  },
+  {
+    "id": "MC19",
+    "type": "選擇題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "聽到堰塞湖警報時，一般民眾最重要的防災行動是什麼？",
+    "options": {
+      "A": "靠近河邊看熱鬧",
+      "B": "留在河床上露營",
+      "C": "等水來了再逃",
+      "D": "注意警報，立即往高處撤離"
+    },
+    "answer": "D",
+    "answer_text": "注意警報，立即往高處撤離",
+    "explanation": "工程師負責技術救援，我們負責生命安全，監測預警與疏散避難是最終防線。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "MC20",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "臺灣常發生地震，主要是因為位在哪兩個板塊的交界？",
+    "options": {
+      "A": "太平洋板塊與南極板塊",
+      "B": "非洲板塊與印度板塊",
+      "C": "北美板塊與南美板塊",
+      "D": "歐亞板塊與菲律賓海板塊"
+    },
+    "answer": "D",
+    "answer_text": "歐亞板塊與菲律賓海板塊",
+    "explanation": "臺灣由歐亞板塊與菲律賓海板塊碰撞擠壓而成。",
+    "basis": "網路查證",
+    "sources": ["臺灣大學 https://www.iam.ntu.edu.tw/images/20201130.pdf"]
+  },
+  {
+    "id": "MC21",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "教案說，土壤液化需要哪三個要素？",
+    "options": {
+      "A": "沙土、水、搖晃",
+      "B": "石頭、火、風",
+      "C": "玻璃、油、冰",
+      "D": "泥巴、陽光、雷"
+    },
+    "answer": "A",
+    "answer_text": "沙土、水、搖晃",
+    "explanation": "沙土、水（飽和）加上地震搖晃，沙粒間支撐力失效，就像流體一樣。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)",
+      "新北市政府工務局土壤液化電子書 https://www.publicwork.ntpc.gov.tw/userfiles/1061400/files/%E5%9C%9F%E5%A3%A4%E6%B6%B2%E5%8C%96%E9%9B%BB%E5%AD%90%E6%9B%B8.pdf"
+    ]
+  },
+  {
+    "id": "MC22",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "內政部消防署建議，地震發生時的保命三步驟是什麼？",
+    "options": {
+      "A": "跑、跳、叫",
+      "B": "開門、關瓦斯、衝出去",
+      "C": "躲窗邊、拍照、等待",
+      "D": "趴下、掩護、穩住"
+    },
+    "answer": "D",
+    "answer_text": "趴下、掩護、穩住",
+    "explanation": "趴下（雙手抱頭膝蓋跪地）、掩護（躲桌下或牆角護住頭頸）、穩住（抓緊直到搖晃停止）。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "內政部消防署地震SOP(風傳媒) https://www.storm.mg/article/221092",
+      "NOWnews地震SOP報導 https://www.nownews.com/news/5255142",
+      "本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"
+    ]
+  },
+  {
+    "id": "MC23",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "難",
+    "question": "土壤液化時，沙粒間為什麼會失去互相支撐的能力？",
+    "options": {
+      "A": "沙子變成了金屬",
+      "B": "孔隙水壓急速上升，使土壤強度下降",
+      "C": "沙子被磁鐵吸走",
+      "D": "沙子被曬乾了"
+    },
+    "answer": "B",
+    "answer_text": "孔隙水壓急速上升，使土壤強度下降",
+    "explanation": "飽和砂土受地震力作用，水壓升高，使土壤原有強度降低。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "國立宜蘭大學土木系液化資料 https://civil.niu.edu.tw/var/file/25/1025/img/719714067.pdf",
+      "本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"
+    ]
+  },
+  {
+    "id": "MC24",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "在液化實驗中，把積木房子放在水剛好淹過沙面的濕沙上並持續敲打盆子，房子會？",
+    "options": {
+      "A": "完全不動",
+      "B": "變成雲朵",
+      "C": "飛到天花板",
+      "D": "下沉、傾斜，甚至浮起"
+    },
+    "answer": "D",
+    "answer_text": "下沉、傾斜，甚至浮起",
+    "explanation": "飽和的沙在搖晃下像流體，房子會下沉、傾斜甚至漂浮。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "MC25",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "搭建抗震模型時，老師為什麼提示用「三角形」結構？",
+    "options": {
+      "A": "三角形結構比較穩固（例如腳踏車骨架）",
+      "B": "三角形比較好看",
+      "C": "三角形比較便宜",
+      "D": "三角形比較輕"
+    },
+    "answer": "A",
+    "answer_text": "三角形結構比較穩固（例如腳踏車骨架）",
+    "explanation": "教案中用腳踏車骨架為例，說明三角結構較穩。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "MC26",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "一般而言，地下水位越深，砂土液化的可能性會怎麼變？",
+    "options": {
+      "A": "越容易液化",
+      "B": "一定會液化",
+      "C": "越不容易液化",
+      "D": "完全沒關係"
+    },
+    "answer": "C",
+    "answer_text": "越不容易液化",
+    "explanation": "地下水位越深，砂土越不易液化；水位越淺越容易液化。",
+    "basis": "網路查證",
+    "sources": [
+      "國立宜蘭大學土木系液化資料 https://civil.niu.edu.tw/var/file/25/1025/img/719714067.pdf"
+    ]
+  },
+  {
+    "id": "MC27",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "想查自己家附近是否為土壤液化潛勢區，可以使用哪個系統？",
+    "options": {
+      "A": "天氣預報APP",
+      "B": "電影售票網站",
+      "C": "經濟部（地質調查及礦業管理中心）的「土壤液化潛勢區查詢系統」",
+      "D": "網路商城"
+    },
+    "answer": "C",
+    "answer_text": "經濟部（地質調查及礦業管理中心）的「土壤液化潛勢區查詢系統」",
+    "explanation": "教案參考資料中列出該系統，可展示給學生看。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)",
+      "The News Lens土壤液化報導 https://www.thenewslens.com/article/38035"
+    ]
+  },
+  {
+    "id": "MC28",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "教案提到，下列哪一類地區在地震時房子特別容易遇到液化危險？",
+    "options": {
+      "A": "高山岩石區",
+      "B": "鋼鐵工廠",
+      "C": "寒帶冰原",
+      "D": "河岸、海邊、舊河道"
+    },
+    "answer": "D",
+    "answer_text": "河岸、海邊、舊河道",
+    "explanation": "這些地區地下水位高且多為砂質土，容易發生液化。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "MC29",
+    "type": "選擇題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "地震搖晃時，身旁有堅固的桌子，應該怎麼做比較正確？",
+    "options": {
+      "A": "躲在桌子底下，用手護住頭頸，並穩住桌腳",
+      "B": "衝向電梯",
+      "C": "站在窗戶旁",
+      "D": "躲進衣櫃上方"
+    },
+    "answer": "A",
+    "answer_text": "躲在桌子底下，用手護住頭頸，並穩住桌腳",
+    "explanation": "掩護：有桌子就躲桌下，沒有桌子則躲牆角、護住頭頸，避開大型傢俱。",
+    "basis": "網路查證",
+    "sources": [
+      "內政部消防署地震SOP(風傳媒) https://www.storm.mg/article/221092",
+      "NOWnews地震SOP報導 https://www.nownews.com/news/5255142"
+    ]
+  },
+  {
+    "id": "MC30",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "中央氣象署將颱風分級，主要依據什麼？",
+    "options": {
+      "A": "下雨量",
+      "B": "近中心最大風速",
+      "C": "颱風名字",
+      "D": "發生的月份"
+    },
+    "answer": "B",
+    "answer_text": "近中心最大風速",
+    "explanation": "氣象署颱風分級僅依近中心最大風速，與雨量、暴風半徑、移動速度無直接關係。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "MC31",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "中央氣象署的「輕度颱風」，近中心最大風速約是多少？",
+    "options": {
+      "A": "每秒5至10公尺",
+      "B": "每秒51公尺以上",
+      "C": "每秒100公尺以上",
+      "D": "每秒17.2至32.6公尺"
+    },
+    "answer": "D",
+    "answer_text": "每秒17.2至32.6公尺",
+    "explanation": "輕度颱風17.2–32.6 m/s（約8至11級風）。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "MC32",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "中央氣象署的「強烈颱風」，近中心最大風速是多少？",
+    "options": {
+      "A": "每秒51公尺以上（約16級風以上）",
+      "B": "每秒17.2公尺以下",
+      "C": "每秒20公尺",
+      "D": "每秒32.7至50.9公尺"
+    },
+    "answer": "A",
+    "answer_text": "每秒51公尺以上（約16級風以上）",
+    "explanation": "強烈颱風為51 m/s以上；32.7–50.9 m/s為中度颱風。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "MC33",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "熱帶性低氣壓成為「颱風」的近中心最大風速門檻大約是？",
+    "options": {
+      "A": "每秒1公尺",
+      "B": "每秒50公尺",
+      "C": "每秒17.2公尺（約8級風）",
+      "D": "每秒100公尺"
+    },
+    "answer": "C",
+    "answer_text": "每秒17.2公尺（約8級風）",
+    "explanation": "近中心最大風速達每秒17.2公尺（每小時約62公里）以上稱為颱風。",
+    "basis": "網路查證",
+    "sources": [
+      "中央氣象署「蒲福風級」https://www.cwa.gov.tw/V8/C/K/Encyclopedia/nous/overview-09.txt",
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "防颱常識(教學資料) https://www.yzu.edu.tw/admin/eo/files/防颱常識宣導.pdf"
+    ]
+  },
+  {
+    "id": "MC34",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "教案說明，風高速吹過「平屋頂」時，屋頂為什麼容易被掀起？",
+    "options": {
+      "A": "屋頂上方壓力變小，屋內壓力較大，屋頂被吸起",
+      "B": "風是熱的把屋頂融化",
+      "C": "屋頂太重",
+      "D": "屋頂有磁鐵"
+    },
+    "answer": "A",
+    "answer_text": "屋頂上方壓力變小，屋內壓力較大，屋頂被吸起",
+    "explanation": "簡單版柏努利原理：高速氣流使屋頂上方壓力變小，屋內壓力大，屋頂就容易被吸走。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "MC35",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "防颱小屋實驗歸納出哪些重點可以讓房子比較抗風？",
+    "options": {
+      "A": "窗戶越大越好",
+      "B": "屋頂越平越好",
+      "C": "地基穩固、三角結構、斜屋頂",
+      "D": "不要固定在地上"
+    },
+    "answer": "C",
+    "answer_text": "地基穩固、三角結構、斜屋頂",
+    "explanation": "教案學習目標：穩固地基、三角結構、斜屋頂。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "MC36",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "颱風來臨前，下列哪個做法是正確的？",
+    "options": {
+      "A": "打開所有窗戶",
+      "B": "關緊門窗、固定盆栽與招牌、清除水溝",
+      "C": "把花盆放在陽台邊",
+      "D": "爬上屋頂看風"
+    },
+    "answer": "B",
+    "answer_text": "關緊門窗、固定盆栽與招牌、清除水溝",
+    "explanation": "教案防災總結：颱風前要關緊門窗、固定盆栽/招牌、清除水溝。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)",
+      "NOWnews防颱報導 https://www.nownews.com/news/6854319"
+    ]
+  },
+  {
+    "id": "MC37",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "難",
+    "question": "颱風的「大小」主要是看哪一個指標，而不是強度？",
+    "options": {
+      "A": "雨量",
+      "B": "颱風名稱",
+      "C": "出現時間",
+      "D": "暴風半徑"
+    },
+    "answer": "D",
+    "answer_text": "暴風半徑",
+    "explanation": "颱風強度看近中心最大風速；大小看暴風半徑，是不同指標。",
+    "basis": "網路查證",
+    "sources": ["NOWnews颱風分級說明 https://www.nownews.com/news/6853228"]
+  },
+  {
+    "id": "MC38",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "在「颱風模擬器」（電風扇）實驗中，下列哪一個安全規定正確？",
+    "options": {
+      "A": "學生可輪流自己調風速",
+      "B": "可以拆掉護網看風扇",
+      "C": "只有講師或助教可以操作電風扇開關，不可把手伸進護網",
+      "D": "可以用吸管去戳風扇"
+    },
+    "answer": "C",
+    "answer_text": "只有講師或助教可以操作電風扇開關，不可把手伸進護網",
+    "explanation": "教案安全規定：嚴禁將手指、吸管或任何物品伸入護網，只有講師/助教可操作開關。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "MC39",
+    "type": "選擇題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "教案中的颱風模擬器設有哪三級風力，每級吹多久？",
+    "options": {
+      "A": "一級，每級5分鐘",
+      "B": "兩級，每級1秒",
+      "C": "輕颱、中颱、強颱，每級30秒",
+      "D": "五級，每級1小時"
+    },
+    "answer": "C",
+    "answer_text": "輕颱、中颱、強颱，每級30秒",
+    "explanation": "教案：三級風力，每級吹30秒，看誰的房子能撐到最後。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "MC40",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "教案歸納，都市容易淹水的常見原因有哪些？",
+    "options": {
+      "A": "天氣太熱",
+      "B": "路燈太亮",
+      "C": "雨太大、水排不掉、地面不吸水",
+      "D": "學生太多"
+    },
+    "answer": "C",
+    "answer_text": "雨太大、水排不掉、地面不吸水",
+    "explanation": "教案：歸納都市淹水原因為雨太大、水排不掉、地面不吸水。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "MC41",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "在迷你都市模型中，防水布代表什麼？",
+    "options": {
+      "A": "綠地公園",
+      "B": "河流",
+      "C": "馬路／水泥地（不吸水的地面）",
+      "D": "天空"
+    },
+    "answer": "C",
+    "answer_text": "馬路／水泥地（不吸水的地面）",
+    "explanation": "防水布=馬路/水泥地；海綿/沙土=綠地/公園；積木=房子。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "MC42",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "都市裡不透水鋪面越多，地表逕流會怎麼變？",
+    "options": {
+      "A": "變少",
+      "B": "完全不變",
+      "C": "全部變成冰",
+      "D": "變多，雨水入滲變少"
+    },
+    "answer": "D",
+    "answer_text": "變多，雨水入滲變少",
+    "explanation": "都市化使不透水面積比例上升，入滲減少、直接逕流增加，淹水機率與程度提高。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "臺灣大學都市化與淹水論文 https://tdr.lib.ntu.edu.tw/jspui/handle/123456789/49151",
+      "公視新聞 https://news.pts.org.tw/article/785573",
+      "本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"
+    ]
+  },
+  {
+    "id": "MC43",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "在實驗中用黏土堵住排水口，再模擬大雨，會觀察到什麼？",
+    "options": {
+      "A": "水位下降",
+      "B": "水變成果汁",
+      "C": "水消失",
+      "D": "淹水範圍擴大、水位上升得更快"
+    },
+    "answer": "D",
+    "answer_text": "淹水範圍擴大、水位上升得更快",
+    "explanation": "教案：模擬排水阻塞，觀察淹水範圍擴大與水位上升速度的變化。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "MC44",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "難",
+    "question": "國外防災單位提醒，多深的「快速流動」的水就足以讓人站不穩跌倒？",
+    "options": {
+      "A": "約15公分（6英寸）",
+      "B": "約1公尺",
+      "C": "約3公尺",
+      "D": "5公尺"
+    },
+    "answer": "A",
+    "answer_text": "約15公分（6英寸）",
+    "explanation": "Auckland Council與美國緬因州MEMA均指出約15公分/6英寸的快速水流就可能把人沖倒。",
+    "basis": "網路查證",
+    "sources": [
+      "Auckland Council淹水安全 https://www.aucklandcouncil.govt.nz/environment/looking-after-aucklands-water/flooding-blockages/Pages/how-to-stay-safe-during-flood-video-transcript.aspx",
+      "美國緬因州MEMA https://www1.maine.gov/mema/tips/turn-around-dont-drown"
+    ]
+  },
+  {
+    "id": "MC45",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "淹水時，下列哪個避難原則是正確的？",
+    "options": {
+      "A": "往高處避難、不要涉水",
+      "B": "往地下室躲",
+      "C": "走進積水試試深淺",
+      "D": "騎車衝過去"
+    },
+    "answer": "A",
+    "answer_text": "往高處避難、不要涉水",
+    "explanation": "教案防災深化：認識警戒、往高處避難、勿涉水。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)",
+      "美國緬因州MEMA https://www1.maine.gov/mema/tips/turn-around-dont-drown"
+    ]
+  },
+  {
+    "id": "MC46",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "教案提到淹水時可能出現哪些危險？",
+    "options": {
+      "A": "觸電、溺水、衛生問題",
+      "B": "變成超人",
+      "C": "得到獎金",
+      "D": "天空變色"
+    },
+    "answer": "A",
+    "answer_text": "觸電、溺水、衛生問題",
+    "explanation": "教案：講解淹水時的危險（觸電、溺水、衛生問題）與應對方式。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "MC47",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "實驗中把迷你沙包堆在房子前面，是在模擬什麼？",
+    "options": {
+      "A": "蓋房子",
+      "B": "種植物",
+      "C": "防洪，擋住水流",
+      "D": "做蛋糕"
+    },
+    "answer": "C",
+    "answer_text": "防洪，擋住水流",
+    "explanation": "教案：堆疊迷你沙包模擬大雨，觀察沙包的防洪效果。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "MC48",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "颱風或豪雨來臨前，下列哪個準備有助於減少淹水？",
+    "options": {
+      "A": "把垃圾丟進水溝",
+      "B": "堵住排水孔",
+      "C": "檢查陽台排水口與戶外排水孔蓋有無淤積，並備妥沙包等",
+      "D": "把門窗都打開"
+    },
+    "answer": "C",
+    "answer_text": "檢查陽台排水口與戶外排水孔蓋有無淤積，並備妥沙包等",
+    "explanation": "氣象與防災報導建議檢查排水口與排水孔蓋，並可準備沙包、擋水閘板、抽水機。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "NOWnews防颱報導 https://www.nownews.com/news/6854319",
+      "NOWnews防颱報導 https://www.nownews.com/news/6718054",
+      "本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"
+    ]
+  },
+  {
+    "id": "MC49",
+    "type": "選擇題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "「透水鋪面」在防洪上的作用是什麼？",
+    "options": {
+      "A": "讓雨水穿過多孔結構滲入地下，減輕排水設施負擔",
+      "B": "讓雨水變多",
+      "C": "讓地面變得不吸水",
+      "D": "讓水全部蒸發"
+    },
+    "answer": "A",
+    "answer_text": "讓雨水穿過多孔結構滲入地下，減輕排水設施負擔",
+    "explanation": "透水鋪面讓雨水入滲並減少地表逕流，是低衝擊開發的常見手法之一。",
+    "basis": "網路查證",
+    "sources": ["公視新聞 https://news.pts.org.tw/article/785573"]
+  },
+  {
+    "id": "MC50",
+    "type": "選擇題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "水黽的腿有什麼特徵，能幫助它不穿破水面、不被水沾濕？",
+    "options": {
+      "A": "腿很粗很重",
+      "B": "腿細長，且有疏水的細毛",
+      "C": "腿上有吸盤",
+      "D": "腿是金屬做的"
+    },
+    "answer": "B",
+    "answer_text": "腿細長，且有疏水的細毛",
+    "explanation": "細長的腿分散重量，腿上疏水細毛捕捉空氣，使水不易沾濕腿部。",
+    "basis": "網路查證",
+    "sources": [
+      "USGS Surface tension and water https://www.usgs.gov/water-science-school/science/surface-tension-and-water",
+      "USGS water strider https://www.usgs.gov/media/images/surface-tension-allows-a-water-strider-walk-water"
+    ]
+  },
+  {
+    "id": "TF01",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "吹紙條實驗中，紙條會被吹得向外散開。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "實際上紙條會向內收合。",
+    "basis": "教案/計畫書",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "本計畫CM03計畫書(20260115版)「8項基礎流力試驗」"
+    ]
+  },
+  {
+    "id": "TF02",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "依據柏努利原理，流速越快的流體，壓力通常越小。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "在穩定流動中，速度增加處壓力降低。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "TF03",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "空氣高速流動時，就像水一樣，是一種流體。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案說明：空氣高速流動（風）和水一樣是流體，會產生壓力。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "TF04",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "風速變成2倍，風壓大約變成原來的4倍。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "動壓力 ½ρv² 與速度平方成正比。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "TF05",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "水面上真的有一層像塑膠膜的薄膜，所以水黽才不會沉下去。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "水面並非真的有薄膜；表面張力是水—空氣交界處內聚力造成的效果。",
+    "basis": "網路查證",
+    "sources": [
+      "USGS Surface tension and water https://www.usgs.gov/water-science-school/science/surface-tension-and-water",
+      "JoVE Cohesion and surface tension https://www.jove.com/t/10673"
+    ]
+  },
+  {
+    "id": "TF06",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "如果水黽的重量過大，就可能穿破水面而沉下去。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "小昆蟲因重量不足以穿破水面才能浮在水上，太重就會沉。",
+    "basis": "網路查證",
+    "sources": [
+      "USGS Surface tension and water https://www.usgs.gov/water-science-school/science/surface-tension-and-water",
+      "USGS water strider https://www.usgs.gov/media/images/surface-tension-allows-a-water-strider-walk-water"
+    ]
+  },
+  {
+    "id": "TF07",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "虹吸管要讓水持續流動，必須一直接上電動馬達。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "虹吸靠高低差與重力等作用，管子裝滿水後不需馬達即可流動。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "Britannica Siphon https://www.britannica.com/print/article/546445"
+    ]
+  },
+  {
+    "id": "TF08",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "中",
+    "question": "虹吸管的出水口必須比水源的水面高，水才會流出來。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "出水口必須低於水源水面。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "Britannica Siphon https://www.britannica.com/print/article/546445",
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"
+    ]
+  },
+  {
+    "id": "TF09",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "難",
+    "question": "只用柏努利原理，就能完整解釋飛機為什麼能飛。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "柏努利原理只是其中一部分；機翼把空氣往下偏折也有貢獻。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/"
+    ]
+  },
+  {
+    "id": "TF10",
+    "type": "是非題",
+    "topic": "柏努利與基礎流力",
+    "difficulty": "易",
+    "question": "對著兩張垂直的紙中間吹氣，兩張紙會互相靠近。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "中間氣流變快、壓力變小，外側相對高壓把紙推向中間。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "聯合新聞網月台氣流解說 https://udn.com/news/story/7266/9660598",
+      "本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"
+    ]
+  },
+  {
+    "id": "TF11",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "堰塞湖的土石壩很穩固，水漫過壩頂也不會崩塌。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "土石壩非常不穩定，水一漫過就可能被沖刷崩塌。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "TF12",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "堰塞湖潰壩時，水流可能夾帶大量泥沙和石塊，像含水量很高的土石流。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "陳文山教授指出，馬太鞍溪溢流水夾帶大量泥沙與石塊，沖毀中下游堤防。",
+    "basis": "網路查證",
+    "sources": ["TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"]
+  },
+  {
+    "id": "TF13",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "堰塞湖只會讓上游淹水，對下游完全沒有影響。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "潰壩洪水會衝向下游，是主要威脅之一。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)"]
+  },
+  {
+    "id": "TF14",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "難",
+    "question": "處理堰塞湖時，如果出水口的水流太快，可能沖刷並破壞壩體。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "林業保育署研究報告提醒：出流口流速過高會造成沖刷，進而破壞壩體。",
+    "basis": "網路查證",
+    "sources": [
+      "農業部林業保育署(原林務局)堰塞湖應變文件 https://taitung.forest.gov.tw/File.aspx?fno=63791"
+    ]
+  },
+  {
+    "id": "TF15",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "馬太鞍溪堰塞湖是在2025年7月形成的。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "TVBS報導：馬太鞍堰塞湖於2025年7月形成，約2個月後發生溢流。",
+    "basis": "網路查證",
+    "sources": ["TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"]
+  },
+  {
+    "id": "TF16",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "難",
+    "question": "虹吸管較適合容量小的堰塞湖，或作為臨時的排水措施。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "研究報告指出，抽水或虹吸原理較適用於容量小的情況或作為臨時措施。",
+    "basis": "網路查證",
+    "sources": [
+      "農業部林業保育署(原林務局)堰塞湖應變文件 https://taitung.forest.gov.tw/File.aspx?fno=63791"
+    ]
+  },
+  {
+    "id": "TF17",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "難",
+    "question": "專家指出，大型堰塞湖若壩體脆弱，貿然開挖可能造成更嚴重的後果。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "馬太鞍溪案例中，專家表示蓄水量大，貿然開挖恐致更嚴重後果。",
+    "basis": "網路查證",
+    "sources": [
+      "公視新聞 https://news.pts.org.tw/article/773542",
+      "新頭殼 https://newtalk.tw/news/view/2025-09-27/995962"
+    ]
+  },
+  {
+    "id": "TF18",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "堰塞湖警戒期間，靠近河邊看熱鬧是安全的。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "官方細胞簡訊提醒民眾不要靠近河道，堰塞湖處理期間水位可能變動。",
+    "basis": "網路查證",
+    "sources": [
+      "農業部林業保育署(原林務局)堰塞湖應變文件 https://taitung.forest.gov.tw/File.aspx?fno=63791",
+      "公視新聞 https://news.pts.org.tw/article/773542"
+    ]
+  },
+  {
+    "id": "TF19",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "中",
+    "question": "馬太鞍溪堰塞湖的蓄水量只有約9萬噸。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "TVBS報導：蓄水量約9100萬噸，約等於一座南化水庫。",
+    "basis": "網路查證",
+    "sources": ["TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"]
+  },
+  {
+    "id": "TF20",
+    "type": "是非題",
+    "topic": "搶救堰塞湖",
+    "difficulty": "易",
+    "question": "地震或颱風造成的山崩，可能堵住河道而形成堰塞湖。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案：地震或颱風使山崩，土石堵住河道，就是堰塞湖；2025年馬太鞍溪堰塞湖由山崖崩落土石形成。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：搶救堰塞湖》(20251226版)",
+      "TVBS馬太鞍堰塞湖報導 https://news.tvbs.com.tw/life/2997888"
+    ]
+  },
+  {
+    "id": "TF21",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "土壤液化時，原本堅固的沙地會像流體一樣失去支撐力。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案：沙粒間支撐力因搖晃與水壓而失效，使整體像流體一樣。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)",
+      "國立宜蘭大學土木系液化資料 https://civil.niu.edu.tw/var/file/25/1025/img/719714067.pdf"
+    ]
+  },
+  {
+    "id": "TF22",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "只要房子的結構蓋得夠堅固，蓋在會液化的沙地上也一定不會下沉。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案：蓋的地點更重要，蓋在會液化的沙地上，再穩的結構也會沉。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "TF23",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "位在土壤液化潛勢區，地震時就一定會發生液化。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "液化需要疏鬆砂質、高地下水位與足夠強的地震同時發生；高潛勢不代表一定液化。",
+    "basis": "網路查證",
+    "sources": [
+      "新北市政府工務局土壤液化電子書 https://www.publicwork.ntpc.gov.tw/userfiles/1061400/files/%E5%9C%9F%E5%A3%A4%E6%B6%B2%E5%8C%96%E9%9B%BB%E5%AD%90%E6%9B%B8.pdf",
+      "The News Lens土壤液化報導 https://www.thenewslens.com/article/38035"
+    ]
+  },
+  {
+    "id": "TF24",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "在實驗中，乾沙加敲打房子通常不會沉下去，濕沙飽和後才會下沉、傾斜。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案實驗A（乾沙）房子可能倒但不會沉；實驗B（飽和濕沙）房子會下沉。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "TF25",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "「黃金三角」躲避法被內政部消防署澄清為錯誤觀念。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "消防署表示「黃金三角」是錯誤觀念，應牢記趴下、掩護、穩住。",
+    "basis": "網路查證",
+    "sources": ["內政部消防署地震SOP(風傳媒) https://www.storm.mg/article/221092"]
+  },
+  {
+    "id": "TF26",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "地震發生時，應該立刻衝出門外，比躲在桌子底下更安全。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "搖晃時移動或奔跑反而容易跌倒或被掉落物砸傷，應趴下、掩護、穩住。",
+    "basis": "網路查證",
+    "sources": [
+      "內政部消防署地震SOP(風傳媒) https://www.storm.mg/article/221092",
+      "NOWnews地震SOP報導 https://www.nownews.com/news/5255142"
+    ]
+  },
+  {
+    "id": "TF27",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "易",
+    "question": "臺灣位於歐亞板塊與菲律賓海板塊的交界。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "兩板塊碰撞擠壓形成臺灣，也使地震頻繁。",
+    "basis": "網路查證",
+    "sources": ["臺灣大學 https://www.iam.ntu.edu.tw/images/20201130.pdf"]
+  },
+  {
+    "id": "TF28",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "地震對房子的威脅只有搖晃，不會有地基下沉的問題。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案：地震有雙重威脅（搖晃、地基下沉／液化）。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：大地在搖晃》(20251226版)"]
+  },
+  {
+    "id": "TF29",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "難",
+    "question": "土壤液化的發生與孔隙水壓下降有關。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "液化起因於孔隙水壓急速「上升」，降低土壤強度。",
+    "basis": "網路查證",
+    "sources": [
+      "國立宜蘭大學土木系液化資料 https://civil.niu.edu.tw/var/file/25/1025/img/719714067.pdf"
+    ]
+  },
+  {
+    "id": "TF30",
+    "type": "是非題",
+    "topic": "大地在搖晃",
+    "difficulty": "中",
+    "question": "只要地震搖晃，沙土就算沒有水也一定會液化。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "液化需要飽和的砂質土壤（高地下水位）、足夠強的地震同時成立。",
+    "basis": "網路查證",
+    "sources": [
+      "新北市政府工務局土壤液化電子書 https://www.publicwork.ntpc.gov.tw/userfiles/1061400/files/%E5%9C%9F%E5%A3%A4%E6%B6%B2%E5%8C%96%E9%9B%BB%E5%AD%90%E6%9B%B8.pdf",
+      "國立宜蘭大學土木系液化資料 https://civil.niu.edu.tw/var/file/25/1025/img/719714067.pdf"
+    ]
+  },
+  {
+    "id": "TF31",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "中央氣象署的颱風強度分級，僅以近中心最大風速為依據。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "與雨量、暴風半徑、移動速度無直接關係。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "TF32",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "中央氣象署的颱風強度分級，與當天雨量多寡直接相關。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "分級只看近中心最大風速。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "TF33",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "風雖然看不見，但高速流動時會產生很大的壓力。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案：風是流體，高速流動會產生巨大壓力，能推倒牆、掀起屋頂。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "TF34",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "難",
+    "question": "在窗戶貼膠帶就能有效防止玻璃被颱風吹破。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "內政部建築研究所風雨風洞實驗指出，貼膠帶無法防爆，需強化玻璃與堅固窗框。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews防颱報導 https://www.nownews.com/news/6854319",
+      "NOWnews防颱報導 https://www.nownews.com/news/6718054"
+    ]
+  },
+  {
+    "id": "TF35",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "颱風天路樹傾倒、招牌掉落、鐵皮屋頂被吹落，都是常見的強風災害。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "防颱教學資料列出這些強風破壞情形。",
+    "basis": "教案/計畫書＋網路查證",
+    "sources": [
+      "防颱常識(教學資料) https://www.yzu.edu.tw/admin/eo/files/防颱常識宣導.pdf",
+      "本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"
+    ]
+  },
+  {
+    "id": "TF36",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "防颱小屋實驗中，地基不需要用膠帶固定，放在桌上就一樣穩。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案強調地基（用膠帶固定在桌上）也是設計的一部分。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "TF37",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "風速變成2倍時，風壓也只會變成2倍。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "風壓與速度平方成正比，風速×2，風壓約×4。",
+    "basis": "網路查證",
+    "sources": [
+      "Science Notes Bernoulli https://sciencenotes.org/bernoullis-principle-definition-equation-examples/",
+      "Bernoulli(NASA Glenn公式轉述) https://www.edinformatics.com/math_science/bernoullis_principle_fluids.htm"
+    ]
+  },
+  {
+    "id": "TF38",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "在颱風模擬器實驗中，學生可以自己把手伸進電風扇護網裡看看。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案嚴禁將手指或任何物品伸入護網，只有講師/助教可操作開關。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "TF39",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "中",
+    "question": "中度颱風的強度，約相當於12至15級風。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "中度颱風近中心最大風速32.7–50.9 m/s，約12–15級。",
+    "basis": "網路查證",
+    "sources": [
+      "NOWnews颱風分級說明 https://www.nownews.com/news/6853228",
+      "數位時代颱風分級指南 https://www.bnext.com.tw/article/91925/typhoon-classification-guide"
+    ]
+  },
+  {
+    "id": "TF40",
+    "type": "是非題",
+    "topic": "超級颱風眼",
+    "difficulty": "易",
+    "question": "颱風很強時，待在窗戶旁邊比較安全。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案：待在家中應遠離窗戶。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：超級颱風眼》(20251226版)"]
+  },
+  {
+    "id": "TF41",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "水往低處流，所以低窪地區比較容易淹水。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案原理連結：水往低處流、不透水鋪面增加逕流、排水容量有限。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "TF42",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "都市裡不透水鋪面越多，雨水入滲就越少。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "不透水面積增加，雨水入滲空間減少，直接逕流增加。",
+    "basis": "網路查證",
+    "sources": [
+      "臺灣大學都市化與淹水論文 https://tdr.lib.ntu.edu.tw/jspui/handle/123456789/49151",
+      "公視新聞 https://news.pts.org.tw/article/785573"
+    ]
+  },
+  {
+    "id": "TF43",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "排水溝是否暢通，對減少淹水沒有幫助。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "教案強調排水溝暢通的重要性。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "TF44",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "淹水時只要水看起來不深，就可以放心涉水行走。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "水深不易判斷，水下可能有碎片，約15公分的快速水流就可能讓人跌倒。",
+    "basis": "網路查證",
+    "sources": [
+      "Auckland Council淹水安全 https://www.aucklandcouncil.govt.nz/environment/looking-after-aucklands-water/flooding-blockages/Pages/how-to-stay-safe-during-flood-video-transcript.aspx",
+      "美國緬因州MEMA https://www1.maine.gov/mema/tips/turn-around-dont-drown"
+    ]
+  },
+  {
+    "id": "TF45",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "淹水時，觸電是可能遇到的危險之一。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案提醒淹水危險包含觸電、溺水與衛生問題。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "TF46",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "降雨強度越大，淹水速度通常越快。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案學習目標：降雨強度與淹水速度具正向關係。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "TF47",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "中",
+    "question": "透水鋪面會增加地表逕流，讓都市更容易淹水。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "透水鋪面讓雨水穿過入滲，減少地表逕流。",
+    "basis": "網路查證",
+    "sources": ["公視新聞 https://news.pts.org.tw/article/785573"]
+  },
+  {
+    "id": "TF48",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "難",
+    "question": "深度約15公分的快速流動水，對人完全不會造成危險。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "國外防災單位指出約15公分的快速水流就可能把人沖倒。",
+    "basis": "網路查證",
+    "sources": [
+      "Auckland Council淹水安全 https://www.aucklandcouncil.govt.nz/environment/looking-after-aucklands-water/flooding-blockages/Pages/how-to-stay-safe-during-flood-video-transcript.aspx",
+      "美國緬因州MEMA https://www1.maine.gov/mema/tips/turn-around-dont-drown"
+    ]
+  },
+  {
+    "id": "TF49",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "在實驗中，小雨和大雨造成的淹水情況完全一樣。",
+    "options": null,
+    "answer": "X（錯誤）",
+    "answer_text": "錯誤",
+    "explanation": "大雨的淹水速度更快，低窪處更易淹水。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  },
+  {
+    "id": "TF50",
+    "type": "是非題",
+    "topic": "迷你都市淹水大作戰",
+    "difficulty": "易",
+    "question": "不亂丟垃圾以免阻塞水溝，是減少淹水的好習慣。",
+    "options": null,
+    "answer": "O（正確）",
+    "answer_text": "正確",
+    "explanation": "教案情意目標：建立注意環境排水、不亂丟垃圾阻塞水溝的態度。",
+    "basis": "教案/計畫書",
+    "sources": ["本計畫教案《Fun玩流體力學：迷你都市淹水大作戰》(20251226版)"]
+  }
+]

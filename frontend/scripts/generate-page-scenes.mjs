@@ -1,0 +1,39 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+
+// Static, decorative SVG scenes. No page content or user input enters SVG markup.
+const destination = new URL('../public/assets/images/page-scenes/', import.meta.url);
+await mkdir(destination, { recursive: true });
+const face = (x, y) => `<g fill="#496b78"><circle cx="${x - 10}" cy="${y}" r="3"/><circle cx="${x + 10}" cy="${y}" r="3"/></g><path d="M${x - 6} ${y + 9}q6 6 12 0" fill="none" stroke="#496b78" stroke-width="2.5"/><g fill="#efb6b0" opacity=".7"><ellipse cx="${x - 18}" cy="${y + 7}" rx="5" ry="3"/><ellipse cx="${x + 18}" cy="${y + 7}" rx="5" ry="3"/></g>`;
+const place = (x, y, scale, content, angle = 0) => `<g transform="translate(${x} ${y}) scale(${scale}) rotate(${angle})">${content}</g>`;
+const sparkle = (x, y, size = 8) => `<path d="M${x} ${y - size}q0 ${size} ${size} ${size}q-${size} 0-${size} ${size}q0-${size}-${size}-${size}q${size} 0 ${size}-${size}" fill="#e8c978"/>`;
+const drop = `<path d="M0-50C-12-28-37-2-37 22a37 37 0 0 0 74 0C37-2 12-28 0-50Z" fill="#8dcde2" stroke="#72b5cc" stroke-width="3"/><path d="M-17-3q-11 15-9 27" fill="none" stroke="#e1f7fc" stroke-width="6"/>${face(0, 24)}`;
+const book = `<path d="M-79-50q40-14 79 4q39-18 79-4v104q-43-13-79 4q-36-17-79-4Z" fill="#fffaf0" stroke="#a4bcb5" stroke-width="3"/><path d="M0-44V57" stroke="#a4bcb5" stroke-width="3"/><g stroke="#ccd9ce" stroke-width="4"><path d="M-62-24l40 2m-40 17 40 2m-40 17 27 2M20-22l40-2M20-3l40-2M20 16l26-2"/></g><path d="M35-49v34l10-7 10 6v-37" fill="#e7b49d"/>`;
+const flask = `<path d="M-16-65h32v54l39 65q8 17-11 17h-88q-19 0-11-17l39-65Z" fill="#edfafa" stroke="#82b2b7" stroke-width="3"/><path d="M-35 20q36-12 70 0l26 42h-122Z" fill="#a7d8c3"/><path d="M-22-65h44" stroke="#82b2b7" stroke-width="7"/>${face(0, 43)}<circle cx="-8" cy="7" r="4" fill="#a7d8c3"/><circle cx="9" cy="-8" r="5" fill="#a7d8c3"/>`;
+const screen = `<rect x="-100" y="-78" width="200" height="131" rx="17" fill="#8eb9c9"/><rect x="-89" y="-67" width="178" height="105" rx="10" fill="#f2faf8"/><circle cx="0" cy="-15" r="30" fill="#bedfd8"/><path d="m-8-31 26 16-26 16Z" fill="#6398b0"/><path d="M-30 67h60M0 53v14" stroke="#8eb9c9" stroke-width="8"/>`;
+const camera = `<rect x="-77" y="-42" width="154" height="100" rx="20" fill="#a6c6d6" stroke="#7fa5ba" stroke-width="3"/><path d="M-40-42l10-21h46l12 21" fill="#a6c6d6" stroke="#7fa5ba" stroke-width="3"/><circle cx="3" cy="7" r="35" fill="#eff8f7"/><circle cx="3" cy="7" r="24" fill="#81b7cd"/><circle cx="-4" cy="-1" r="9" fill="#c9edf3"/><rect x="43" y="-29" width="20" height="10" rx="3" fill="#fff0c6"/>`;
+const trophy = `<path d="M-38-63h76v57q-3 38-38 38t-38-38Z" fill="#f0d792" stroke="#ccae69" stroke-width="3"/><path d="M-39-49h-26q-6 44 34 44M39-49h26q6 44-34 44" fill="none" stroke="#ccae69" stroke-width="8"/><path d="M0 32v26m-35 9h70" stroke="#ccae69" stroke-width="10"/>${face(0, -7)}`;
+const bulb = `<path d="M-22 27c0-18-27-24-27-57a49 49 0 0 1 98 0c0 33-27 39-27 57Z" fill="#f5e3a5" stroke="#d9bd78" stroke-width="3"/><path d="M-20 35h40m-37 11h34m-28 11h22" stroke="#96b6b4" stroke-width="7"/>${face(0, -13)}`;
+const clipboard = `<rect x="-59" y="-76" width="118" height="154" rx="14" fill="#d6bc98"/><rect x="-49" y="-64" width="98" height="131" rx="7" fill="#fffaf0"/><rect x="-27" y="-84" width="54" height="25" rx="8" fill="#9ebbb5"/><g fill="none" stroke="#85b4a8" stroke-width="5"><path d="m-30-24 7 7 13-16m-20 47 7 7 13-16"/></g><path d="M3-23h27M3 15h27M-30 49h60" stroke="#cedbd3" stroke-width="5"/>`;
+const gamepad = `<path d="M-59-47q-20 0-28 23l-17 62q-7 36 22 33q11 0 34-26h96q23 26 34 26q29 3 22-33L87-24q-8-23-28-23Z" fill="#c5c4df" stroke="#9e9fbe" stroke-width="3"/><path d="M-53-13v38m-19-19h38" stroke="#6e89a2" stroke-width="10"/><circle cx="50" cy="-7" r="8" fill="#e8b1a7"/><circle cx="68" cy="12" r="8" fill="#f0d797"/>${face(0, 12)}`;
+const robot = `<path d="M0-65v-17" stroke="#8cafb6" stroke-width="4"/><circle cy="-86" r="7" fill="#e6c77e"/><rect x="-66" y="-60" width="132" height="103" rx="28" fill="#b5d9d7" stroke="#8cafb6" stroke-width="3"/><rect x="-51" y="-43" width="102" height="65" rx="19" fill="#f3faf6"/>${face(0, -14)}<rect x="-40" y="49" width="80" height="37" rx="17" fill="#b5d9d7"/><path d="M-65-16h-13v26h13M65-16h13v26H65" fill="#8cafb6"/>`;
+const photo = `<rect x="-54" y="-66" width="108" height="132" rx="6" fill="#fffaf0" stroke="#c8d8d1" stroke-width="2"/><rect x="-44" y="-55" width="88" height="86" rx="4" fill="#d4edf1"/><circle cx="23" cy="-34" r="10" fill="#f3dc9c"/><path d="M-44 21l28-37L9 11l15-15 20 25v10h-88Z" fill="#aad0b8"/>`;
+const pencil = `<path d="M-9-66h18v110L0 66-9 44Z" fill="#efd18d" stroke="#c9ad77" stroke-width="2"/><path d="M-9-48H9M-9 44H9" stroke="#fff4da" stroke-width="4"/><path d="m-4 58 4 8 4-8" fill="#688796"/>`;
+const sprout = `<path d="M0 24v-46" stroke="#82b49c" stroke-width="5"/><path d="M0-7q-44 1-34-29Q1-36 0-7M0 3q-1-36 36-28Q39 1 0 3" fill="#afd4a4"/><ellipse cy="27" rx="38" ry="10" fill="#ccb89c"/>`;
+const chat = `<path d="M-39-29h78q13 0 13 13v29q0 13-13 13H-9l-20 15V26h-10q-13 0-13-13v-29q0-13 13-13Z" fill="#fff9e8" stroke="#cebd98" stroke-width="2"/><g fill="#a3bdb4"><circle cx="-21" r="4"/><circle r="4"/><circle cx="21" r="4"/></g>`;
+
+const scenes = {
+  experiments: place(323, 184, 1.05, screen) + place(146, 237, .7, flask, -8) + place(514, 247, .65, flask, 10) + place(470, 97, .38, drop),
+  resources: place(328, 214, 1.25, book, -5) + place(518, 182, .84, pencil, 18) + place(155, 240, .58, drop) + place(205, 112, .5, sprout),
+  activities: place(321, 203, 1.05, camera, -7) + place(140, 170, .72, photo, -13) + place(503, 198, .72, photo, 12) + place(436, 94, .36, drop),
+  honors: place(322, 197, 1.1, trophy) + place(159, 237, .63, drop, -8) + place(499, 247, .65, sprout) + `<path d="m181 107 9 16 18-4-11 15 10 16-18-5-10 15-1-19-17-6 18-5Z" fill="#eed899"/>`,
+  knowledge: place(328, 241, 1.02, book) + place(332, 129, .8, bulb) + place(143, 222, .63, drop) + place(522, 231, .65, sprout),
+  quiz: place(330, 197, 1.07, clipboard, -7) + place(485, 204, .82, pencil, 22) + place(164, 233, .65, drop) + `<circle cx="485" cy="97" r="26" fill="#e1ebd4"/><path d="m473 97 8 8 16-17" fill="none" stroke="#87af98" stroke-width="5"/>`,
+  games: place(327, 203, 1.05, gamepad, -5) + place(155, 222, .6, drop) + `<path d="M449 236v-105m0 0q27-18 52 0v37q-25-18-52 0" fill="#e6c794" stroke="#b5aa8c" stroke-width="3"/><rect x="472" y="224" width="46" height="42" rx="8" fill="#bad9cb"/><rect x="519" y="251" width="36" height="31" rx="6" fill="#d6d8e8"/>`,
+  'ai-qa': place(327, 192, 1.03, robot) + place(500, 133, .8, chat, 6) + place(156, 163, .68, chat, -8) + place(490, 257, .53, drop),
+  about: place(326, 209, 1.05, book) + place(203, 151, .76, drop, -8) + place(465, 185, .95, sprout) + place(132, 249, .56, photo, -10) + `<path d="M329 106c-29-30-55 9 0 39c55-30 29-69 0-39Z" fill="#e6b4ab"/>`,
+};
+for (const [name, content] of Object.entries(scenes)) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M110 227C55 152 125 67 222 77C302-13 433 33 460 92C571 60 624 170 560 242Z" fill="#edf7f1"/><ellipse cx="328" cy="289" rx="224" ry="31" fill="#c4e1d8"/><path d="M63 312Q174 278 297 311T590 311" stroke="#b4d9df" stroke-width="8"/><path d="M130 327Q206 309 272 326M390 330q68-21 121-3" stroke="#eaf7f7" stroke-width="7"/>${content}${sparkle(111, 109)}${sparkle(550, 154, 7)}${sparkle(414, 60, 6)}<g fill="#b5d9e1"><circle cx="80" cy="222" r="5"/><circle cx="570" cy="244" r="4"/><circle cx="258" cy="60" r="4"/></g></svg>`;
+  await writeFile(new URL(`${name}.svg`, destination), svg);
+}
+console.log(`Generated ${Object.keys(scenes).length} page header scenes.`);

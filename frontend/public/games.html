@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  互動小遊戲使用獨立頁面，未來每個遊戲的畫面與程式應繼續拆成明確模組。
+  games-page.js 目前顯示準備中文案；加入遊戲任務後，只需擴充本頁入口與對應 API。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#games" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>互動小遊戲｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/games.css" />
+    <script type="module" src="assets/js/games-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="games">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+    </header>
+
+    <main class="page-main">
+      <!-- games-page.js 會在此建立遊戲頁內容。 -->
+      <div id="content-page-root"></div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>

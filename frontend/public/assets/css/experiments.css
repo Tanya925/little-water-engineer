@@ -1,0 +1,6 @@
+/* 實驗影片頁唯一的 CSS 入口：基礎外觀、影片卡片元件、共用頁首與頁尾。 */
+@import url("./styles.css");
+@import url("./learning.css");
+@import url("./page-shell.css");
+
+/* 實驗搜尋列、影片卡片或播放器的頁面專屬調整請寫在此處。 */

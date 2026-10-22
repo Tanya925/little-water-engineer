@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  關於我們的章節內容由 /api/pages/about 提供，畫面建立集中在 about-page.js。
+  老師可在後台編輯這份結構化內容；前端逐層建立純文字 DOM，不直接執行儲存內容。
+  content-page-root 是唯一動態內容插入點，aria-live 會朗讀載入或錯誤結果。
+-->
+<html lang="zh-Hant">
+  <head>
+    <!-- 相容入口：統一導向已恢復的原始版面，避免拆頁期間的簡化樣式取代原設計。 -->
+    <meta http-equiv="refresh" content="0; url=index.html#about" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>關於我們｜小小水利工程師養成計畫</title>
+    <link rel="stylesheet" href="assets/css/about.css" />
+    <script type="module" src="assets/js/about-page.js"></script>
+  </head>
+  <body class="page-shell" data-page="about">
+    <header class="page-header">
+      <a class="page-brand" href="index.html">
+        💧 小小水利工程師
+        <small>養成計畫</small>
+      </a>
+      <nav class="page-nav" aria-label="主要導覽">
+        <a href="experiments.html" data-page-link="experiments">實驗影片</a>
+        <a href="resources.html" data-page-link="resources">教材下載</a>
+        <a href="quiz.html" data-page-link="quiz">知識小學堂</a>
+        <a href="ai-qa.html" data-page-link="ai-qa">AI 問答</a>
+        <a href="about.html" data-page-link="about">關於我們</a>
+      </nav>
+    </header>
+
+    <main class="page-main">
+      <div class="page-introduction">
+        <span class="section-kicker">ABOUT THE PROJECT</span>
+        <h1>關於我們</h1>
+        <p>認識小小水利工程師養成計畫的理念、課程與參與夥伴。</p>
+      </div>
+      <div id="about-content" aria-live="polite">
+        <div id="content-page-root"></div>
+      </div>
+    </main>
+
+    <footer class="page-footer">小小水利工程師養成計畫</footer>
+  </body>
+</html>
