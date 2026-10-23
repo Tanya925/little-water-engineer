@@ -1,4 +1,4 @@
-// 網站正式入口的預備設定；完成全功能驗證前不取代現行 AI Worker 設定。
+// 網站正式入口：公開靜態資產、D1 內容、登入、AI 與 Vectorize 綁定皆由同一 Worker 提供。
 {
   "name": "little-water-engineer-site",
   "main": "src/site-worker.js",

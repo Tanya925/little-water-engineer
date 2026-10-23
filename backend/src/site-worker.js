@@ -4,6 +4,13 @@ import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminFind, adminList, adminSave } from "./d1-admin.js";
 import { resolveAIChunks } from "./d1-ai.js";
 import {
+  deleteResourceMaterial,
+  deleteResourceMaterials,
+  resyncResourceMaterial,
+  saveResourceMaterial,
+  syncResourceMetadata,
+} from "./d1-materials.js";
+import {
   gradeQuestion,
   listResources,
   listUpdates,
@@ -94,6 +101,34 @@ export default {
           );
           return json({ collections, topics: topics });
         }
+        const materialSync = /^\/api\/admin\/resources\/([^/]+)\/materials\/([^/]+)\/sync$/.exec(pathname);
+        if (materialSync && request.method === "POST") {
+          if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
+          const [, resourceId, materialId] = materialSync;
+          return json({ item: await resyncResourceMaterial(env.DB, env, resourceId, materialId) });
+        }
+        const material = /^\/api\/admin\/resources\/([^/]+)\/materials(?:\/([^/]+))?$/.exec(pathname);
+        if (material) {
+          const [, resourceId, materialId] = material;
+          const resource = await adminFind(env.DB, "resources", resourceId);
+          if (!resource) return json({ error: "Not found" }, 404);
+          if (request.method === "GET" && materialId) {
+            const found = resource.materials.find((entry) => entry.id === materialId);
+            return found ? json({ item: found }) : json({ error: "Not found" }, 404);
+          }
+          if (request.method !== "GET" && !sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
+          if (request.method === "POST" && !materialId) {
+            return json({ item: await saveResourceMaterial(env.DB, env, resource, null, await readJSON(request, 768000), context) }, 201);
+          }
+          if (request.method === "PUT" && materialId) {
+            return json({ item: await saveResourceMaterial(env.DB, env, resource, materialId, await readJSON(request, 768000), context) });
+          }
+          if (request.method === "DELETE" && materialId) {
+            await deleteResourceMaterial(env.DB, env, resourceId, materialId, context);
+            return json({ deletedId: materialId });
+          }
+          return json({ error: "Method not allowed" }, 405);
+        }
         const list = /^\/api\/admin\/(experiments|resources|questions|updates)$/.exec(pathname);
         if (list && request.method === "GET") {
           return json({ items: await adminList(env.DB, list[1]) });
@@ -104,8 +139,18 @@ export default {
           if (request.method !== "GET" && !sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
           if (request.method === "GET" && id) { const found = await adminFind(env.DB, kind, id); return found ? json({ item: found }) : json({ error: "Not found" }, 404); }
           if (request.method === "POST" && !id) return json({ item: await adminSave(env.DB, kind, null, await readJSON(request, 512000)) }, 201);
-          if (request.method === "PUT" && id) return json({ item: await adminSave(env.DB, kind, id, await readJSON(request, 512000)) });
-          if (request.method === "DELETE" && id) return json(await adminDelete(env.DB, kind, id));
+          if (request.method === "PUT" && id) {
+            const before = kind === "resources" ? await adminFind(env.DB, kind, id) : null;
+            const saved = await adminSave(env.DB, kind, id, await readJSON(request, 512000));
+            if (kind === "resources" && before && (before.title !== saved.title || before.status !== saved.status)) {
+              await syncResourceMetadata(env.DB, env, saved, context);
+            }
+            return json({ item: saved });
+          }
+          if (request.method === "DELETE" && id) {
+            if (kind === "resources") await deleteResourceMaterials(env.DB, env, id, context);
+            return json(await adminDelete(env.DB, kind, id));
+          }
         }
         return json({ error: "Not found" }, 404);
       }

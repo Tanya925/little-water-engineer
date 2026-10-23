@@ -247,6 +247,12 @@ SQLite（frontend/.data/site.sqlite）
 需要 AI 時：server.mjs → ai.mjs → Cloudflare Worker → Workers AI／Vectorize
 ```
 
+### 正式內容：以 Cloudflare D1 為唯一來源
+
+公開網站的老師後台會直接讀寫 Cloudflare D1；老師與開發者登入同一個公開網址時，修改的是同一份正式資料。教材章節、小教材的全文、發布狀態、AI 索引狀態及學生端教材清單都以 D1 為準。小教材儲存後先安全寫入 D1，再建立 Vectorize 索引；若 Workers AI 暫時不可用，資料仍會保留並標示「AI 索引失敗」，可在後台按「重試索引」。
+
+`frontend/.data/site.sqlite` 只保留給尚未完全淘汰的本機 Node 開發流程與歷史備份，並不會自動與 D1 同步。不要同時在本機 SQLite 後台與公開 D1 後台修改正式內容；正式內容一律在公開網站後台編輯。等所有本機開發 API 都改為 D1 或改由公開 Worker 提供後，再依備份政策移除 SQLite。
+
 ### `frontend/database/`：第一次啟動使用的種子資料
 
 | 檔案 | 主要用途 | 內容何時會生效 |
@@ -382,6 +388,7 @@ SQLite（frontend/.data/site.sqlite）
 | `backend/src/d1-public.js` | 只查詢可公開影片、教材、頁面與題庫的資料層。 | 學生頁讀取資料時使用；不能把題目答案、草稿或管理欄位回傳給瀏覽器。 |
 | `backend/src/d1-auth.js` | 延用 scrypt 密碼雜湊、建立與驗證 session，並提供老師權限判斷。 | 登入、登出與後台 API 每次請求使用；不得把 token 或雜湊交給前端。 |
 | `backend/src/d1-admin.js` | 以欄位白名單處理後台內容列表與修改。 | 老師管理影片、教材、題目與活動時使用；所有寫入都須先完成登入檢查。 |
+| `backend/src/d1-materials.js` | 管理章節內小教材、教材全文與 AI 向量同步；保存失敗狀態供後台重試。 | 老師新增、編輯、發布／下架或刪除小教材時使用；任何 AI 服務失敗都不能刪除已寫入 D1 的教材。 |
 | `backend/src/d1-ai.js` | 將 Vectorize 回傳的片段 ID 再用 D1 驗證教材是否仍發布、索引是否仍有效。 | AI 回答前使用，避免模型讀到已下架、被更新或不屬於當前教材的內容。 |
 | `.github/workflows/deploy-cloudflare.yml` | GitHub Actions 的部署工作流程：安裝依賴、執行語法檢查，再部署 `wrangler.site.jsonc`。 | 推送到 `main` 時執行；GitHub repository 必須先設定 `CLOUDFLARE_API_TOKEN` secret 才能真正自動部署。 |
 

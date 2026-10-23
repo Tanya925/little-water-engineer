@@ -19,6 +19,13 @@ const sections = [
   ["export", "↧", "資料匯出", "保存目前的內容資料，方便留存與整理。"],
 ];
 const states = { published: "發布", draft: "下架" };
+const indexStates = {
+  pending: "等待建立索引",
+  syncing: "正在建立索引",
+  ready: "AI 索引完成",
+  failed: "AI 索引失敗",
+  deleted: "索引已移除",
+};
 const labels = { experiments: "影片", resources: "教材", questions: "題目", updates: "最新活動" };
 let topics = [];
 let currentSection = "overview";
@@ -63,6 +70,18 @@ function action(label, handler, className = "secondary") {
   button.addEventListener("click", handler);
 
   return button;
+}
+
+/** 手動重試單筆教材索引；AI 暫時額度不足時，教材內容仍安全留在 D1，不會遺失。 */
+async function retryResourceMaterial(resource, material) {
+  try {
+    const result = await managed(`/api/admin/resources/${resource.id}/materials/${material.id}/sync`, {}, "POST");
+    Object.assign(material, result.item);
+    drawTable();
+    message($("admin-message"), result.item.indexState === "ready" ? "AI 索引已完成。" : "索引尚未完成，請查看狀態後稍後再試。", result.item.indexState === "failed");
+  } catch (error) {
+    message($("admin-message"), error.message, true);
+  }
 }
 
 /** 建立導覽或來源連結；外部連結的 target 與 rel 由呼叫端依用途設定。 */
@@ -492,9 +511,16 @@ function drawResourceGroups(found, pages) {
         );
         const itemMeta = node("div", undefined, "resource-material-meta");
         itemMeta.append(
+          node("span", indexStates[material.indexState] || "索引狀態未知", `badge ${material.indexState === "failed" ? "draft" : "published"}`),
           action("編輯", () => openResourceMaterialEditor(resource.id, material.id), "secondary"),
           action("刪除", () => deleteResourceMaterial(resource, material), "danger"),
         );
+        if (["failed", "pending"].includes(material.indexState)) {
+          itemMeta.insertBefore(
+            action("重試索引", () => retryResourceMaterial(resource, material), "secondary"),
+            itemMeta.lastElementChild,
+          );
+        }
         row.append(detail, itemMeta);
         list.append(row);
       });
