@@ -1,3 +1,5 @@
+// 原始學生學習區控制器：載入教材與題庫、管理冒險式答題流程與作答回饋。
+// 僅取得公開題目；正解與最終判分一律由 /api/quiz/answer 在伺服器端處理。
 const learningElement = (id) => document.getElementById(id);
 const learningNode = (tag, text, className) => {
   const element = document.createElement(tag);

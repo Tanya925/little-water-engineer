@@ -164,10 +164,23 @@ AI 流程的設計原則：
 └── backend/
     ├── package.json                Cloudflare Worker 開發、部署與檢查指令
     ├── package-lock.json           Worker 開發依賴的鎖定版本，安裝時應一併保留
-    ├── wrangler.jsonc              Worker、向量索引與環境綁定設定
+    ├── wrangler.jsonc              原 AI Worker、向量索引與環境綁定設定
+    ├── wrangler.site.jsonc         正式整站 Worker：靜態資產、D1、AI、Vectorize 綁定
     ├── ai-secrets.example          Worker 所需機密資料範例
-    └── src/index.js                AI Worker：向量新增、刪除、查詢與模型呼叫
+    ├── migrations/                 可重複執行的 D1 資料表遷移，依檔名順序套用
+    ├── scripts/                    僅在遷移時使用的本機 SQLite／帳號匯出工具
+    └── src/
+        ├── index.js                原 AI Worker：向量新增、刪除、查詢與模型呼叫
+        ├── site-worker.js          現行 Cloudflare 整站入口與 API 路由
+        ├── d1-public.js            學生公開資料的 D1 讀取層
+        ├── d1-auth.js              老師登入、session 與權限檢查
+        ├── d1-admin.js             老師後台的 D1 清單與內容管理規則
+        └── d1-ai.js                Vectorize 搜尋結果的 D1 教材驗證層
 ```
+
+### 註解與資料檔的約定
+
+每個會被執行或解讀的原始碼、樣式、SQL、部署設定與工作流程檔，都在檔案開頭註明「主要功能」與它不應承擔的責任；這是讓維護者能快速判斷應修改哪裡的第一層說明。JSON、`package-lock.json` 與圖片／SVG 資產不能任意插入註解，否則會破壞資料格式、套件校驗或瀏覽器載入；這些檔案的逐檔用途改由本 README 的表格記錄。換言之，程式內註解說明執行責任與安全邊界，README 說明所有檔案（含不可加註解的資料與資產）的維護用途。
 
 ### 根目錄與開發設定檔
 
@@ -356,9 +369,21 @@ SQLite（frontend/.data/site.sqlite）
 | `frontend/package.json` | 前台網站的指令清單，包含正式啟動、開發時自動重啟和語法檢查。 | 在根目錄執行 `npm start`、`npm run dev` 或 `npm run check` 時會間接使用。 |
 | `backend/src/index.js` | Cloudflare AI Worker 的核心。它只接受網站 Server 的內部請求，執行教材段落的向量新增、刪除、搜尋與 AI 模型回答。 | AI 教材同步或學生送出 AI 問答時，`ai.mjs` 呼叫它；瀏覽器不應直接連線。 |
 | `backend/wrangler.jsonc` | Cloudflare Worker 的部署設定，指定 Worker 名稱、Workers AI、Vectorize 索引與環境綁定名稱。 | 本機執行 Worker 或部署到 Cloudflare 時使用；不是一般網站啟動所需檔案。 |
+| `backend/wrangler.site.jsonc` | 正式網站 Worker 的部署設定；指定公開靜態檔來源、D1、Workers AI 與 Vectorize 綁定，供目前公開網址部署使用。 | 執行 `npx wrangler deploy --config backend/wrangler.site.jsonc` 或 GitHub Actions 自動部署時使用；綁定名稱不可與 Cloudflare 後台資源脫節。 |
 | `backend/ai-secrets.example` | Cloudflare Worker 所需私密設定的欄位範例，主要是內部服務權杖名稱。 | 設定正式 Worker 時參考；真實值應透過 Wrangler secret 儲存，不能填進這份範例。 |
 | `backend/package.json` | AI Worker 專用的安裝、開發、部署與檢查指令清單。 | 只有開發或部署 Cloudflare AI Worker 時使用。 |
 | `backend/package-lock.json` | 固定 Worker 開發套件與 Wrangler 的精確版本，使不同電腦部署工具一致。 | 執行 `npm --prefix backend install` 後可能更新，應與 `backend/package.json` 一起保留。 |
+| `backend/migrations/0001_site_schema.sql` | 建立 D1 的公開內容、題庫、教材索引與管理資料表。 | 新建 D1 或核對正式資料結構時使用；已套用的 migration 不應就地修改。 |
+| `backend/migrations/0002_teacher_auth.sql` | 補上老師帳號與 session 資料表。 | 讓 Cloudflare 版登入仍可使用既有的雜湊密碼資料；絕不放入明碼密碼。 |
+| `backend/migrations/0003_ai_conversations.sql` | 建立短期 AI 對話訊息資料表。 | 讓 Cloudflare 問答可帶入最近對話脈絡；資料讀寫只應透過 Worker。 |
+| `backend/scripts/export-local-sqlite-to-d1.mjs` | 將本機 SQLite 內容輸出成 D1 可匯入 SQL。 | 一次性遷移或人工備份用途；不在網站執行與部署時自動呼叫。 |
+| `backend/scripts/export-local-account-to-d1.mjs` | 將本機老師帳號的雜湊與 salt 輸出成 D1 匯入資料。 | 僅在帳號遷移時使用；輸出檔必須保留在被 Git 忽略的 `backend/.migration-data/`。 |
+| `backend/src/site-worker.js` | 目前公開 Cloudflare 網站的總入口：靜態資產回應、公開 API、登入、後台 API 與 AI 問答路由都由它分派。 | 部署後每一個公開網址請求都會經過此檔；修改路由或跨服務流程時才調整。 |
+| `backend/src/d1-public.js` | 只查詢可公開影片、教材、頁面與題庫的資料層。 | 學生頁讀取資料時使用；不能把題目答案、草稿或管理欄位回傳給瀏覽器。 |
+| `backend/src/d1-auth.js` | 延用 scrypt 密碼雜湊、建立與驗證 session，並提供老師權限判斷。 | 登入、登出與後台 API 每次請求使用；不得把 token 或雜湊交給前端。 |
+| `backend/src/d1-admin.js` | 以欄位白名單處理後台內容列表與修改。 | 老師管理影片、教材、題目與活動時使用；所有寫入都須先完成登入檢查。 |
+| `backend/src/d1-ai.js` | 將 Vectorize 回傳的片段 ID 再用 D1 驗證教材是否仍發布、索引是否仍有效。 | AI 回答前使用，避免模型讀到已下架、被更新或不屬於當前教材的內容。 |
+| `.github/workflows/deploy-cloudflare.yml` | GitHub Actions 的部署工作流程：安裝依賴、執行語法檢查，再部署 `wrangler.site.jsonc`。 | 推送到 `main` 時執行；GitHub repository 必須先設定 `CLOUDFLARE_API_TOKEN` secret 才能真正自動部署。 |
 
 ### 執行後才產生、不應提交的內容
 
@@ -369,6 +394,8 @@ SQLite（frontend/.data/site.sqlite）
 | `frontend/.data/covers/` | 老師在後台上傳的影片封面檔，檔名由 Server 產生以避免覆蓋。 | 要和 `site.sqlite` 一起備份；不需手動改檔名。 |
 | `.env` | 本機網站連至 AI Worker 的真實網址與權杖。 | 不可提交、傳給學生或貼進前端程式；新電腦要使用 AI 時自行重新建立。 |
 | `node_modules/`、`backend/node_modules/` | npm 下載的第三方套件，協助執行排版工具或 Cloudflare Worker。 | 不需備份、也不需手動修改；刪除後可依 `package-lock.json` 重新安裝。 |
+| `.cache/` | 本機媒體處理工具產生的語音辨識模型、影片影格等暫存。網站、前端 Server、Cloudflare Worker 與部署流程都不會讀取它。 | 不需保留或提交；可安全刪除，未來若使用同類工具會自行重新產生。 |
+| `backend/.migration-data/` | 遷移腳本輸出的暫時 SQL，其中可能含帳號雜湊等資料。 | 不可提交；完成匯入並確認後可在安全備份政策下移除。 |
 
 ## 維護原則
 

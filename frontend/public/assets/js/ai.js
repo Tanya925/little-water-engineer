@@ -1,3 +1,5 @@
+// 原始完整版型的 AI 助教控制器：負責教材問答畫面及學習頁上的提示介面。
+// 它只送出學生問題並安全呈現 API 回應；教材檢索、歷史脈絡與模型權限全在伺服器端。
 (() => {
   const make = (tag, text, className) => {
     const element = document.createElement(tag);
