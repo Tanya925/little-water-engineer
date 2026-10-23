@@ -1,7 +1,7 @@
 // Cloudflare 正式網站入口：公開 API 讀 D1，AI/Vectorize 內部端點沿用既有 Worker。
-import aiWorker, { modelText } from "./index.js";
+import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
-import { adminDelete, adminFind, adminList, adminSave } from "./d1-admin.js";
+import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
 import { resolveAIChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
@@ -50,10 +50,6 @@ export default {
     const url = new URL(request.url);
     const { pathname } = url;
 
-    // 既有 Node 服務與正式 Worker 都只由網站後端呼叫這些內部 AI 端點。
-    if (pathname === "/internal/ai") {
-      return aiWorker.fetch(request, env, context);
-    }
     if (!pathname.startsWith("/api/")) {
       return env.ASSETS.fetch(request);
     }
@@ -100,6 +96,26 @@ export default {
             })),
           );
           return json({ collections, topics: topics });
+        }
+        if (pathname === "/api/admin/export" && request.method === "GET") {
+          return json(await adminExport(env.DB), 200, { "Content-Disposition": `attachment; filename="water-content-${new Date().toISOString().slice(0, 10)}.json"` });
+        }
+        const page = /^\/api\/admin\/pages\/(about)$/.exec(pathname);
+        if (page) {
+          if (request.method === "GET") {
+            const item = await adminPage(env.DB, page[1]);
+            return item ? json({ item }) : json({ error: "Not found" }, 404);
+          }
+          if (request.method === "PUT") {
+            if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
+            return json({ item: await savePage(env.DB, page[1], await readJSON(request, 512000)) });
+          }
+          return json({ error: "Method not allowed" }, 405);
+        }
+        if (["/api/admin/questions/import-preview", "/api/admin/questions/import"].includes(pathname) && request.method === "POST") {
+          if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
+          const body = await readJSON(request, 2 * 1024 * 1024);
+          return json(await importQuestions(env.DB, body?.questions, pathname.endsWith("/import")));
         }
         const materialSync = /^\/api\/admin\/resources\/([^/]+)\/materials\/([^/]+)\/sync$/.exec(pathname);
         if (materialSync && request.method === "POST") {

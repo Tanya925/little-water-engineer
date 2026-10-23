@@ -167,3 +167,57 @@ export async function adminDelete(db, kind, id) {
   await db.prepare(`DELETE FROM ${table} WHERE id=?`).bind(id).run();
   return { success: true };
 }
+
+// 關於我們頁保留結構化 JSON；瀏覽器端以 textContent 呈現，不能把老師輸入當成 HTML。
+export async function adminPage(db, id) {
+  if (id !== "about") return null;
+  const row = await db.prepare("SELECT * FROM site_pages WHERE id=?").bind(id).first();
+  return row ? { id: row.id, title: row.title, sections: parse(row.sections_json, []), status: row.status, revision: Number(row.revision), updatedAt: row.updated_at } : null;
+}
+
+export async function savePage(db, id, input) {
+  const current = await adminPage(db, id);
+  if (!current) throw new Error("找不到此頁面。");
+  if (!Number.isInteger(input?.revision)) throw new Error("頁面已被更新，請重新載入後再儲存。");
+  const title = cleanText(input.title, "頁面標題", 200);
+  if (!Array.isArray(input.sections) || input.sections.length > 40) throw new Error("頁面區塊格式不正確。");
+  const sections = JSON.stringify(input.sections);
+  if (sections.length > 500000) throw new Error("頁面內容過長。");
+  const status = state(input.status);
+  const result = await db.prepare("UPDATE site_pages SET title=?,sections_json=?,status=?,revision=revision+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND revision=?").bind(title, sections, status, id, input.revision).run();
+  if (!result.meta.changes) throw new Error("頁面已被更新，請重新載入後再儲存。");
+  return adminPage(db, id);
+}
+
+export async function adminExport(db) {
+  return {
+    format: "little-water-engineer-content",
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    experiments: await adminList(db, "experiments"),
+    resources: await adminList(db, "resources"),
+    questions: await adminList(db, "questions"),
+    updates: await adminList(db, "updates"),
+    pages: [await adminPage(db, "about")],
+  };
+}
+
+export async function importQuestions(db, input, commit = false) {
+  if (!Array.isArray(input) || !input.length || input.length > 1000) throw new Error("請匯入 1–1000 題的 JSON 陣列。");
+  const ids = new Set();
+  const rows = [];
+  for (const row of input) {
+    const id = cleanText(row?.id, "匯入題號", 64);
+    if (ids.has(id)) throw new Error(`匯入檔有重複題號：${id}`);
+    ids.add(id);
+    if (await db.prepare("SELECT 1 FROM quiz_questions WHERE id=?").bind(id).first()) throw new Error(`題號 ${id} 已存在；請修改原題或使用新的題號。`);
+    rows.push({ id, ...value("questions", { ...row, status: "draft" }) });
+  }
+  if (commit) {
+    await db.batch(rows.map((row) => db.prepare(
+      `INSERT INTO quiz_questions (id,type,topic,difficulty,question,options_json,answer,answer_text,explanation,basis,sources_json,status,updated_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)`,
+    ).bind(row.id, row.type, row.topic, row.difficulty, row.question, row.options_json, row.answer, row.answer_text, row.explanation, row.basis, row.sources_json, row.status)));
+  }
+  return { count: rows.length, topics: [...new Set(rows.map((row) => row.topic))], imported: commit };
+}

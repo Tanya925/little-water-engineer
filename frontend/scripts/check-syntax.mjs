@@ -6,7 +6,7 @@ import { extname, join, relative } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const projectDirectory = new URL("../", import.meta.url);
-const sourceDirectories = ["public/assets/js", "server", "scripts"];
+const sourceDirectories = ["public/assets/js", "scripts"];
 const supportedExtensions = new Set([".js", ".mjs"]);
 
 // 遞迴掃描指定資料夾並只回傳 Node.js 能做語法檢查的程式檔。

@@ -4,9 +4,10 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "check": "node --check src/index.js"
+    "start": "wrangler dev --config wrangler.site.jsonc --remote",
+    "dev": "wrangler dev --config wrangler.site.jsonc --remote",
+    "deploy": "wrangler deploy --config wrangler.site.jsonc",
+    "check": "node --check src/site-worker.js && node --check src/ai-utils.js && node --check src/d1-admin.js && node --check src/d1-ai.js && node --check src/d1-auth.js && node --check src/d1-materials.js && node --check src/d1-public.js"
   },
   "keywords": [],
   "author": "",

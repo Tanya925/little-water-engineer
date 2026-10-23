@@ -4,8 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --env-file-if-exists=../.env server/server.mjs",
-    "dev": "node --env-file-if-exists=../.env --watch server/server.mjs",
     "check": "node scripts/check-syntax.mjs"
   },
   "engines": {
