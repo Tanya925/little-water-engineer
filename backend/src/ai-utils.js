@@ -1,5 +1,8 @@
-// Workers AI 回應格式工具：將不同模型的文字或 OpenAI 相容 choices 格式統一為可處理文字。
-// 此檔沒有路由、密鑰或資料庫責任，讓正式整站 Worker 不必保留舊的內部 AI API。
+/*
+ * Workers AI 回應格式的邊界工具。Cloudflare 模型可能回傳 response 字串，也可能採
+ * OpenAI 相容的 choices[0].message.content；本函式將兩者統一為文字，讓呼叫端只處理
+ * 成功文字或 null。它不呼叫模型、不讀取 D1、也不處理金鑰，避免格式相容邏輯散落在路由。
+ */
 export function modelText(result) {
   const output = result?.response ?? result?.choices?.[0]?.message?.content;
   if (typeof output === "string") return output;

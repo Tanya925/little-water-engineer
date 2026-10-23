@@ -3,7 +3,8 @@
 <!--
   本頁是前台所有 hash 路由的共同框架：首頁 hero、功能頁容器、題庫區塊及頁尾。
   CSS 控制外觀，assets/js 各檔分別負責導覽、文章、影片、練習及 AI；動態資料由 /api/ 取得。
-  修改 id 前需搜尋對應的 getElementById 與 CSS；SVG 人物的群組決定哪些圖形和名字一起浮動。
+  修改 id 前需搜尋對應的 getElementById 與 CSS；SVG 人物的群組決定哪些圖形和名字一起
+  浮動。題庫答案、AI 金鑰與教材全文不屬於 HTML，必須維持由 Worker API 管理。
 -->
 <html lang="zh-Hant">
   <head>

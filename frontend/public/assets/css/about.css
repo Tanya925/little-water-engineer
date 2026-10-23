@@ -1,4 +1,8 @@
-/* 關於我們唯一的 CSS 入口：基礎外觀、介紹內容元件、共用頁首與頁尾。 */
+/*
+ * 關於我們頁的樣式入口。此檔只組合全站基礎、介紹內容元件與共用頁框；內容卡片
+ * 由 about-page.js 依 API 資料建立，因此若有關於頁專屬視覺規則應加在這裡，而不是
+ * 修改 pages.css 影響其他介紹頁。
+ */
 @import url("./styles.css");
 @import url("./pages.css");
 @import url("./page-shell.css");

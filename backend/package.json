@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Cloudflare Worker backend: public content, teacher administration, D1, Vectorize, and Workers AI routes.",
   "type": "module",
   "scripts": {
     "start": "wrangler dev --config wrangler.site.jsonc --remote",

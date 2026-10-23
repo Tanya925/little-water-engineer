@@ -1,5 +1,8 @@
-// 主要功能：載入並呈現老師可從後台維護的「關於我們」內容。
-// 本頁只處理 /api/pages/about；其他介紹頁有各自的同名入口檔。
+/*
+ * 「關於我們」頁的專屬入口。它只讀取 /api/pages/about 的已發布結構化內容，交由
+ * content-renderer 用 textContent 建立 DOM；後台文字不可成為 HTML。頁首／背景則由
+ * site-shell 初始化，故本檔不處理導覽或其他介紹頁的 API，避免內容頁互相耦合。
+ */
 
 import "./shared/site-shell.js";
 import {

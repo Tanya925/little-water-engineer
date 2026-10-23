@@ -1,4 +1,7 @@
-/* 實驗影片頁唯一的 CSS 入口：基礎外觀、影片卡片元件、共用頁首與頁尾。 */
+/*
+ * 實驗影片頁的入口。影片卡與載入狀態沿用 learning.css，頁首／頁尾沿用 page-shell；
+ * 真正的 Drive iframe 由 experiments.js 在使用者點選時才建立，本檔不應嘗試預載遠端影片。
+ */
 @import url("./styles.css");
 @import url("./learning.css");
 @import url("./page-shell.css");

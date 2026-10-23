@@ -1,5 +1,9 @@
-// D1 小教材與 AI 索引管理：每筆章節內教材各自保有全文、版本與 Vectorize 片段。
-// 寫入 D1 後才非同步同步向量；模型服務失敗不會遺失教材，而是留下 failed 狀態供老師重試。
+/*
+ * D1 小教材與 AI 索引管理。每筆章節內教材各自保存全文、revision、切段結果與
+ * Vectorize 向量；章節本身只是組織單位，不會把多筆小教材混成一份索引。
+ * 寫入 D1 後才由 context.waitUntil 非同步同步向量：AI 或網路失敗時教材仍已保存，
+ * 只留下 error 狀態供後台重試。查詢端只接受目前 revision 且 ready 的片段。
+ */
 import { materialRows, validateResourceMaterial } from "./d1-admin.js";
 
 const EMBEDDING_MODEL = "@cf/baai/bge-m3";

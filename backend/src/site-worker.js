@@ -1,4 +1,9 @@
-// Cloudflare 正式網站入口：公開 API 讀 D1，AI/Vectorize 內部端點沿用既有 Worker。
+/*
+ * Cloudflare Worker 的唯一 HTTP 入口：提供前端靜態資產、公開內容 API、老師登入與
+ * 管理 API、以及教材 AI 問答。路由在本檔集中，但資料庫驗證、登入、教材索引分別
+ * 委派到 d1-* 模組。任何改變資料的請求都必須同時通過 session 與 same-origin 檢查；
+ * 瀏覽器從不取得 D1、Vectorize 或 Workers AI 的綁定資訊。
+ */
 import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";

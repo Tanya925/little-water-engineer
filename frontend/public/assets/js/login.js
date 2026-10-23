@@ -1,8 +1,7 @@
-// 主要功能：判斷老師帳號是否已設定，提交首次設定或登入表單，顯示錯誤並導向管理區。
 /*
- * 先向 /api/auth/status 詢問是否已有老師帳號，再決定顯示首次設定或登入。
- * 密碼只隨 HTTPS／本機請求送給伺服器驗證；本檔不在 localStorage 儲存密碼。
- * 登入憑證由伺服器寫入 HttpOnly Cookie，前端只依 API 成功結果跳轉後台。
+ * 老師帳號設定與登入畫面。先由 /api/auth/status 決定是首次建立帳號或一般登入，
+ * 再將密碼僅隨本站請求交給 Worker 驗證；本檔不保存密碼、不建立 token，也不寫入
+ * localStorage。登入憑證由伺服器寫入 HttpOnly Cookie，前端只在成功後導向管理區。
  */
 const form = document.getElementById("login-form");
 const message = document.getElementById("login-message");

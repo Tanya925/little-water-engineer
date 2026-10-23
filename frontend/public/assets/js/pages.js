@@ -1,4 +1,8 @@
-// Editorial content is plain text throughout; teacher input never becomes HTML.
+/*
+ * 舊首頁 hash 路由使用的介紹頁渲染器。所有老師輸入或 API 內容皆以純文字 DOM 呈現，
+ * 永不使用 innerHTML；它與新獨立頁的 content-renderer 分開維護，是為了保留既有
+ * 首頁場景與段落版面，不應將其當作通用 API 顯示工具。
+ */
 (() => {
   const make = (tag, text, className) => {
     const element = document.createElement(tag);

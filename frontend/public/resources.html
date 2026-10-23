@@ -2,7 +2,8 @@
 <!--
   教材下載中心只保留本頁必要容器，資料由 resources-page.js 向 /api/resources 取得。
   API 只回傳已發布教材；AI 使用的完整教材文字不會送到這個公開頁面。
-  resources-status 同時是載入狀態與錯誤訊息區，resources-retry 只在失敗時顯示。
+  resources-status 同時是載入狀態與錯誤訊息區，resources-retry 只在失敗時顯示；連結
+  由 JavaScript 以 noopener 建立，避免外部 Drive 分頁能控制本站頁面。
 -->
 <html lang="zh-Hant">
   <head>

@@ -1,4 +1,7 @@
-/* 互動小遊戲唯一的 CSS 入口：基礎外觀、介紹內容元件、共用頁首與頁尾。 */
+/*
+ * 互動小遊戲目前使用介紹頁的簡潔版型。遊戲尚未有可操作關卡；未來新增遊戲畫面時，
+ * 應在這裡放置遊戲專屬布局並維持 styles.css 只存放全站共用視覺規則。
+ */
 @import url("./styles.css");
 @import url("./pages.css");
 @import url("./page-shell.css");

@@ -1,5 +1,8 @@
-// 公開頁共用的網站外觀。
-// 各功能仍各自維護 HTML、CSS 與 JavaScript；這裡只管理全站都會出現的外觀。
+/*
+ * 獨立公開頁共用的非資料外觀：依 body[data-page] 標示目前導覽、建立純裝飾性的
+ * 漂浮背景與共同頁尾。此檔不呼叫任何 API，也不應保存學生狀態；功能頁各自保有
+ * HTML、CSS 與資料載入程式，避免一頁的功能失敗拖累所有頁面。
+ */
 
 const activePage = document.body.dataset.page;
 

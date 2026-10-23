@@ -4,7 +4,8 @@
   老師管理區的固定框架，包含側欄、清單容器與編輯／匯入 dialog。
   admin.js 動態建立各類資料欄位；頁面和其程式由伺服器驗證登入後才提供。
   body 預設 hidden，admin.js 確認 authenticated 後才顯示，避免未登入時閃現管理介面。
-  editor 與 import-dialog 的 id 是事件綁定及無障礙標題關聯，重新命名須同步修改 admin.js。
+  editor 與 import-dialog 的 id 是事件綁定及無障礙標題關聯，重新命名須同步修改 admin.js；
+  HTML 本身不代表授權，任何人直接開啟頁面仍必須通過 API session 檢查。
 -->
 <html lang="zh-Hant">
   <head>

@@ -1,4 +1,7 @@
-/* 教材下載頁唯一的 CSS 入口：基礎外觀、教材卡片元件、共用頁首與頁尾。 */
+/*
+ * 教材下載中心的入口。resources-page.js 只取得已發布章節與資料夾連結，教材全文與
+ * AI 索引不會送到此頁；本檔以 learning.css 的卡片元件呈現公開下載清單。
+ */
 @import url("./styles.css");
 @import url("./learning.css");
 @import url("./page-shell.css");

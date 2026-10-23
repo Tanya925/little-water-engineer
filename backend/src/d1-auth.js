@@ -1,4 +1,8 @@
-// 老師登入：延續舊站既有的 scrypt 雜湊格式，session 僅保存雜湊後的 token。
+/*
+ * 老師登入與 session 生命週期。密碼採既有 scrypt 格式比對，資料庫只保存 salt 與
+ * 雜湊；登入成功後產生的原始 token 只放入 HttpOnly Cookie，D1 僅保存其 SHA-256 雜湊。
+ * 所有公開 API 不需經過本模組；site-worker.js 只在 /api/admin 與 /api/auth 路由呼叫它。
+ */
 import { randomBytes, scryptSync, timingSafeEqual, createHash } from "node:crypto";
 import { Buffer } from "node:buffer";
 

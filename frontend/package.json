@@ -1,6 +1,7 @@
 {
   "name": "little-water-engineers",
   "version": "1.0.0",
+  "description": "Static student and teacher frontend assets; the check script syntax-checks every browser module.",
   "private": true,
   "type": "module",
   "scripts": {

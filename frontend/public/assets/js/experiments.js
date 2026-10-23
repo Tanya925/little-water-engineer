@@ -1,8 +1,7 @@
-// 主要功能：載入與搜尋實驗影片，建立影片卡片，開關 Google Drive 播放視窗及重試載入。
 /*
- * 影片清單來自 /api/experiments，本檔負責搜尋、卡片及播放視窗。
- * 封面由網站提供，影片本體由 Google Drive 提供；只有點選播放才建立遠端 iframe。
- * 關閉視窗或切換頁面會移除播放器，避免背景繼續播放。
+ * 科普實驗影片的公開控制器。清單來自 /api/experiments，搜尋只在已取得的公開資料
+ * 上執行；封面由本站資產提供，Drive 播放器只在學生點選後才建立 iframe。關閉視窗
+ * 或離開頁面必須移除 iframe，避免背景播放與不必要的第三方連線持續存在。
  */
 
 const experimentsContent = document.getElementById("experiments-content");

@@ -1,5 +1,8 @@
-// 主要功能：提供互動小遊戲頁目前的獨立入口與準備中文案。
-// 未來加入遊戲狀態、關卡或操作事件時，集中在本檔及 games.css 維護。
+/*
+ * 互動小遊戲的預留入口。目前沒有遊戲資料或玩家紀錄 API，僅利用共用渲染器顯示
+ * 安全的準備中文案；未來的關卡狀態、計分與操作事件都應在本檔實作，避免把臨時
+ * 遊戲邏輯塞進首頁路由或共用內容工具。
+ */
 
 import "./shared/site-shell.js";
 import { contentRoot, renderMessage } from "./shared/content-renderer.js";

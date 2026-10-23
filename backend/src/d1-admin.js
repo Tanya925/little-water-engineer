@@ -1,5 +1,8 @@
-// Cloudflare 後台資料層：白名單限制可管理資料表，並把章節與小教材完整組裝給管理介面。
-// 所有值一律使用 D1 參數繫結；前端不可指定 SQL 表名、發布狀態以外的資料庫欄位或教材關聯。
+/*
+ * Cloudflare 後台資料層：集中處理可管理資料的白名單、輸入清理、D1 參數繫結、頁面
+ * 結構化內容與章節／小教材組裝。前端不得指定 SQL 表名、任意欄位、教材關聯或索引
+ * revision；本檔僅接受明確映射的資料類型，所有外來字串都要在此再次驗證。
+ */
 const tables = {
   experiments: "experiment_videos",
   resources: "teaching_resources",

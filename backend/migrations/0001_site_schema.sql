@@ -1,4 +1,7 @@
--- 正式網站資料：由 Cloudflare D1 保存，不依賴 Worker 本機檔案系統。
+-- 正式網站的第一版 D1 結構：集中建立公開影片、章節、題庫、活動、頁面文字與
+-- AI 教材／片段資料表。這是只向前追加的 migration；已在正式資料庫執行後不可
+-- 改寫，後續欄位或資料表請建立新的 migration，避免新舊環境 schema 不一致。
+-- 所有公開讀取仍由 Worker 依 status 篩選；資料表中的內容不是自動公開的權限依據。
 CREATE TABLE IF NOT EXISTS experiment_videos (
   id INTEGER PRIMARY KEY,
   drive_file_id TEXT NOT NULL UNIQUE,

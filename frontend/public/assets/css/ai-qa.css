@@ -1,4 +1,7 @@
-/* AI 問答頁唯一的 CSS 入口：基礎外觀、對話元件、共用頁首與頁尾。 */
+/*
+ * 獨立 AI 問答頁的入口。ai.css 管理對話、來源與附圖元件，page-shell.css 管理導覽
+ * 和頁尾；本檔讓 ai-qa.html 不必依賴首頁的大型樣式集合，專屬調整也應集中於此。
+ */
 @import url("./styles.css");
 @import url("./ai.css");
 @import url("./page-shell.css");

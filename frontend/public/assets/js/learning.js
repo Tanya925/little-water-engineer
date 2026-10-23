@@ -1,5 +1,8 @@
-// 原始學生學習區控制器：載入教材與題庫、管理冒險式答題流程與作答回饋。
-// 僅取得公開題目；正解與最終判分一律由 /api/quiz/answer 在伺服器端處理。
+/*
+ * 學生學習區與知識小學堂的完整控制器：載入公開教材／題目、管理選題與冒險式作答
+ * 流程、呈現回饋與回顧。瀏覽器只取得可公開的題幹與選項；正解及最終判分永遠交由
+ * /api/quiz/answer 在 Worker 端處理，不能因前端修改或 localStorage 而繞過評分。
+ */
 const learningElement = (id) => document.getElementById(id);
 const learningNode = (tag, text, className) => {
   const element = document.createElement(tag);

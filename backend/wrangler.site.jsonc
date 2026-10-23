@@ -1,4 +1,6 @@
-// 網站正式入口：公開靜態資產、D1 內容、登入、AI 與 Vectorize 綁定皆由同一 Worker 提供。
+// Cloudflare 部署設定：同一 Worker 提供公開靜態檔與 /api/*，並繫結正式 D1、
+// Vectorize 及 Workers AI。assets.run_worker_first 只攔截 API，其他路徑由靜態資產
+// 直接回應；不要把帳密或 API key 寫在 vars，機密應以 Wrangler secret 管理。
 {
   "name": "little-water-engineer-site",
   "main": "src/site-worker.js",

@@ -1,8 +1,8 @@
-// 主要功能：管理後台導覽、內容清單、表單驗證、編輯發布、題庫匯入、資料匯出與老師登出。
 /*
- * 後台控制器：hash 路由 → 取得受保護 API 資料 → 清單／編輯表單 → 送出變更。
- * records、filters、page 控制目前清單；editorDirty 用來提醒尚未儲存的表單。
- * 前端驗證改善操作體驗，實際權限、網址、發布狀態及版本衝突仍由伺服器判斷。
+ * 後台唯一控制器：hash 路由 → 受保護 API → 清單／編輯 dialog → 儲存、發布、匯入
+ * 或刪除。records、filters、page 保存當前視圖；editorDirty 防止未儲存資料遺失。
+ * 前端驗證僅改善操作體驗，帳號權限、網址白名單、教材 revision、發布狀態與資料庫
+ * 完整性一律由 Worker 再驗證，不能信任瀏覽器送回的值。
  */
 const $ = (id) => document.getElementById(id);
 const sections = [

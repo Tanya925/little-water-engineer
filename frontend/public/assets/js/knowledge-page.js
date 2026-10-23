@@ -1,5 +1,8 @@
-// 主要功能：提供科普知識頁目前的獨立入口與準備中文案。
-// 未來加入文章查詢、分類或搜尋時，只需擴充本檔，不會影響其他介紹頁。
+/*
+ * 科普知識頁的預留入口。此頁尚未建立文章表或搜尋 API，暫以共用渲染器顯示說明；
+ * 未來文章分類、全文搜尋和卡片載入應從本檔串接專屬公開 API，保持與教材下載及
+ * AI 檢索資料分離。
+ */
 
 import "./shared/site-shell.js";
 import { contentRoot, renderMessage } from "./shared/content-renderer.js";

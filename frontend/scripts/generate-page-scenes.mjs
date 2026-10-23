@@ -1,5 +1,8 @@
-// 維護用產生器：以固定 SVG 模板重建九個公開功能頁的場景插圖。
-// 不在網站請求期間執行；只有遺失插圖或要整批更新視覺資產時才手動執行。
+/*
+ * 維護用 SVG 場景產生器：以本檔內固定模板重建公開功能頁使用的裝飾插圖。它不是
+ * Worker 路由、也不在學生開啟網站時執行；只有場景資產遺失或要整批更新視覺設計時
+ * 手動執行。模板不接受使用者資料，避免把動態內容直接插入 SVG 字串。
+ */
 import { mkdir, writeFile } from 'node:fs/promises';
 
 // Static, decorative SVG scenes. No page content or user input enters SVG markup.

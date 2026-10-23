@@ -1,5 +1,8 @@
-// 專案排版規則：所有控制流程都使用大括號，並維持左大括號不換到下一行。
-// Prettier 負責縮排與折行；ESLint 補上控制流程大括號和函式間的閱讀空間。
+/*
+ * 專案的補充 lint 規則。Prettier 處理縮排、換行和引號；ESLint 只強制容易造成維護
+ * 風險的控制流程大括號、1TBS 大括號風格及函式間留白。規則只套用自行維護的前後端
+ * 程式，不套用產生檔、相依套件或 JSON／CSS／HTML。
+ */
 export default [
   {
     files: ["frontend/**/*.{js,mjs}", "backend/src/**/*.js"],

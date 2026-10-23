@@ -1,5 +1,8 @@
-// 主要功能：尋找 frontend 中所有 JavaScript 模組，逐一執行 Node.js 語法檢查。
-// 新增前端或伺服器程式時不必再手動修改 package.json 的超長檢查指令。
+/*
+ * 前端語法檢查器：遞迴尋找 public/assets/js 與 scripts 中的 .js／.mjs，逐一交給
+ * Node.js --check。它不執行瀏覽器程式、也不驗證 DOM 或 API 行為；目的只是讓新增
+ * 模組自動納入 npm run check，免得 package.json 維護一串容易漏掉的檔案清單。
+ */
 
 import { readdir } from "node:fs/promises";
 import { extname, join, relative } from "node:path";

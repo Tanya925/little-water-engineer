@@ -1,4 +1,8 @@
-/* 活動紀錄唯一的 CSS 入口：基礎外觀、介紹內容元件、共用頁首與頁尾。 */
+/*
+ * 活動紀錄頁的樣式入口。activities-page.js 從公開 API 動態建立日期、文字及連結，
+ * 此檔只載入它們共用的頁框與內容元件；未來活動卡片或篩選控制項請在此擴充，避免
+ * 污染其他靜態介紹頁。
+ */
 @import url("./styles.css");
 @import url("./pages.css");
 @import url("./page-shell.css");

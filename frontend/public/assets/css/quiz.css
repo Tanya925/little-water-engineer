@@ -1,4 +1,7 @@
-/* 知識小學堂唯一的 CSS 入口：基礎外觀、題目元件、共用頁首與頁尾。 */
+/*
+ * 知識小學堂的入口。learning.css 提供題目、選項及評分回饋，page-shell.css 提供頁面
+ * 外框；舊首頁的探險角色場景另由 quiz-friends.css 使用，獨立頁新增的測驗規則請放此處。
+ */
 @import url("./styles.css");
 @import url("./learning.css");
 @import url("./page-shell.css");

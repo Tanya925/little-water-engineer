@@ -1,6 +1,7 @@
 {
   "name": "little-water-engineer",
   "version": "1.0.0",
+  "description": "Workspace scripts that coordinate the Cloudflare Worker backend and static frontend checks.",
   "private": true,
   "scripts": {
     "start": "npm --prefix backend run start",

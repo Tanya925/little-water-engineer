@@ -2,7 +2,8 @@
 <!--
   關於我們的章節內容由 /api/pages/about 提供，畫面建立集中在 about-page.js。
   老師可在後台編輯這份結構化內容；前端逐層建立純文字 DOM，不直接執行儲存內容。
-  content-page-root 是唯一動態內容插入點，aria-live 會朗讀載入或錯誤結果。
+  content-page-root 是唯一動態內容插入點，aria-live 會朗讀載入或錯誤結果；本 HTML
+  不內嵌資料內容，避免教師更新介紹文字時還必須重新部署靜態頁面。
 -->
 <html lang="zh-Hant">
   <head>
