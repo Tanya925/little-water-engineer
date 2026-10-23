@@ -12,7 +12,7 @@
   const qa = make("section", undefined, "ai-qa-page"); qa.id = "ai-qa-content"; qa.hidden = true;
   const intro = make("div", undefined, "ai-intro");
   intro.append(make("span", "💬", "ai-intro-icon"), make("h2", "把好奇，變成新發現"),
-    make("p", "什麼領域都可以問，我會根據老師提供的教材回答，並附上教材來源。教材沒有的資訊，我會告訴你。"));
+    make("p", "你可以問老師提供的教材內容；我會依教材帶你一步步找答案。教材沒有的資訊，我會誠實告訴你。"));
   const notice = make("p", "不用填姓名。對話只保留在這次頁面中，重新整理就會清除。", "ai-note");
   qa.append(intro, notice);
   document.getElementById("feature-page").append(qa);
@@ -57,13 +57,18 @@
       paper.append(make("strong", role === "user" ? "你" : mode === "qa" ? "教材問答夥伴" : "小水滴助教"), make("p", text));
 
       if (sources.length) {
+        for (const source of sources.filter((item) => item.imageUrl)) {
+          const figure = make("figure", undefined, "ai-source-image");
+          const link = make("a"); link.href = source.imageSourceUrl || source.imageUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
+          const image = make("img"); image.src = source.imageUrl; image.alt = `題目圖｜${source.title}`; image.loading = "lazy";
+          link.append(image);
+          figure.append(link);
+          paper.append(figure);
+        }
         const sourceBox = make("div", undefined, "ai-sources"); sourceBox.append(make("strong", "依據教材"));
         for (const source of sources) {
           const a = make("a", `${source.title} ↗`); a.href = source.url; a.target = "_blank"; a.rel = "noopener noreferrer";
           sourceBox.append(a);
-          const details = make("details"); details.append(make("summary", "查看教材原文"));
-          [...new Set(source.excerpts || [])].forEach(text => details.append(make("blockquote", text)));
-          sourceBox.append(details);
         }
         paper.append(sourceBox);
       }
@@ -104,7 +109,7 @@
     });
     reset(); return { reset, input };
   }
-  const qaChat = buildChat(qa, "qa", "你好！想問什麼呢？我會從老師提供的教材裡找答案。跨領域的問題也歡迎喔！");
+  const qaChat = buildChat(qa, "qa", "你好！想問什麼呢？我會從老師提供的教材裡找線索，陪你一步步找答案。");
   const tutorChat = buildChat(tutor, "tutor", "你遇到什麼問題呢？");
   function activeContext() { return location.hash === "#quiz" ? context : location.hash === "#games" ? gameContext : null; }
   function openTutor() {

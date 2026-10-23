@@ -34,17 +34,35 @@ function addMessage(role, text, sources = []) {
   entry.className = `ai-message ai-message-${role}`;
   entry.append(aiNode("strong", role === "user" ? "我" : "教材小幫手"), aiNode("p", text));
 
-  sources.forEach((source) => {
-    const details = document.createElement("details");
+  sources.filter((source) => source.imageUrl).forEach((source) => {
+    const figure = document.createElement("figure");
+    figure.className = "ai-source-image";
     const link = document.createElement("a");
-    link.href = source.url;
+    link.href = source.imageSourceUrl || source.imageUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = `${source.title} ↗`;
-    details.append(aiNode("summary", "查看教材來源"), link);
-    source.excerpts.forEach((excerpt) => details.append(aiNode("blockquote", excerpt)));
-    entry.append(details);
+    const image = document.createElement("img");
+    image.src = source.imageUrl;
+    image.alt = `題目圖｜${source.title}`;
+    image.loading = "lazy";
+    link.append(image);
+    figure.append(link);
+    entry.append(figure);
   });
+
+  if (sources.length) {
+    const sourceBox = aiNode("div", undefined, "ai-sources");
+    sourceBox.append(aiNode("strong", "依據教材"));
+    sources.forEach((source) => {
+      const link = document.createElement("a");
+      link.href = source.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = `${source.title} ↗`;
+      sourceBox.append(link);
+    });
+    entry.append(sourceBox);
+  }
 
   aiLog.append(entry);
   entry.scrollIntoView({ block: "nearest", behavior: "smooth" });

@@ -227,6 +227,14 @@ function validate(kind, input, creating) {
  * 每一步都先查詢 schema，因此可在每次啟動安全重跑，不會重複新增欄位。
  */
 export function migrateManagement(database) {
+  database.exec(`CREATE TABLE IF NOT EXISTS resource_materials (
+    id TEXT PRIMARY KEY, resource_id TEXT NOT NULL, title TEXT NOT NULL,
+    material_type TEXT NOT NULL, source_url TEXT NOT NULL,
+    image_url TEXT NOT NULL DEFAULT '',
+    ai_material_id TEXT NOT NULL DEFAULT '', sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  ); CREATE INDEX IF NOT EXISTS resource_materials_resource ON resource_materials(resource_id, sort_order, id);`);
   database.exec(`CREATE TABLE IF NOT EXISTS latest_updates (
     id TEXT PRIMARY KEY, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
     event_date TEXT NOT NULL DEFAULT '', link_url TEXT NOT NULL DEFAULT '', sort_order INTEGER NOT NULL DEFAULT 0
@@ -280,6 +288,14 @@ export function migrateManagement(database) {
     database.exec(
       "ALTER TABLE teaching_resources ADD COLUMN ai_material_id TEXT NOT NULL DEFAULT ''",
     );
+  }
+  if (
+    !database
+      .prepare("PRAGMA table_info(resource_materials)")
+      .all()
+      .some((row) => row.name === "image_url")
+  ) {
+    database.exec("ALTER TABLE resource_materials ADD COLUMN image_url TEXT NOT NULL DEFAULT ''");
   }
 }
 

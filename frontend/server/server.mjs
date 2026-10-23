@@ -146,6 +146,70 @@ async function readBody(request, limit = 4096) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+// 章節底下的小教材各自有來源與可檢索全文；章節資料夾仍只給學生下載使用。
+function resourceMaterials(input) {
+  if (!Array.isArray(input) || input.length > 50) {
+    throw new ContentError("每個章節最多可建立 50 筆小教材。");
+  }
+  return input.map((item, index) => {
+    const label = `第 ${index + 1} 筆小教材`;
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new ContentError(`${label}格式不正確。`);
+    }
+    const title = typeof item.title === "string" ? item.title.trim() : "";
+    const materialType = typeof item.materialType === "string" ? item.materialType.trim() : "";
+    const fullText = typeof item.fullText === "string" ? item.fullText.trim() : "";
+    const imageUrl = typeof item.imageUrl === "string" ? item.imageUrl.trim() : "";
+    if (!title || title.length > 200 || !materialType || materialType.length > 50) {
+      throw new ContentError(`${label}需要教材名稱與類型。`);
+    }
+    if (!fullText || fullText.length > 100000) {
+      throw new ContentError(`${label}的教材文字需填寫，且不可超過 100000 字。`);
+    }
+    let sourceUrl;
+    try {
+      sourceUrl = new URL(item.sourceUrl);
+    } catch {
+      throw new ContentError(`${label}需要有效的 Google Drive 或 Google 文件連結。`);
+    }
+    if (
+      sourceUrl.protocol !== "https:" ||
+      !["drive.google.com", "docs.google.com"].includes(sourceUrl.hostname) ||
+      sourceUrl.username ||
+      sourceUrl.password ||
+      sourceUrl.port
+    ) {
+      throw new ContentError(`${label}需使用 Google Drive 或 Google 文件的 HTTPS 連結。`);
+    }
+    if (imageUrl) {
+      let image;
+      try {
+        image = new URL(imageUrl);
+      } catch {
+        throw new ContentError(`${label}的題圖連結格式不正確。`);
+      }
+      if (
+        image.protocol !== "https:" ||
+        image.hostname !== "drive.google.com" ||
+        image.username ||
+        image.password ||
+        image.port
+      ) {
+        throw new ContentError(`${label}的題圖需使用 Google Drive 圖片檔 HTTPS 連結。`);
+      }
+    }
+    return {
+      id: typeof item.id === "string" && /^resource-material-[a-f0-9-]{36}$/.test(item.id) ? item.id : null,
+      title,
+      materialType,
+      sourceUrl: sourceUrl.href,
+      imageUrl,
+      fullText,
+      sortOrder: index + 1,
+    };
+  });
+}
+
 // 使用白名單提供網站檔案，帳號資料與伺服器原始碼不對外提供。
 // 新增公開 HTML、CSS、JS 或圖片時必須同步加入此集合，否則即使檔案存在也會回傳 404。
 const publicFiles = new Set([
@@ -196,6 +260,7 @@ const publicFiles = new Set([
   "assets/images/quiz-camp.svg",
   "assets/images/quiz-river-garden.svg",
   "assets/images/quiz-forest.svg",
+  "assets/images/quiz-forest-center.svg",
   "assets/images/quiz-answer-decor.svg",
   "assets/images/quiz-sky.svg",
   "assets/images/quiz-map-texture.svg",
@@ -353,6 +418,57 @@ const server = http.createServer(async (request, response) => {
           videoDatabase.importQuestions(body?.questions, url.pathname.endsWith("/import")),
         );
       }
+      const resourceMaterialMatch =
+        /^\/api\/admin\/resources\/([a-zA-Z0-9_-]{1,64})\/materials(?:\/(resource-material-[a-f0-9-]{36}))?$/.exec(
+          url.pathname,
+        );
+      if (resourceMaterialMatch) {
+        const [, resourceId, materialId] = resourceMaterialMatch;
+        const resource = videoDatabase.adminFind("resources", resourceId);
+        const existing = materialId
+          ? videoDatabase.resourceMaterialRows(resource.id).find((item) => item.id === materialId)
+          : null;
+        if (materialId && !existing) {
+          throw new ContentError("找不到這筆小教材，請重新整理後再試。", 404);
+        }
+        if (request.method === "GET" && materialId) {
+          return respond(response, 200, { item: resource.materials.find((item) => item.id === materialId) });
+        }
+        if ((request.method === "POST" && !materialId) || (request.method === "PUT" && materialId)) {
+          const item = resourceMaterials([await readBody(request, 768 * 1024)])[0];
+          const prior = existing?.aiMaterialId ? videoDatabase.aiFind(existing.aiMaterialId) : null;
+          const saved = await aiService.save(prior?.id || null, {
+            title: `${resource.title}｜${item.title}`,
+            topic: resource.title,
+            sourceUrl: item.sourceUrl,
+            fullText: item.fullText,
+            status: resource.status,
+            ...(prior ? { revision: prior.revision } : {}),
+          });
+          const savedId = videoDatabase.saveResourceMaterial({
+            id: existing?.id || null,
+            resourceId: resource.id,
+            title: item.title,
+            materialType: item.materialType,
+            sourceUrl: item.sourceUrl,
+            imageUrl: item.imageUrl,
+            aiMaterialId: saved.id,
+            sortOrder: existing?.sortOrder || resource.materials.length + 1,
+          });
+          return respond(response, request.method === "POST" ? 201 : 200, {
+            item: videoDatabase.adminFind("resources", resource.id).materials.find((material) => material.id === savedId),
+          });
+        }
+        if (request.method === "DELETE" && materialId) {
+          if (existing.aiMaterialId) {
+            const prior = videoDatabase.aiFind(existing.aiMaterialId);
+            await aiService.remove(prior.id, prior.revision);
+          }
+          videoDatabase.deleteResourceMaterial(existing.id);
+          return respond(response, 200, { deletedId: existing.id });
+        }
+        return respond(response, 405, { error: "不支援的操作。" });
+      }
       const match =
         /^\/api\/admin\/(experiments|resources|questions|updates)(?:\/([a-zA-Z0-9_-]{1,64}))?$/.exec(
           url.pathname,
@@ -377,22 +493,73 @@ const server = http.createServer(async (request, response) => {
             item: videoDatabase.adminSave(kind, id || null, body),
           });
         }
-        const resource = videoDatabase.adminSave("resources", id || null, body);
-        const prior = resource.aiMaterialId ? videoDatabase.aiFind(resource.aiMaterialId) : null;
-        // 原本只提供下載的教材仍可正常儲存；老師在相同表單加入全文後，
-        // 伺服器才會另外建立可供 AI 搜尋的教材紀錄，避免舊資料被強制轉換。
-        if (typeof body?.fullText !== "string" && !prior) {
-          return respond(response, request.method === "POST" ? 201 : 200, { item: resource });
+        const managesMaterials = Array.isArray(body?.materials);
+        const submittedMaterials = managesMaterials ? resourceMaterials(body.materials) : [];
+        const existingResource = id ? videoDatabase.adminFind("resources", id) : null;
+        const existingMaterials = existingResource
+          ? videoDatabase.resourceMaterialRows(existingResource.id)
+          : [];
+        const existingById = new Map(existingMaterials.map((item) => [item.id, item]));
+        for (const item of submittedMaterials) {
+          if (item.id && !existingById.has(item.id)) {
+            throw new ContentError("找不到這筆小教材，請重新開啟章節後再儲存。", 409);
+          }
         }
-        const material = await aiService.save(resource.aiMaterialId || null, {
-          title: resource.title,
-          topic: "教材下載中心",
-          sourceUrl: resource.folderUrl,
-          fullText: typeof body?.fullText === "string" ? body.fullText : prior?.fullText,
-          status: resource.status,
-          ...(prior ? { revision: prior.revision } : {}),
-        });
-        videoDatabase.adminSetResourceMaterial(resource.id, material.id);
+        const resource = videoDatabase.adminSave("resources", id || null, body);
+        for (const item of submittedMaterials) {
+          const existing = item.id ? existingById.get(item.id) : null;
+          const prior = existing?.aiMaterialId ? videoDatabase.aiFind(existing.aiMaterialId) : null;
+          const material = await aiService.save(prior?.id || null, {
+            title: `${resource.title}｜${item.title}`,
+            topic: resource.title,
+            sourceUrl: item.sourceUrl,
+            fullText: item.fullText,
+            status: resource.status,
+            ...(prior ? { revision: prior.revision } : {}),
+          });
+          videoDatabase.saveResourceMaterial({
+            id: item.id,
+            resourceId: resource.id,
+            title: item.title,
+            materialType: item.materialType,
+            sourceUrl: item.sourceUrl,
+            imageUrl: item.imageUrl,
+            aiMaterialId: material.id,
+            sortOrder: item.sortOrder,
+          });
+        }
+        if (managesMaterials) {
+          const kept = new Set(submittedMaterials.map((item) => item.id).filter(Boolean));
+          for (const existing of existingMaterials) {
+            if (!kept.has(existing.id)) {
+              if (existing.aiMaterialId) {
+                const prior = videoDatabase.aiFind(existing.aiMaterialId);
+                await aiService.remove(prior.id, prior.revision);
+              }
+              videoDatabase.deleteResourceMaterial(existing.id);
+            }
+          }
+        }
+        // 章節名稱與發布狀態也是小教材索引的中繼資料；即使沒有編輯任何
+        // 小教材，改動這兩項時仍要同步，讓搜尋與顯示維持一致。
+        if (
+          !managesMaterials &&
+          existingResource &&
+          (existingResource.title !== resource.title || existingResource.status !== resource.status)
+        ) {
+          for (const materialRow of existingMaterials) {
+            if (!materialRow.aiMaterialId) continue;
+            const prior = videoDatabase.aiFind(materialRow.aiMaterialId);
+            await aiService.save(prior.id, {
+              title: `${resource.title}｜${materialRow.title}`,
+              topic: resource.title,
+              sourceUrl: materialRow.sourceUrl,
+              fullText: prior.fullText,
+              status: resource.status,
+              revision: prior.revision,
+            });
+          }
+        }
 
         return respond(response, request.method === "POST" ? 201 : 200, {
           item: videoDatabase.adminFind("resources", resource.id),
@@ -401,19 +568,33 @@ const server = http.createServer(async (request, response) => {
       if (request.method === "PATCH" && id) {
         const body = await readBody(request);
         const item = videoDatabase.adminStatus(kind, id, body);
-        if (kind === "resources" && item.aiMaterialId) {
-          const prior = videoDatabase.aiFind(item.aiMaterialId);
-          await aiService.save(item.aiMaterialId, {
-            title: item.title,
-            topic: "教材下載中心",
-            sourceUrl: item.folderUrl,
-            fullText: prior.fullText,
-            status: item.status,
-            revision: prior.revision,
-          });
+        if (kind === "resources") {
+          for (const materialRow of videoDatabase.resourceMaterialRows(item.id)) {
+            if (!materialRow.aiMaterialId) continue;
+            const prior = videoDatabase.aiFind(materialRow.aiMaterialId);
+            await aiService.save(prior.id, {
+              title: `${item.title}｜${materialRow.title}`,
+              topic: item.title,
+              sourceUrl: materialRow.sourceUrl,
+              fullText: prior.fullText,
+              status: item.status,
+              revision: prior.revision,
+            });
+          }
         }
 
         return respond(response, 200, { item: videoDatabase.adminFind(kind, id) });
+      }
+      if (request.method === "DELETE" && id && kind === "resources") {
+        const resource = videoDatabase.adminFind("resources", id);
+        for (const material of resource.materials) {
+          if (!material.aiMaterialId) continue;
+          const prior = videoDatabase.aiFind(material.aiMaterialId);
+          await aiService.remove(prior.id, prior.revision);
+          videoDatabase.deleteResourceMaterial(material.id);
+        }
+        videoDatabase.deleteResource(resource.id);
+        return respond(response, 200, { deletedId: resource.id });
       }
 
       return respond(response, 405, { error: "不支援的操作。" });
@@ -690,7 +871,9 @@ const server = http.createServer(async (request, response) => {
         "default-src 'self'",
         "script-src 'self'",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data:",
+        // 題圖只接受後台驗證過的 Google Drive 連結；縮圖重新導向後會由
+        // Google 的圖片 CDN 載入，因此三個網域都需列入白名單。
+        "img-src 'self' data: https://drive.google.com https://drive.usercontent.google.com https://lh3.googleusercontent.com",
         "connect-src 'self'",
         "frame-src https://drive.google.com",
         "frame-ancestors 'none'",

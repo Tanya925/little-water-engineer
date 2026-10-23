@@ -1,0 +1,12 @@
+<!-- 步驟二的中間大樹：獨立圖層，可完整往上延展。 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" aria-hidden="true">
+  <defs>
+    <g id="pine">
+      <path d="M0-275 60-215H30l62 80H44l74 82H52L126 0H-126l74-53h-66l74-82h-48l62-80H-60Z" fill="currentColor"/>
+      <rect x="-14" y="-10" width="28" height="182" fill="#c9aa7b"/>
+    </g>
+  </defs>
+  <g color="#abcdbb" opacity=".2">
+    <use href="#pine" transform="translate(900 620) rotate(3) scale(2.25)"/>
+  </g>
+</svg>

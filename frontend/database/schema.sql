@@ -23,6 +23,19 @@ CREATE TABLE IF NOT EXISTS teaching_resources (
   sections_json TEXT NOT NULL,
   sort_order INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS resource_materials (
+  id TEXT PRIMARY KEY,
+  resource_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  material_type TEXT NOT NULL,
+  source_url TEXT NOT NULL,
+  image_url TEXT NOT NULL DEFAULT '',
+  ai_material_id TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS resource_materials_resource ON resource_materials(resource_id, sort_order, id);
 -- 題庫包含答案、解析及來源，屬伺服器資料；出題 API 只選公開欄位，提交答案後才提供評分。
 CREATE TABLE IF NOT EXISTS quiz_questions (
   id TEXT PRIMARY KEY,

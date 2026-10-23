@@ -9,7 +9,7 @@ const sections = [
   ["overview", "◈", "內容總覽", ""],
   ["home", "🏠", "首頁最新活動管理", "計畫介紹為固定內容；這裡管理首頁的最新活動。"],
   ["experiments", "🧪", "科普實驗影片管理", "管理影片連結、簡介與顯示順序。"],
-  ["resources", "📚", "教材管理", "管理教材連結、介紹與全文；全文會同步給 AI 問答機器人檢索。"],
+  ["resources", "📚", "教材管理", "管理章節資料夾與章節內的小教材；每筆小教材各自建立 AI 問答索引。"],
   ["activities", "📷", "活動紀錄管理", ""],
   ["honors", "🏆", "小小工程師榮譽榜管理", ""],
   ["knowledge", "💡", "科普知識專區管理", ""],
@@ -27,6 +27,7 @@ let page = 1;
 let loadNumber = 0;
 let editorRecord = null;
 let editorKind = null;
+let editorResourceId = null;
 let editorDirty = false;
 let importRows = null;
 let pageDirty = false;
@@ -191,7 +192,9 @@ async function renderRoute() {
       records = result.items;
       page = 1;
       Object.assign(filters, { keyword: "", status: "", topic: "", type: "", difficulty: "" });
-      $("page-actions").append(action(`＋ 新增${labels[kind]}`, () => openEditor(kind), "primary"));
+      $("page-actions").append(
+        action(kind === "resources" ? "＋ 新增章節" : `＋ 新增${labels[kind]}`, () => openEditor(kind), "primary"),
+      );
       if (kind === "questions") {
         $("page-actions").append(action("匯入題庫", openImport));
       }
@@ -302,29 +305,47 @@ function drawTable() {
       (!filters.type || item.type === filters.type) &&
       (!filters.difficulty || item.difficulty === filters.difficulty) &&
       (!keyword ||
-        [item.title, item.description, item.question, item.explanation, item.driveFileId]
+        [
+          item.title,
+          item.description,
+          item.question,
+          item.explanation,
+          item.driveFileId,
+          ...(kind === "resources" ? (item.materials || []).flatMap((material) => [material.title, material.materialType]) : []),
+        ]
           .join(" ")
           .toLocaleLowerCase()
           .includes(keyword)),
   );
   const pages = Math.max(1, Math.ceil(found.length / 12));
   page = Math.min(page, pages);
-  const wrap = node("div", undefined, "table-wrap");
+  if (kind === "resources") {
+    drawResourceGroups(found, pages);
+    return;
+  }
+  const wrap = node("div", undefined, kind === "resources" ? "table-wrap resource-table-wrap" : "table-wrap");
   const table = node("table");
   table.setAttribute("aria-label", `${labels[kind]}管理清單`);
   const head = node("thead"),
     header = node("tr");
   [
-    kind === "questions" ? "題目 / 主題" : "名稱 / 連結",
+    kind === "questions" ? "題目 / 主題" : kind === "resources" ? "章節 / 章節內教材" : "名稱 / 連結",
     kind === "questions" ? "題型 / 難度" : "排序",
-    "狀態",
+    kind === "resources" ? "發布／AI 索引" : "狀態",
     "操作",
   ].forEach((value) => header.append(node("th", value)));
   head.append(header);
   table.append(head);
   const body = node("tbody");
-  found.slice((page - 1) * 12, page * 12).forEach((item) => {
-    const row = node("tr"),
+  found.slice((page - 1) * 12, page * 12).forEach((item, index) => {
+    if (kind === "resources" && index > 0) {
+      const divider = node("tr", undefined, "resource-chapter-divider");
+      const dividerCell = node("td");
+      dividerCell.colSpan = 4;
+      divider.append(dividerCell);
+      body.append(divider);
+    }
+    const row = node("tr", undefined, kind === "resources" ? "resource-chapter-row" : ""),
       title = node("td");
     title.append(node("strong", item.title || item.question));
     if (kind === "questions") {
@@ -352,7 +373,10 @@ function drawTable() {
     const statusCell = node("td");
     statusCell.append(node("span", states[item.status], `badge ${item.status}`));
     const controls = node("td");
-    controls.append(action("編輯", () => openEditor(kind, item.id), "table-action"));
+    controls.append(action(kind === "resources" ? "編輯章節" : "編輯", () => openEditor(kind, item.id), "table-action"));
+    if (kind === "resources") {
+      controls.append(action("＋ 新增小教材", () => openResourceMaterialEditor(item.id), "table-action"));
+    }
     row.append(
       title,
       node("td", kind === "questions" ? `${item.type} · ${item.difficulty}` : item.sortOrder),
@@ -360,6 +384,27 @@ function drawTable() {
       controls,
     );
     body.append(row);
+    if (kind === "resources") {
+      (item.materials || []).forEach((material) => {
+        const child = node("tr", undefined, "resource-material-table-row");
+        const childTitle = node("td");
+        childTitle.append(
+          node("span", "↳", "resource-material-table-arrow"),
+          node("strong", material.title),
+          node("small", material.materialType),
+        );
+        child.append(
+          childTitle,
+          node("td", "—"),
+          node("td", ""),
+          node("td", undefined, "resource-material-table-actions"),
+        );
+        child.lastElementChild.append(
+          action("編輯小教材", () => openResourceMaterialEditor(item.id, material.id), "table-action"),
+        );
+        body.append(child);
+      });
+    }
   });
   table.append(body);
   wrap.append(table);
@@ -390,6 +435,131 @@ function drawTable() {
   buttons.append(prev, next);
   pagination.append(buttons);
   $("content-table").replaceChildren(wrap, pagination);
+}
+
+/** 將教材以章節卡片呈現，避免父子教材被表格欄位切得零散難讀。 */
+function drawResourceGroups(found, pages) {
+  const groups = node("div", undefined, "resource-groups");
+  const visible = found.slice((page - 1) * 12, page * 12);
+  visible.forEach((resource) => {
+    const group = node("article", undefined, "resource-group");
+    const header = node("div", undefined, "resource-group-header");
+    const heading = node("div", undefined, "resource-group-heading");
+    heading.append(
+      node("span", `章節 ${resource.sortOrder}`, "resource-group-kicker"),
+      node("h3", resource.title),
+    );
+    if (resource.description) {
+      heading.append(node("p", resource.description, "resource-group-description"));
+    }
+    const meta = node("div", undefined, "resource-group-meta");
+    meta.append(node("span", states[resource.status], `badge ${resource.status}`));
+    const controls = node("div", undefined, "actions resource-group-actions");
+    if (resource.folderUrl) {
+      const source = link("Google Drive 資料夾 ↗", resource.folderUrl, "secondary");
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      controls.append(source);
+    }
+    controls.append(
+      action("編輯章節", () => openEditor("resources", resource.id), "secondary"),
+      action("＋ 新增小教材", () => openResourceMaterialEditor(resource.id), "primary"),
+      action("刪除章節", () => deleteResource(resource), "danger"),
+    );
+    header.append(heading, meta, controls);
+    group.append(header);
+
+    const materialPanel = node("details", undefined, "resource-material-panel");
+    const materialHeading = node("summary", undefined, "resource-material-panel-heading");
+    const materialHeadingCopy = node("span", undefined, "resource-material-panel-title");
+    materialHeading.append(
+      node("span", "›", "resource-material-chevron"),
+      materialHeadingCopy,
+      node("span", `${(resource.materials || []).length} 筆`, "resource-material-count"),
+    );
+    materialHeadingCopy.append(node("h4", "章節內教材"));
+    materialPanel.append(materialHeading);
+    if (!(resource.materials || []).length) {
+      materialPanel.append(node("p", "尚未建立小教材，可從上方按鈕新增。", "resource-material-empty"));
+    } else {
+      const list = node("div", undefined, "resource-material-listing");
+      resource.materials.forEach((material) => {
+        const row = node("div", undefined, "resource-material-item");
+        const detail = node("div", undefined, "resource-material-detail");
+        detail.append(
+          node("strong", material.title),
+          node("span", material.materialType, "resource-material-type"),
+        );
+        const itemMeta = node("div", undefined, "resource-material-meta");
+        itemMeta.append(
+          action("編輯", () => openResourceMaterialEditor(resource.id, material.id), "secondary"),
+          action("刪除", () => deleteResourceMaterial(resource, material), "danger"),
+        );
+        row.append(detail, itemMeta);
+        list.append(row);
+      });
+      materialPanel.append(list);
+    }
+    group.append(materialPanel);
+    groups.append(group);
+  });
+  if (!visible.length) {
+    groups.append(
+      node(
+        "p",
+        records.length ? "沒有符合條件的內容，試試其他篩選。" : "尚無教材章節，可以從新增開始。",
+        "empty",
+      ),
+    );
+  }
+  const pagination = node("div", undefined, "pagination");
+  pagination.append(node("span", `共 ${found.length} 個章節 · 第 ${page} / ${pages} 頁`));
+  const buttons = node("div");
+  const prev = action("← 上一頁", () => {
+    page--;
+    drawTable();
+  });
+  prev.disabled = page === 1;
+  const next = action("下一頁 →", () => {
+    page++;
+    drawTable();
+  });
+  next.disabled = page === pages;
+  buttons.append(prev, next);
+  pagination.append(buttons);
+  $("content-table").replaceChildren(groups, pagination);
+}
+
+/** 刪除整個章節及其小教材；伺服器會先清除所有對應的 AI 索引。 */
+async function deleteResource(resource) {
+  const count = resource.materials?.length || 0;
+  if (!confirm(`確定要刪除「${resource.title}」嗎？${count ? `\n這也會刪除章節內的 ${count} 筆小教材與 AI 索引。` : ""}\n此操作無法復原。`)) {
+    return;
+  }
+  try {
+    await managed(`/api/admin/resources/${resource.id}`, {}, "DELETE");
+    records = records.filter((item) => item.id !== resource.id);
+    page = 1;
+    drawTable();
+    message($("admin-message"), "章節與其小教材已刪除。");
+  } catch (error) {
+    message($("admin-message"), error.message, true);
+  }
+}
+
+/** 刪除單一小教材；不會影響其餘教材或所屬章節。 */
+async function deleteResourceMaterial(resource, material) {
+  if (!confirm(`確定要刪除小教材「${material.title}」嗎？\n對應的 AI 索引也會一併刪除，且無法復原。`)) {
+    return;
+  }
+  try {
+    await managed(`/api/admin/resources/${resource.id}/materials/${material.id}`, {}, "DELETE");
+    resource.materials = (resource.materials || []).filter((item) => item.id !== material.id);
+    drawTable();
+    message($("admin-message"), "小教材已刪除。");
+  } catch (error) {
+    message($("admin-message"), error.message, true);
+  }
 }
 
 /**
@@ -454,11 +624,13 @@ async function openEditor(kind, id = null) {
   try {
     editorRecord = id === null ? null : (await request(`/api/admin/${kind}/${id}`)).item;
     editorKind = kind;
+    editorResourceId = null;
     editorDirty = false;
     const item = editorRecord || {};
     $("editor-form").reset();
     $("editor-fields").replaceChildren();
-    $("editor-title").textContent = `${id === null ? "新增" : "編輯"}${labels[kind]}`;
+    const editorLabel = kind === "resources" ? "章節" : labels[kind];
+    $("editor-title").textContent = `${id === null ? "新增" : "編輯"}${editorLabel}`;
     message($("editor-message"));
     $("question-preview").hidden = kind !== "questions";
     $("question-preview").open = false;
@@ -510,16 +682,6 @@ async function openEditor(kind, id = null) {
           max: 3000,
         }),
       );
-      fields.append(
-        field("教材全文文字", "fullText", item.fullText || "", {
-          wide: true,
-          required: true,
-          textarea: true,
-          max: 100000,
-          hint: "請貼上完整教材文字。AI 問答機器人只會根據這裡的內容回答；修改後會自動更新索引。",
-        }),
-      );
-      fields.querySelector('[name="fullText"]').rows = 16;
       fields.append(
         field("顯示順序", "sortOrder", item.sortOrder ?? records.length + 1, {
           type: "number",
@@ -620,6 +782,65 @@ async function openEditor(kind, id = null) {
   }
 }
 
+/** 開啟單一小教材的編輯視窗；發布狀態由所屬章節統一控制。 */
+async function openResourceMaterialEditor(resourceId, materialId = null) {
+  try {
+    const resource = await request(`/api/admin/resources/${resourceId}`);
+    const material = materialId ? resource.item.materials?.find((item) => item.id === materialId) : null;
+    if (materialId && !material) {
+      throw new Error("找不到這筆小教材，請重新整理後再試。");
+    }
+    editorRecord = material || null;
+    editorKind = "resource-material";
+    editorResourceId = resourceId;
+    editorDirty = false;
+    const item = editorRecord || {};
+    $("editor-form").reset();
+    $("editor-fields").replaceChildren();
+    $("editor-title").textContent = `${materialId ? "編輯" : "新增"}小教材｜${resource.item.title}`;
+    message($("editor-message"));
+    $("question-preview").hidden = true;
+    $("question-preview").open = false;
+    const fields = $("editor-fields");
+    fields.append(
+      node(
+        "p",
+        `這筆教材會獨立儲存、建立 AI 索引；發布或下架會跟隨章節目前的「${states[resource.item.status]}」狀態。`,
+        "editor-hint wide",
+      ),
+      field("教材名稱", "title", item.title || "", { wide: true, required: true, max: 200 }),
+      field("類型", "materialType", item.materialType || "講義", {
+        values: ["講義", "影片", "PDF", "投影片", "其他"],
+        required: true,
+      }),
+      field("Google Drive／文件連結", "sourceUrl", item.sourceUrl || "", {
+        type: "url",
+        required: true,
+        wide: true,
+        max: 1500,
+        hint: "此連結標示這筆小教材的來源；學生下載仍會開啟章節資料夾。",
+      }),
+      field("教材圖片 Google Drive 連結（選填）", "imageUrl", item.imageUrl || "", {
+        type: "url",
+        wide: true,
+        max: 1500,
+        hint: "學生問題引用到這筆教材時，會在回答下方顯示這張圖片；圖片檔仍保留在 Google Drive。",
+      }),
+      field("教材文字（供 AI 助教檢索）", "fullText", item.fullText || "", {
+        textarea: true,
+        wide: true,
+        required: true,
+        max: 100000,
+      }),
+    );
+    fields.querySelector('textarea[name="fullText"]').rows = 14;
+    $("editor").showModal();
+    $("editor").scrollTop = 0;
+  } catch (error) {
+    message($("admin-message"), error.message, true);
+  }
+}
+
 /**
  * 依目前表單值預覽題目、選項、正解與解析。
  * 預覽只協助老師檢查輸入，正式評分仍使用伺服器資料庫中的答案。
@@ -670,6 +891,35 @@ $("editor-form").addEventListener("submit", async (event) => {
   button.textContent = "儲存中…";
   message($("editor-message"));
   try {
+    if (kind === "resource-material") {
+      const payload = {
+        title: value("title"),
+        materialType: value("materialType"),
+        sourceUrl: value("sourceUrl"),
+        imageUrl: value("imageUrl"),
+        fullText: value("fullText"),
+      };
+      const result = await managed(
+        `/api/admin/resources/${editorResourceId}/materials${previous ? `/${previous.id}` : ""}`,
+        payload,
+        previous ? "PUT" : "POST",
+      );
+      const resource = records.find((item) => item.id === editorResourceId);
+      if (resource) {
+        const index = (resource.materials || []).findIndex((item) => item.id === result.item.id);
+        if (index < 0) {
+          resource.materials = [...(resource.materials || []), result.item];
+        } else {
+          resource.materials[index] = result.item;
+        }
+      }
+      editorDirty = false;
+      $("editor").close();
+      if (currentSection === "resources") {
+        drawTable();
+      }
+      return;
+    }
     const payload = { ...previous, status: value("status") };
     if (kind !== "questions") {
       Object.assign(payload, { title: value("title"), sortOrder: Number(value("sortOrder")) });
@@ -683,7 +933,6 @@ $("editor-form").addEventListener("submit", async (event) => {
       Object.assign(payload, {
         folderUrl: value("folderUrl"),
         description: value("description"),
-        fullText: value("fullText"),
       });
     } else if (kind === "updates") {
       Object.assign(payload, {
@@ -732,9 +981,7 @@ $("editor-form").addEventListener("submit", async (event) => {
     }
     const saved =
       kind === "resources"
-        ? result.item.aiIndexState === "ready"
-          ? "教材已儲存，問答索引已同步。"
-          : "教材已儲存，問答索引會自動同步。"
+        ? "章節已儲存；請從列表的「新增小教材」建立教材內容。"
         : `內容已儲存${result.item.status === "published" ? "並發布；重新整理前台即可看到更新" : "為下架狀態，前台不顯示"}。`;
     message($("admin-message"), saved);
   } catch (error) {

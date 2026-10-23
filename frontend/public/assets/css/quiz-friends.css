@@ -2805,6 +2805,18 @@ body:has(#quiz-content:not([hidden])) .site-header {
   pointer-events: none;
 }
 
+/* 獨立的中間大樹可以向上延展，不會被背包區的背景邊界裁掉。 */
+.quiz-central-tree {
+  position: absolute;
+  inset: -130px auto auto 50%;
+  width: var(--quiz-page-width, 100vw);
+  height: min(1120px, calc(100% + 130px));
+  translate: -50% 0;
+  z-index: 0;
+  background: url("../images/quiz-forest-center.svg") center top / 100% auto no-repeat;
+  pointer-events: none;
+}
+
 .quiz-departure-decor span {
   position: absolute;
   font-size: clamp(24px, 2.8vw, 36px);

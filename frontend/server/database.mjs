@@ -10,6 +10,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { randomUUID } from "node:crypto";
 import { seedLearningContent, learningStore } from "./learning.mjs";
 import { migrateManagement, managementStore } from "./management.mjs";
 import { initializePages, pageStore } from "./pages.mjs";
@@ -61,23 +62,64 @@ export async function openVideoDatabase(dataDirectory) {
     // 日後真的新增遊戲任務時，再建立對應資料來源，避免先保留沒有內容的設定檔。
     const ai = aiStore(database, []);
 
-    // 把教材卡片的管理欄位和對應 AI 全文／同步狀態合併，讓老師在同一表單編輯。
-    function enrichResource(resource) {
-      if (!resource.aiMaterialId) {
-        return { ...resource, fullText: "", aiIndexState: "not-created" };
+    // 教材改為「章節 → 多筆小教材」後，舊版整章全文不再使用。先把舊索引
+    // 標記為待刪除，讓既有同步機制確認 Vectorize 清理成功後才移除舊片段。
+    database.exec("CREATE TABLE IF NOT EXISTS app_migrations (id TEXT PRIMARY KEY)");
+    const materialMigration = "resource-materials-v2";
+    if (!database.prepare("SELECT 1 FROM app_migrations WHERE id = ?").get(materialMigration)) {
+      const legacyRows = database
+        .prepare("SELECT ai_material_id AS aiMaterialId FROM teaching_resources WHERE ai_material_id != ''")
+        .all();
+      for (const row of legacyRows) {
+        try {
+          const legacy = ai.aiFind(row.aiMaterialId);
+          ai.aiDelete(legacy.id, legacy.revision);
+        } catch {
+          // 舊連結可能已手動刪除；清除章節上的參照即可。
+        }
+      }
+      database.exec("UPDATE teaching_resources SET ai_material_id = ''");
+      database.prepare("INSERT INTO app_migrations (id) VALUES (?)").run(materialMigration);
+    }
+    function resourceMaterialRows(resourceId) {
+      return database
+        .prepare(
+          `SELECT id, resource_id AS resourceId, title, material_type AS materialType,
+            source_url AS sourceUrl, image_url AS imageUrl, ai_material_id AS aiMaterialId, sort_order AS sortOrder
+           FROM resource_materials WHERE resource_id = ? ORDER BY sort_order, id`,
+        )
+        .all(resourceId);
+    }
+
+    function enrichResourceMaterial(row) {
+      if (!row.aiMaterialId) {
+        return { ...row, fullText: "", aiIndexState: "not-created", aiIndexError: "" };
       }
       try {
-        const material = ai.aiFind(resource.aiMaterialId);
-
+        const material = ai.aiFind(row.aiMaterialId);
         return {
-          ...resource,
+          ...row,
           fullText: material.fullText,
           aiIndexState: material.indexState,
           aiIndexError: material.indexError,
         };
       } catch {
-        return { ...resource, fullText: "", aiIndexState: "not-created" };
+        return { ...row, fullText: "", aiIndexState: "not-created", aiIndexError: "" };
       }
+    }
+
+    // 章節本身只決定前台資料夾下載；小教材各自保存全文與 AI 索引。
+    function enrichResource(resource) {
+      const materials = resourceMaterialRows(resource.id).map(enrichResourceMaterial);
+      return {
+        ...resource,
+        materials,
+        aiIndexState: materials.length
+          ? materials.every((item) => item.aiIndexState === "ready")
+            ? "ready"
+            : "pending"
+          : "not-created",
+      };
     }
 
     return {
@@ -85,6 +127,29 @@ export async function openVideoDatabase(dataDirectory) {
       ...learningStore(database),
       ...management,
       ...pages,
+      resourceMaterialRows,
+      saveResourceMaterial({ id, resourceId, title, materialType, sourceUrl, imageUrl, aiMaterialId, sortOrder }) {
+        const materialId = id || `resource-material-${randomUUID()}`;
+        database
+          .prepare(
+            `INSERT INTO resource_materials
+              (id, resource_id, title, material_type, source_url, image_url, ai_material_id, sort_order, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(id) DO UPDATE SET resource_id=excluded.resource_id, title=excluded.title,
+              material_type=excluded.material_type, source_url=excluded.source_url,
+              image_url=excluded.image_url,
+              ai_material_id=excluded.ai_material_id, sort_order=excluded.sort_order,
+              updated_at=CURRENT_TIMESTAMP`,
+          )
+          .run(materialId, resourceId, title, materialType, sourceUrl, imageUrl || "", aiMaterialId, sortOrder);
+        return materialId;
+      },
+      deleteResourceMaterial(id) {
+        database.prepare("DELETE FROM resource_materials WHERE id = ?").run(id);
+      },
+      deleteResource(id) {
+        database.prepare("DELETE FROM teaching_resources WHERE id = ?").run(id);
+      },
       adminList(kind) {
         const items = management.adminList(kind);
 
@@ -96,8 +161,10 @@ export async function openVideoDatabase(dataDirectory) {
         return kind === "resources" ? enrichResource(item) : item;
       },
       adminExport() {
+        const exported = management.adminExport();
         return {
-          ...management.adminExport(),
+          ...exported,
+          resources: exported.resources.map(enrichResource),
           pages: pages.exportPages(),
           aiMaterials: ai.aiList(),
         };

@@ -191,6 +191,31 @@
   font-size: 14px;
 }
 
+.ai-source-image {
+  margin: 14px 0 0;
+}
+
+.ai-source-image a {
+  display: block;
+}
+
+.ai-source-image img {
+  display: block;
+  width: min(100%, 560px);
+  max-height: 420px;
+  object-fit: contain;
+  border: 2px solid #b8d2cc;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.ai-source-image figcaption {
+  margin-top: 6px;
+  color: #486568;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .ai-message summary {
   cursor: pointer;
   color: #405f64;

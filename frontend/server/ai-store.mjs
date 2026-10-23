@@ -44,10 +44,16 @@ export function aiStore(db, games = []) {
     id TEXT PRIMARY KEY, title TEXT NOT NULL, topic TEXT NOT NULL, source_url TEXT NOT NULL,
     full_text TEXT NOT NULL, status TEXT NOT NULL, revision INTEGER NOT NULL,
     index_state TEXT NOT NULL DEFAULT 'pending', index_error TEXT NOT NULL DEFAULT '',
+    index_format INTEGER NOT NULL DEFAULT 2,
     deleted INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
     CREATE TABLE IF NOT EXISTS ai_chunks (
     id TEXT PRIMARY KEY, material_id TEXT NOT NULL, revision INTEGER NOT NULL, content TEXT NOT NULL);
     CREATE INDEX IF NOT EXISTS ai_chunks_material ON ai_chunks(material_id);`);
+  // v2 的向量內容加入章節與教材名稱。舊版服務不知道此欄位，因此即使它把
+  // index_state 寫回 ready，新版重啟後仍會再同步一次，確保舊向量不會漏掉名稱。
+  if (!db.prepare("PRAGMA table_info(ai_materials)").all().some((row) => row.name === "index_format")) {
+    db.exec("ALTER TABLE ai_materials ADD COLUMN index_format INTEGER NOT NULL DEFAULT 1");
+  }
   // 把 SQLite 的 snake_case 欄位轉成 API 使用的 camelCase，並計算目前版本的片段數。
   // 這個數量只供後台顯示，不代表遠端索引已完成；真正狀態應讀 indexState。
   const decode = (r) => ({
@@ -181,7 +187,7 @@ export function aiStore(db, games = []) {
     // 因為這兩種狀態仍可能需要從 Vectorize 清除舊片段。
     aiPending() {
       return db
-        .prepare("SELECT id FROM ai_materials WHERE index_state != 'ready'")
+        .prepare("SELECT id FROM ai_materials WHERE index_state != 'ready' OR index_format != 2")
         .all()
         .map((r) => r.id);
     },
@@ -201,8 +207,11 @@ export function aiStore(db, games = []) {
     // revision 條件防止較慢的舊同步工作覆蓋較新版本的同步狀態。
     aiIndexState(id, revision, state, error = "") {
       db.prepare(
-        "UPDATE ai_materials SET index_state=?,index_error=? WHERE id=? AND revision=?",
-      ).run(state, error, id, revision);
+        `UPDATE ai_materials
+         SET index_state=?, index_error=?,
+             index_format=CASE WHEN ?='ready' THEN 2 ELSE index_format END
+         WHERE id=? AND revision=?`,
+      ).run(state, error, state, id, revision);
     },
     // 向量服務只回傳 ID 與分數；真正能引用的文字必須回到本機逐筆驗證版本與發布資格。
     aiResolveMatches(matches, threshold, topK) {
@@ -215,8 +224,10 @@ export function aiStore(db, games = []) {
         seen.add(match.id);
         const row = db
           .prepare(
-            `SELECT c.id,c.content,c.revision,c.material_id AS materialId,m.title,m.source_url AS sourceUrl
+            `SELECT c.id,c.content,c.revision,c.material_id AS materialId,m.title,m.topic,m.source_url AS sourceUrl,
+            COALESCE(rm.image_url,'') AS imageUrl
           FROM ai_chunks c JOIN ai_materials m ON m.id=c.material_id
+          LEFT JOIN resource_materials rm ON rm.ai_material_id=m.id
           WHERE c.id=? AND m.deleted=0 AND m.status='published' AND m.index_state='ready' AND c.revision=m.revision`,
           )
           .get(match.id);
@@ -226,6 +237,97 @@ export function aiStore(db, games = []) {
       }
 
       return rows.sort((a, b) => b.score - a.score).slice(0, topK);
+    },
+
+    // 中文短問句有時與向量片段的相似度不足，卻明確包含教材關鍵詞。
+    // 此備援只在本機的「已發布、已完成索引、目前版本」片段中比對，不引入外部知識。
+    aiKeywordMatches(question, topK) {
+      const rawQuestion = String(question || "");
+      const compact = rawQuestion.replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, "");
+      const terms = new Set();
+      // 「所以」、「然後」等語氣或連接詞不代表學生要找的概念；保留它們會把
+      // 不相關的教材片段一起選進來，反而干擾後續模型判斷。
+      const stopTerms = new Set([
+        "所以",
+        "但是",
+        "然後",
+        "就是",
+        "什麼",
+        "怎麼",
+        "可以",
+        "到底",
+        "請問",
+        "一下",
+        "這個",
+        "那個",
+        "為何",
+        "為甚",
+      ]);
+      const chars = Array.from(compact);
+      for (let size = 2; size <= 4; size += 1) {
+        for (let start = 0; start + size <= chars.length; start += 1) {
+          const term = chars.slice(start, start + size).join("");
+          if (!stopTerms.has(term)) terms.add(term);
+        }
+      }
+      String(question || "")
+        .toLowerCase()
+        .match(/[a-z][a-z0-9-]{1,}/g)
+        ?.forEach((term) => terms.add(term));
+      if (!terms.size) return [];
+      const rows = db
+        .prepare(
+          `SELECT c.id,c.content,c.revision,c.material_id AS materialId,m.title,m.topic,m.source_url AS sourceUrl,
+            COALESCE(rm.image_url,'') AS imageUrl
+           FROM ai_chunks c JOIN ai_materials m ON m.id=c.material_id
+           LEFT JOIN resource_materials rm ON rm.ai_material_id=m.id
+           WHERE m.deleted=0 AND m.status='published' AND m.index_state='ready' AND c.revision=m.revision`,
+        )
+        .all();
+      const compactTitle = (row) => String(row.title || "").replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, "");
+      // 題號是學生最明確的教材指定，例如「習題 1-5」。若已說出題號，不能
+      // 被前一題或同樣出現「質量」等詞的其他教材搶走，直接限定到該教材。
+      const exercise = /習題\s*(\d+)\s*[-－—_.]\s*(\d+)/u.exec(rawQuestion);
+      if (exercise) {
+        const requested = `習題${exercise[1]}${exercise[2]}`;
+        const exactExercise = rows.filter((row) => compactTitle(row).includes(requested));
+        if (exactExercise.length) {
+          return exactExercise
+            .slice(0, topK)
+            .map((row) => ({ ...row, score: 1, exactTarget: true }));
+        }
+      }
+      // 同一個詞出現在越少教材片段，越可能是學生真正想問的概念。例如「質量」
+      // 應比常見的語氣詞或一般動詞更優先。
+      const searchable = (row) => {
+        const value = `${row.title}\n${row.topic}\n${row.content}`;
+        // 題號常被輸入成「2-1」、「2.1」或「21」；保留原文與去除分隔符的版本，
+        // 讓名稱關鍵字不會因輸入格式不同而失效。
+        return `${value}\n${value.replace(/[^\u4e00-\u9fffA-Za-z0-9]/g, "")}`;
+      };
+      const frequencies = new Map(
+        [...terms].map((term) => [
+          term,
+          rows.reduce((count, row) => count + Number(searchable(row).includes(term)), 0),
+        ]),
+      );
+      const matches = rows
+        .map((row) => ({
+          ...row,
+          score: [...terms].reduce((count, term) => {
+            if (!searchable(row).includes(term)) return count;
+            const frequency = frequencies.get(term) || 0;
+            return count + term.length * Math.log((rows.length + 1) / (frequency + 1));
+          }, 0),
+        }))
+        .filter((row) => row.score > 0)
+        .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
+      const highest = matches[0]?.score || 0;
+      return matches
+        // 只留下與最佳命中足夠接近的片段，避免把弱關聯內容塞進同一次回答。
+        .filter((row) => row.score >= highest * 0.6)
+        .slice(0, topK)
+        .map((row) => ({ ...row, score: 1 }));
     },
 
     // 只有已發布且索引完成的教材才能啟用一般問答；草稿及同步失敗不計入。

@@ -1,0 +1,24 @@
+// 網站正式入口的預備設定；完成全功能驗證前不取代現行 AI Worker 設定。
+{
+  "name": "little-water-engineer-site",
+  "main": "src/site-worker.js",
+  "compatibility_date": "2026-10-23",
+  "observability": { "enabled": true },
+  "vars": { "VECTOR_NAMESPACE": "water-materials-v1" },
+  "assets": { "directory": "../frontend/public", "run_worker_first": ["/api/*", "/admin.html", "/login.html"] },
+  "ai": { "binding": "AI" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "little-water-engineer-db",
+      "database_id": "aa2fe951-059f-47ad-bddf-2d851a2335ac"
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE",
+      "index_name": "little-water-engineer-vectors",
+      "remote": true
+    }
+  ]
+}
