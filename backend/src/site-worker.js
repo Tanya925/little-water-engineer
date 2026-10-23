@@ -59,7 +59,10 @@ export default {
     try {
       if (pathname === "/api/auth/status" && request.method === "GET") {
         const session = await sessionFor(request, env.DB);
-        return json({ authenticated: Boolean(session), username: session?.username || "" });
+        // 登入頁須同時知道「是否已登入」與「是否已建立老師帳號」：
+        // 前者決定是否跳到後台，後者決定顯示登入或首次註冊表單。
+        const account = await env.DB.prepare("SELECT count(*) AS count FROM teacher_accounts").first();
+        return json({ authenticated: Boolean(session), username: session?.username || "", configured: Number(account?.count || 0) > 0 });
       }
       if (pathname === "/api/auth/logout" && request.method === "POST") {
         if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
@@ -171,7 +174,8 @@ export default {
         return json({ error: "Not found" }, 404);
       }
       if (pathname === "/api/experiments" && request.method === "GET") {
-        return json(await listVideos(env.DB));
+        // 前端維持既有的 { videos } 契約，避免畫面把正確資料誤判為載入失敗。
+        return json({ videos: await listVideos(env.DB) });
       }
       if (pathname === "/api/ai/status" && request.method === "GET") {
         const row = await env.DB.prepare("SELECT count(*) AS count FROM ai_materials WHERE deleted=0 AND status='published' AND index_state='ready'").first();
@@ -222,15 +226,16 @@ export default {
         }
       }
       if (pathname === "/api/resources" && request.method === "GET") {
-        return json(await listResources(env.DB));
+        // 公開教材頁與學習頁皆以 { resources } 讀取資料。
+        return json({ resources: await listResources(env.DB) });
       }
       if (pathname === "/api/updates" && request.method === "GET") {
-        return json(await listUpdates(env.DB));
+        return json({ updates: await listUpdates(env.DB) });
       }
       const page = /^\/api\/pages\/(home|about)$/.exec(pathname);
       if (page && request.method === "GET") {
         const result = await publicPage(env.DB, page[1]);
-        return result ? json(result) : json({ error: "Not found" }, 404);
+        return result ? json({ page: result }) : json({ error: "Not found" }, 404);
       }
       if (pathname === "/api/quiz/catalog" && request.method === "GET") {
         return json(await quizCatalog(env.DB));

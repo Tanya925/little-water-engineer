@@ -5,7 +5,7 @@
   "compatibility_date": "2026-10-23",
   "observability": { "enabled": true },
   "vars": { "VECTOR_NAMESPACE": "water-materials-v1" },
-  "assets": { "directory": "../frontend/public", "run_worker_first": ["/api/*", "/admin.html", "/login.html"] },
+  "assets": { "directory": "../frontend/public", "run_worker_first": ["/api/*"] },
   "ai": { "binding": "AI" },
   "d1_databases": [
     {
