@@ -88,6 +88,12 @@ async function saveAiMaterial(db, resource, existingAiId, material) {
   return id;
 }
 
+/**
+ * 儲存小教材與其 AI 可檢索本文。images_json 保存完整的多張圖片清單；image_url
+ * 同步保存第一張圖片，供仍讀取舊欄位的資料與舊前端相容。圖片本身不會觸發新的
+ * 向量內容，仍呼叫 syncMaterial 是因為小教材的標題、本文或來源可能同時被更新，
+ * 並確保索引狀態與目前 revision 一致。
+ */
 export async function saveResourceMaterial(db, env, resource, materialId, input, context) {
   const material = validateResourceMaterial(input);
   const rows = await materialRows(db, resource.id);
@@ -96,11 +102,11 @@ export async function saveResourceMaterial(db, env, resource, materialId, input,
   const id = existing?.id || `resource-material-${crypto.randomUUID()}`;
   const aiMaterialId = await saveAiMaterial(db, resource, existing?.aiMaterialId, material);
   await db.prepare(
-    `INSERT INTO resource_materials (id,resource_id,title,material_type,source_url,image_url,ai_material_id,sort_order,updated_at)
-     VALUES (?,?,?,?,?,?,?,?,?)
+    `INSERT INTO resource_materials (id,resource_id,title,material_type,source_url,image_url,images_json,ai_material_id,sort_order,updated_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?)
      ON CONFLICT(id) DO UPDATE SET title=excluded.title,material_type=excluded.material_type,source_url=excluded.source_url,
-       image_url=excluded.image_url,ai_material_id=excluded.ai_material_id,updated_at=excluded.updated_at`,
-  ).bind(id, resource.id, material.title, material.materialType, material.sourceUrl, material.imageUrl, aiMaterialId, existing?.sortOrder || rows.length + 1, now()).run();
+       image_url=excluded.image_url,images_json=excluded.images_json,ai_material_id=excluded.ai_material_id,updated_at=excluded.updated_at`,
+  ).bind(id, resource.id, material.title, material.materialType, material.sourceUrl, material.images[0]?.url || "", JSON.stringify(material.images), aiMaterialId, existing?.sortOrder || rows.length + 1, now()).run();
   context.waitUntil(syncMaterial(db, env, aiMaterialId));
   return (await materialRows(db, resource.id)).find((row) => row.id === id);
 }

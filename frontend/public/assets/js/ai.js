@@ -58,14 +58,20 @@
       const paper = make("div", undefined, "ai-message-paper");
       paper.append(make("strong", role === "user" ? "你" : mode === "qa" ? "教材問答夥伴" : "小水滴助教"), make("p", text));
 
+      // 每個來源可附多張教材圖片。圖片是在伺服器已選定的教材來源旁呈現，並非
+      // 額外檢索結果；imageUrl 分支保留給舊版 API 回應，以免舊快取內容失去圖片。
       if (sources.length) {
-        for (const source of sources.filter((item) => item.imageUrl)) {
-          const figure = make("figure", undefined, "ai-source-image");
-          const link = make("a"); link.href = source.imageSourceUrl || source.imageUrl; link.target = "_blank"; link.rel = "noopener noreferrer";
-          const image = make("img"); image.src = source.imageUrl; image.alt = `題目圖｜${source.title}`; image.loading = "lazy";
-          link.append(image);
-          figure.append(link);
-          paper.append(figure);
+        for (const source of sources) {
+          const images = Array.isArray(source.images) ? source.images : source.imageUrl ? [{ url: source.imageUrl, caption: "" }] : [];
+          for (const item of images) {
+            const figure = make("figure", undefined, "ai-source-image");
+            const link = make("a"); link.href = item.url; link.target = "_blank"; link.rel = "noopener noreferrer";
+            const image = make("img"); image.src = item.url; image.alt = item.caption || `教材圖片｜${source.title}`; image.loading = "lazy";
+            link.append(image);
+            figure.append(link);
+            if (item.caption) figure.append(make("figcaption", item.caption));
+            paper.append(figure);
+          }
         }
         const sourceBox = make("div", undefined, "ai-sources"); sourceBox.append(make("strong", "依據教材"));
         for (const source of sources) {

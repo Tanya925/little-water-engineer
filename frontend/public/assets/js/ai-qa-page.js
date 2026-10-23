@@ -26,28 +26,34 @@ function aiNode(tag, text, className) {
 }
 
 /**
- * 將一則學生或 AI 訊息加入聊天紀錄。
- * sources 由伺服器完成教材版本與發布狀態驗證後提供；前端只負責安全呈現。
+ * 將一則學生或 AI 訊息加入聊天紀錄。sources 已由伺服器確認教材版本、發布狀態
+ * 與索引狀態；前端只安全呈現文字、來源與附圖。新版以 source.images 顯示多張圖，
+ * 同時保留 imageUrl 的讀取分支，讓舊對話或快取的 API 回應仍能呈現單張圖片。
+ * 圖片連結另以 noopener 開啟，避免外部 Drive 頁面取得本站視窗控制權。
  */
 function addMessage(role, text, sources = []) {
   const entry = document.createElement("article");
   entry.className = `ai-message ai-message-${role}`;
   entry.append(aiNode("strong", role === "user" ? "我" : "教材小幫手"), aiNode("p", text));
 
-  sources.filter((source) => source.imageUrl).forEach((source) => {
-    const figure = document.createElement("figure");
-    figure.className = "ai-source-image";
-    const link = document.createElement("a");
-    link.href = source.imageSourceUrl || source.imageUrl;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    const image = document.createElement("img");
-    image.src = source.imageUrl;
-    image.alt = `題目圖｜${source.title}`;
-    image.loading = "lazy";
-    link.append(image);
-    figure.append(link);
-    entry.append(figure);
+  sources.forEach((source) => {
+    const images = Array.isArray(source.images) ? source.images : source.imageUrl ? [{ url: source.imageUrl, caption: "" }] : [];
+    images.forEach((item) => {
+      const figure = document.createElement("figure");
+      figure.className = "ai-source-image";
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      const image = document.createElement("img");
+      image.src = item.url;
+      image.alt = item.caption || `教材圖片｜${source.title}`;
+      image.loading = "lazy";
+      link.append(image);
+      figure.append(link);
+      if (item.caption) figure.append(aiNode("figcaption", item.caption));
+      entry.append(figure);
+    });
   });
 
   if (sources.length) {

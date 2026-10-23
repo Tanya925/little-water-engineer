@@ -818,6 +818,153 @@ td small {
   line-height: 1.65;
 }
 
+/*
+ * 小教材的附圖採「摘要卡片 + 按需展開欄位」而非固定的一長排 input：老師能快速
+ * 瀏覽多張圖片的順序與圖說，只有要修改的那筆才顯示網址。整段跨 editor-fields
+ * 的兩欄版面，避免在窄欄內截斷網址與按鈕；手機版則將欄位垂直排列。
+ */
+.material-images-editor {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 9px;
+  padding: 4px 0 0;
+}
+
+.material-images-editor h3,
+.material-images-editor p {
+  margin: 0;
+}
+
+.material-images-editor h3 {
+  font-size: 15px;
+}
+
+.material-images-header,
+.material-images-heading,
+.material-image-summary,
+.material-image-actions {
+  display: flex;
+  align-items: center;
+}
+
+.material-images-header {
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.material-images-heading {
+  gap: 9px;
+}
+
+.material-images-count {
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: #edf4e9;
+  color: #63806e;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.material-images-hint,
+.material-images-empty {
+  color: #687d74;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.material-image-list {
+  display: grid;
+  gap: 8px;
+}
+
+.material-image-card {
+  overflow: hidden;
+  border: 1px solid #dce7d9;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.material-image-summary {
+  min-height: 54px;
+  gap: 11px;
+  padding: 9px 12px;
+}
+
+.material-image-number {
+  flex: 0 0 auto;
+  border-radius: 7px;
+  padding: 4px 7px;
+  background: #f1f6ee;
+  color: #66816f;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.material-image-title {
+  min-width: 0;
+  overflow: hidden;
+  color: #38584e;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.material-image-actions {
+  flex: 0 0 auto;
+  gap: 3px;
+  margin-left: auto;
+}
+
+.material-image-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border-top: 1px solid #e5ede2;
+  background: #f8fbf6;
+}
+
+.material-image-fields label {
+  display: grid;
+  gap: 6px;
+  color: #5f766b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.material-image-fields input {
+  min-width: 0;
+}
+
+.material-image-add {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.material-image-done {
+  margin: 0;
+}
+
+@media (max-width: 680px) {
+  .material-images-header {
+    align-items: flex-start;
+  }
+
+  .material-image-summary {
+    flex-wrap: wrap;
+  }
+
+  .material-image-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .material-image-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .resource-material-table-arrow {
   display: inline-block;
   margin-right: 8px;

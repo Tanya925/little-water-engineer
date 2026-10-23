@@ -2,6 +2,8 @@
 
 給國小高年級學生使用的土、風、水防災科普網站。學生可觀看影片、閱讀教材、完成題庫並向教材 AI 助教提問；老師由公開網站的登入後台管理正式內容。
 
+正式網站：https://little-water-engineer-site.ziijing2340.workers.dev
+
 > 正式網站與正式內容都在 Cloudflare：網站程式由 **Workers** 執行，內容、老師帳號與對話紀錄由 **D1** 保存，教材語意搜尋使用 **Vectorize**。本專案不再使用本機 SQLite。
 
 ## 三個最常用的操作
@@ -39,7 +41,7 @@ Cloudflare Worker（backend/src/site-worker.js）
 ### AI 教材的狀態
 
 1. 老師建立或編輯章節內小教材。
-2. 全文、來源與圖片連結先安全寫入 D1。
+2. 全文、來源與可自行增減的教材圖片／圖說先安全寫入 D1。
 3. Worker 在背景建立 Vectorize 索引。
 4. 後台顯示「等待建立索引／正在建立／完成／失敗」。
 5. AI 額度或服務暫時不可用時，教材不會遺失；老師可在該小教材按「重試索引」。
@@ -87,6 +89,7 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `0001_site_schema.sql` | 影片、教材章節、小教材、題庫、活動、頁面、AI 教材與片段資料表。 |
 | `0002_teacher_auth.sql` | 老師帳號與登入 session 資料表。 |
 | `0003_ai_conversations.sql` | AI 對話紀錄資料表，用於保留最近提問脈絡。 |
+| `0004_resource_material_images.sql` | 為小教材新增多張圖片及各自圖說的儲存欄位；既有單張圖片仍相容。 |
 
 ### `frontend/public/`：瀏覽器畫面
 
@@ -133,6 +136,7 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `backend/migrations/0001_site_schema.sql` | 建立第一版 D1 的內容、教材、題庫、頁面、AI 片段等核心資料表。 | 已套用的 migration 不回頭修改。 |
 | `backend/migrations/0002_teacher_auth.sql` | 建立老師帳號與 session 資料表。 | 只儲存雜湊與 salt，絕不加入明碼密碼。 |
 | `backend/migrations/0003_ai_conversations.sql` | 建立 AI 對話訊息資料表，保存最近脈絡。 | 不要把敏感個資放入對話欄位。 |
+| `backend/migrations/0004_resource_material_images.sql` | 為小教材新增圖片清單與圖說欄位。 | 舊有 `image_url` 會保留，確保既有教材圖片不遺失。 |
 
 ### HTML 頁面
 

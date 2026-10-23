@@ -215,7 +215,10 @@ export default {
           const result = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", { messages: [{ role: "system", content: "你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文，先說重點，再用簡短步驟或例子教學；教材不足時直接說不足。舊問題只用於理解模糊追問，現在的問題優先。" }, { role: "user", content: `最近學生問題：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材：\n${materials}` }], max_tokens: 900, temperature: 0.15 });
           const answer = modelText(result);
           if (!answer) throw new Error("Missing model response");
-          const sources = [...new Map(chunks.map((chunk) => [chunk.materialId, { id: chunk.materialId, title: chunk.title, url: chunk.sourceUrl, imageUrl: chunk.imageUrl || "", imageSourceUrl: chunk.imageUrl || "", excerpts: [chunk.content.slice(0, 180)] }])).values()];
+          // 同一份小教材可能命中多個片段，但回答下方只需顯示一次教材來源與全部附圖。
+          // 來源資料由 resolveAIChunks 在 D1 驗證後提供；images 僅供前端呈現，並不
+          // 會併入 prompt 或改變向量檢索結果，避免圖片網址成為模型回答的依據。
+          const sources = [...new Map(chunks.map((chunk) => [chunk.materialId, { id: chunk.materialId, title: chunk.title, url: chunk.sourceUrl, images: chunk.images || [], excerpts: [chunk.content.slice(0, 180)] }])).values()];
           await env.DB.batch([
             env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "user", question, Date.now()),
             env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "assistant", answer, Date.now()),

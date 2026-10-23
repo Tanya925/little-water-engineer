@@ -37,20 +37,46 @@ function validGoogleUrl(value, label, imageOnly = false) {
   return url.href;
 }
 
+/**
+ * 驗證小教材及其附圖清單。API 同時接受新版 images 陣列與舊版 imageUrl，
+ * 讓尚未重新儲存的舊教材、已快取的後台頁面都可安全使用；輸出一律統一為
+ * { url, caption }[]。圖說可以空白，但只填圖說而沒有圖片連結沒有可顯示的資源，
+ * 因此會明確拒絕，而不把不完整資料寫進 D1。
+ */
 export function validateResourceMaterial(input) {
+  const rawImages = Array.isArray(input?.images)
+    ? input.images
+    : input?.imageUrl
+      ? [{ url: input.imageUrl, caption: "" }]
+      : [];
+  if (rawImages.length > 30) throw new Error("教材圖片最多可設定 30 張。");
+  const images = rawImages
+    .map((image, index) => {
+      const url = validGoogleUrl(image?.url || "", `第 ${index + 1} 張教材圖片連結`, true);
+      const caption = cleanText(image?.caption || "", `第 ${index + 1} 張圖片圖說`, 300, false);
+      if (!url && !caption) return null;
+      if (!url) throw new Error(`第 ${index + 1} 張圖片請填寫 Google Drive 連結。`);
+      return { url, caption };
+    })
+    .filter(Boolean);
   return {
     title: cleanText(input?.title, "教材名稱", 200),
     materialType: cleanText(input?.materialType, "教材類型", 50),
     sourceUrl: validGoogleUrl(input?.sourceUrl, "教材連結"),
-    imageUrl: validGoogleUrl(input?.imageUrl || "", "教材圖片連結", true),
+    images,
     fullText: cleanText(input?.fullText, "教材文字", 100000),
   };
 }
 
+/**
+ * 讀取一個章節內的所有小教材，並將 D1 的 images_json 還原為前端/API 使用的
+ * images 陣列。解析失敗、不是陣列或沒有有效 URL 時，會退回舊的 image_url；
+ * 這個讀取時相容層能避免資料庫升級期間或早期教材遺失附圖。
+ */
 export async function materialRows(db, resourceId) {
   const { results } = await db
     .prepare(
-      `SELECT rm.id,rm.resource_id,rm.title,rm.material_type,rm.source_url,rm.image_url,rm.ai_material_id,rm.sort_order,
+      `SELECT rm.id,rm.resource_id,rm.title,rm.material_type,rm.source_url,rm.image_url,rm.images_json,rm.ai_material_id,rm.sort_order,
               m.full_text,m.index_state,m.index_error,m.revision AS ai_revision,m.deleted
        FROM resource_materials rm
        LEFT JOIN ai_materials m ON m.id=rm.ai_material_id
@@ -58,19 +84,30 @@ export async function materialRows(db, resourceId) {
     )
     .bind(resourceId)
     .all();
-  return results.map((row) => ({
-    id: row.id,
-    title: row.title,
-    materialType: row.material_type,
-    sourceUrl: row.source_url,
-    imageUrl: row.image_url || "",
-    aiMaterialId: row.ai_material_id || "",
-    fullText: row.full_text || "",
-    sortOrder: Number(row.sort_order || 0),
-    indexState: row.deleted ? "deleted" : row.index_state || "pending",
-    indexError: row.index_error || "",
-    aiRevision: Number(row.ai_revision || 0),
-  }));
+  return results.map((row) => {
+    const savedImages = parse(row.images_json, []);
+    const images = Array.isArray(savedImages) && savedImages.length
+      ? savedImages
+          .filter((image) => typeof image?.url === "string" && image.url)
+          .map((image) => ({ url: image.url, caption: typeof image.caption === "string" ? image.caption : "" }))
+      : row.image_url
+        ? [{ url: row.image_url, caption: "" }]
+        : [];
+    return {
+      id: row.id,
+      title: row.title,
+      materialType: row.material_type,
+      sourceUrl: row.source_url,
+      imageUrl: images[0]?.url || "",
+      images,
+      aiMaterialId: row.ai_material_id || "",
+      fullText: row.full_text || "",
+      sortOrder: Number(row.sort_order || 0),
+      indexState: row.deleted ? "deleted" : row.index_state || "pending",
+      indexError: row.index_error || "",
+      aiRevision: Number(row.ai_revision || 0),
+    };
+  });
 }
 
 async function decode(db, kind, row) {

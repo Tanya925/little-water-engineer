@@ -629,6 +629,117 @@ function field(label, name, value = "", options = {}) {
   return holder;
 }
 
+/**
+ * 建立小教材的附圖清單。清單預設只顯示圖片編號與已填圖說，避免長網址破壞編輯
+ * 對話框的閱讀性；每一筆都能自行展開修改，不會因為新增多張圖而變成一大排欄位。
+ * 新增時先開啟編輯欄位，既有資料則維持收合。空白卡片不會在儲存時送到 API。
+ */
+function materialImagesEditor(images = []) {
+  const holder = node("section", undefined, "material-images-editor");
+  const list = node("div", undefined, "material-image-list");
+  const count = node("span", "0 張", "material-images-count");
+
+  // 刪除後重新編號並更新數量，讓圖號與畫面上的順序始終一致。
+  const updateList = () => {
+    const cards = [...list.querySelectorAll(".material-image-card")];
+    count.textContent = `${cards.length} 張`;
+    cards.forEach((card, index) => {
+      card.querySelector(".material-image-number").textContent = `圖片 ${index + 1}`;
+    });
+  };
+
+  // card 保留輸入欄位，即使收合也不遺失內容；收合只是介面狀態，非另一份資料。
+  const addImage = (image = {}, initiallyEditing = false) => {
+    const card = node("article", undefined, "material-image-card");
+    const summary = node("div", undefined, "material-image-summary");
+    const number = node("span", "圖片", "material-image-number");
+    const title = node("strong", image.caption || "", "material-image-title");
+    const url = node("input");
+    url.type = "url";
+    url.name = "material-image-url";
+    url.maxLength = 1500;
+    url.placeholder = "貼上 Google Drive 圖片連結";
+    url.value = image.url || "";
+    url.setAttribute("aria-label", "教材圖片 Google Drive 連結");
+    const caption = node("input");
+    caption.type = "text";
+    caption.name = "material-image-caption";
+    caption.maxLength = 300;
+    caption.placeholder = "例如：圖一：平行平板流動示意";
+    caption.value = image.caption || "";
+    caption.setAttribute("aria-label", "教材圖片圖說或圖號");
+    const fields = node("div", undefined, "material-image-fields");
+    const urlLabel = node("label", "圖片連結");
+    const captionLabel = node("label", "圖說／圖號");
+    urlLabel.append(url);
+    captionLabel.append(caption);
+    const done = action("完成", () => setEditing(false), "table-action material-image-done");
+    fields.append(urlLabel, captionLabel, done);
+
+    const edit = action("編輯", () => setEditing(true), "table-action");
+    const remove = action("刪除", () => {
+      if (!confirm("要刪除這張教材圖片嗎？")) {
+        return;
+      }
+      card.remove();
+      updateList();
+      editorDirty = true;
+    }, "table-action archive");
+    const controls = node("div", undefined, "material-image-actions");
+    controls.append(edit, remove);
+    summary.append(number, title, controls);
+
+    const setEditing = (isEditing) => {
+      fields.hidden = !isEditing;
+      edit.hidden = isEditing;
+      remove.hidden = isEditing;
+      if (isEditing) {
+        url.focus();
+      }
+    };
+    const updateTitle = () => {
+      title.textContent = caption.value.trim();
+    };
+    caption.addEventListener("input", updateTitle);
+    card.append(summary, fields);
+    list.append(card);
+    setEditing(initiallyEditing);
+    updateList();
+  };
+
+  const heading = node("div", undefined, "material-images-heading");
+  heading.append(node("h3", "教材附圖（選填）"), count);
+  const header = node("div", undefined, "material-images-header");
+  header.append(
+    heading,
+    action("＋ 新增圖片", () => {
+      addImage({}, true);
+      editorDirty = true;
+    }, "secondary material-image-add"),
+  );
+  holder.append(
+    header,
+    node("p", "可放習題圖、公式圖或重要圖表；學生引用這筆教材時，系統會一併顯示附圖。", "material-images-hint"),
+    list,
+  );
+  images.forEach((image) => addImage(image));
+  updateList();
+  return holder;
+}
+
+/**
+ * 從每張卡片讀取目前值，轉成後端驗證器需要的 images 陣列。老師可先按新增再
+ * 決定不填；完全空白的卡片在此移除，避免產生沒有圖片連結的無效資料。
+ */
+function materialImages() {
+  return [...document.querySelectorAll('#editor-fields .material-image-card')]
+    .map((card) => ({
+      url: card.querySelector('[name="material-image-url"]')?.value.trim() || "",
+      caption: card.querySelector('[name="material-image-caption"]')?.value.trim() || "",
+    }))
+    .filter((image) => image.url || image.caption);
+}
+
 /** 取得編輯表單指定欄位的目前字串值；欄位不存在時回傳空字串。 */
 function value(name) {
   return $("editor-form").elements.namedItem(name)?.value || "";
@@ -846,12 +957,7 @@ async function openResourceMaterialEditor(resourceId, materialId = null) {
         max: 1500,
         hint: "此連結標示這筆小教材的來源；學生下載仍會開啟章節資料夾。",
       }),
-      field("教材圖片 Google Drive 連結（選填）", "imageUrl", item.imageUrl || "", {
-        type: "url",
-        wide: true,
-        max: 1500,
-        hint: "學生問題引用到這筆教材時，會在回答下方顯示這張圖片；圖片檔仍保留在 Google Drive。",
-      }),
+      materialImagesEditor(item.images || (item.imageUrl ? [{ url: item.imageUrl, caption: "" }] : [])),
       field("教材文字（供 AI 助教檢索）", "fullText", item.fullText || "", {
         textarea: true,
         wide: true,
@@ -922,7 +1028,7 @@ $("editor-form").addEventListener("submit", async (event) => {
         title: value("title"),
         materialType: value("materialType"),
         sourceUrl: value("sourceUrl"),
-        imageUrl: value("imageUrl"),
+        images: materialImages(),
         fullText: value("fullText"),
       };
       const result = await managed(
