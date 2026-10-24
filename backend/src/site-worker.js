@@ -39,6 +39,9 @@ const quizTopics = ["柏努利與基礎流力", "搶救堰塞湖", "大地在搖
 // 生成額度；較小上限可避免少數冗長回覆快速耗盡 Workers AI 的共享額度。
 const ANSWER_TOKEN_LIMIT = 360;
 const DETAILED_ANSWER_TOKEN_LIMIT = 800;
+// 同一個模型同時負責搜尋問句整理與最終教材回答。集中成常數可避免兩個流程意外
+// 使用不同模型，並讓日後做模型評估或切換時只需修改一處。
+const TEXT_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
 
 async function readJSON(request, maxLength = 4096) {
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
@@ -60,6 +63,23 @@ function sameOrigin(request, origin) {
  */
 function isFollowUpQuestion(question) {
   return /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
+}
+
+/**
+ * 將回答模型要求的 JSON 安全還原。模型偶爾仍會包上 Markdown 程式碼區塊；這裡只
+ * 移除最外層包裝，不會嘗試猜測或修復內容。格式無效時回傳 null，呼叫端會採取
+ * 「教材不足」的保守結果，而不是把未驗證文字或來源顯示給學生。
+ */
+function parseGroundedAnswer(result) {
+  const text = modelText(result)?.trim();
+  if (!text) return null;
+  const jsonText = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  try {
+    const parsed = JSON.parse(jsonText);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 function conversationMaterialSelection(question, previousQuestions) {
@@ -273,7 +293,7 @@ export default {
           const hasExactMaterial = references.length > 0 || namedMaterialIds.length > 0;
           let searchQuestion = question;
           if (!hasExactMaterial) {
-            const normalization = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+            const normalization = await env.AI.run(TEXT_MODEL, {
               messages: [
                 { role: "system", content: "將學生目前問題整理成一句適合教材搜尋的繁體中文問句。舊問題只可用來補足『這個、再說明』等模糊指稱；如果現在問題有明確題號或概念，一律以現在問題為主。只輸出 JSON：{\"searchQuery\":\"...\"}。" },
                 { role: "user", content: JSON.stringify({ question, previousQuestions }) },
@@ -305,36 +325,33 @@ export default {
             await persistExchange(insufficientAnswer);
             return json({ answer: insufficientAnswer, sources: [], conversationId });
           }
-          const materials = chunks.map((chunk) => `【${chunk.title}】\n${chunk.content}`).join("\n\n");
-          // 精確代號已在 D1 驗證為同一份已發布教材；不再交給相關性模型猜測它是否足夠，
-          // 避免像 102地特-4 明明有完整題目與解法卻被誤判為教材不足。一般語意搜尋才需
-          // 這道保守關卡，以避免無關片段被模型勉強拿來回答。
-          let sufficient = hasExactMaterial;
-          if (!sufficient) {
-            const relevance = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
-              messages: [
-                { role: "system", content: "你是教材相關性判斷器。只依據提供教材，判斷教材是否足夠回答學生目前問題。若學生問圖片、圖示或題目，但教材文字沒有足夠說明，視為不足。只輸出 JSON：{\"sufficient\":true} 或 {\"sufficient\":false}。" },
-                { role: "user", content: `學生問題：${question}\n\n教材：\n${materials}` },
-              ], max_tokens: 30, temperature: 0,
-            });
-            try {
-              sufficient = JSON.parse(modelText(relevance))?.sufficient === true;
-            } catch { /* 判斷格式異常時採保守策略，不顯示可能不相關的教材與圖片。 */ }
-          }
-          if (!sufficient) {
-            await persistExchange(insufficientAnswer);
-            return json({ answer: insufficientAnswer, sources: [], conversationId });
-          }
+          // 片段 ID 一併交給回答模型。模型必須明確列出實際用到的 ID，後端才會顯示該
+          // 教材的來源與圖片；因此就算 Vectorize 找到多份相似教材，也不會自動帶出別題圖。
+          const materials = chunks.map((chunk) => `【片段ID：${chunk.id}｜${chunk.title}】\n${chunk.content}`).join("\n\n");
           const detailInstruction = requestsDetailedExplanation(question)
             ? "學生明確要求更詳細。請依教材原本順序，補足定義、已知條件、公式、符號、推導與每個計算步驟；不可只重複先前的重點摘要。"
             : "先說重點，再用清楚的步驟或例子教學。";
-          const result = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", { messages: [{ role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文；教材沒有提到的事要明確說明。${detailInstruction} 舊問題只用於理解模糊追問，現在的問題優先。` }, { role: "user", content: `最近學生問題：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材：\n${materials}` }], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
-          const answer = modelText(result);
-          if (!answer) throw new Error("Missing model response");
-          // 同一份小教材可能命中多個片段，但回答下方只需顯示一次來源。圖片只在題號／
-          // week／國考等明確教材代號成功比對時回傳；一般語意搜尋可以引用多份文字，卻
-          // 不該猜測要顯示哪一題的圖，這可根除不相干教材圖片混入的問題。
-          const sources = [...new Map(chunks.map((chunk) => [chunk.materialId, {
+          // 「能否回答」與「如何回答」共用同一次模型呼叫：模型以原始問題、最近最多三題
+          // 和實際檢索片段作判斷，回傳足夠性、答案與引用片段 ID。這取代原先獨立的
+          // relevance 呼叫，既減少一次 AI 用量，也避免兩個模型判斷前後不一致。
+          const result = await env.AI.run(TEXT_MODEL, { messages: [
+            { role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文。先判斷教材是否足夠回答「現在問題」：若不足、問題要求解讀圖片但教材文字不足、或無法以提供片段支持，輸出 {"sufficient":false,"answer":"","usedChunkIds":[]}。若足夠，輸出 {"sufficient":true,"answer":"你的完整回答","usedChunkIds":["實際使用的片段ID"]}。answer 中不得加入教材未提及的知識；usedChunkIds 只能填提供教材內、且確實支持答案的 ID。只輸出合法 JSON，不得使用 Markdown 或額外文字。${detailInstruction} 舊問題只用於理解模糊追問，現在問題優先。` },
+            { role: "user", content: `最近學生問題（最多三題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}` },
+          ], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
+          const grounded = parseGroundedAnswer(result);
+          const availableChunkIds = new Set(chunks.map((chunk) => chunk.id));
+          const usedChunkIds = [...new Set(Array.isArray(grounded?.usedChunkIds)
+            ? grounded.usedChunkIds.filter((id) => typeof id === "string" && availableChunkIds.has(id))
+            : [])];
+          const answer = typeof grounded?.answer === "string" ? grounded.answer.trim() : "";
+          if (grounded?.sufficient !== true || !answer || !usedChunkIds.length) {
+            await persistExchange(insufficientAnswer);
+            return json({ answer: insufficientAnswer, sources: [], conversationId });
+          }
+          const usedChunks = chunks.filter((chunk) => usedChunkIds.includes(chunk.id));
+          // 同一份小教材可能有多個被引用片段，但回答下方只顯示一次來源。圖片只在學生
+          // 明確指定教材時回傳，並且只取本次真正引用的教材，避免語意相近的其他題目附圖。
+          const sources = [...new Map(usedChunks.map((chunk) => [chunk.materialId, {
             id: chunk.materialId,
             title: chunk.title,
             url: chunk.sourceUrl,
