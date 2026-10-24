@@ -37,8 +37,8 @@ const json = (body, status = 200, headers = {}) =>
 const quizTopics = ["柏努利與基礎流力", "搶救堰塞湖", "大地在搖晃", "超級颱風眼", "迷你都市淹水大作戰"];
 // 問答模型的單次輸出上限。教材已先由檢索縮小範圍，不需要為每個問題保留過長的
 // 生成額度；較小上限可避免少數冗長回覆快速耗盡 Workers AI 的共享額度。
-const ANSWER_TOKEN_LIMIT = 520;
-const DETAILED_ANSWER_TOKEN_LIMIT = 1000;
+const ANSWER_TOKEN_LIMIT = 360;
+const DETAILED_ANSWER_TOKEN_LIMIT = 800;
 
 async function readJSON(request, maxLength = 4096) {
   if (!request.headers.get("content-type")?.startsWith("application/json")) {
