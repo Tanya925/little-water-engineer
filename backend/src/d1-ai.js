@@ -71,10 +71,22 @@ export function materialReference(value) {
   return materialReferences(value)[0] || "";
 }
 
-/** 讀取追問中的簡短「2-7」，只用來比對最近已確認教材代號的尾端。 */
-export function shortMaterialReference(value) {
-  const found = /^\s*([0-9０-９]+)\s*[-－–—．.]\s*([0-9０-９]+)/.exec(String(value || ""));
-  return found ? normalizeReference(`${found[1]}-${found[2]}`) : "";
+/**
+ * 讀取追問中的簡短題號（例如「再詳細說明一下 2-7」）。題號可出現在句中任意位置；
+ * 它本身無法分辨 week2-7 與習題2-7，因此只能供 site-worker 與最近對話中的
+ * 完整教材代號交叉比對，絕不能單獨作為資料庫搜尋條件。
+ */
+export function shortMaterialReferences(value) {
+  const text = String(value || "");
+  const references = [];
+  const pattern = /([0-9０-９]+)\s*[-－–—．.]\s*([0-9０-９]+)/g;
+  for (const match of text.matchAll(pattern)) {
+    const before = text.slice(Math.max(0, (match.index || 0) - 4), match.index || 0);
+    // week2-7、習題2-7、108地特-1 已由完整代號解析器處理，不能同時誤列為裸露短碼。
+    if (/week\s*$/i.test(before) || /習題\s*$/.test(before) || /(?:地特|技師)\s*$/.test(before)) continue;
+    references.push(normalizeReference(`${match[1]}-${match[2]}`));
+  }
+  return [...new Set(references)];
 }
 
 /** 從明確教材代號直接取得同一筆小教材，避免語意相近的其他題目混入回答和附圖。 */

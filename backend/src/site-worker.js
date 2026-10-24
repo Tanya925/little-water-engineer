@@ -7,7 +7,7 @@
 import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { materialReferences, resolveAIChunks, resolveMaterialReferenceChunks, shortMaterialReference } from "./d1-ai.js";
+import { materialReferences, resolveAIChunks, resolveMaterialReferenceChunks, shortMaterialReferences } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -58,21 +58,24 @@ function sameOrigin(request, origin) {
  * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
  * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
  */
-function conversationMaterialReferences(question, previousQuestions) {
+function conversationMaterialSelection(question, previousQuestions) {
   // 教材身分只能由學生實際輸入與既有對話決定，不能相信 AI 改寫後的搜尋句子；否則模型
   // 若自行補上一個題號，會錯誤把回答與題圖鎖到不相干教材。
   const current = materialReferences(question);
-  if (current.length) return current;
+  if (current.length) return { references: current, ambiguous: false };
   const recentReferences = [...previousQuestions].reverse().flatMap(materialReferences);
-  const shortReference = shortMaterialReference(question);
-  if (shortReference) {
-    const matchingReference = recentReferences.find((reference) => reference.endsWith(shortReference));
-    return matchingReference ? [matchingReference] : [];
+  const shortReferences = shortMaterialReferences(question);
+  if (shortReferences.length) {
+    const candidates = [...new Set(recentReferences.filter((reference) => shortReferences.some((shortReference) => reference.endsWith(shortReference))))];
+    // 相同尾碼可能是不同教材；有歧義時寧可請學生補全名稱，也不能把答案或題圖猜錯。
+    return { references: candidates.length === 1 ? candidates : [], ambiguous: candidates.length > 1 };
   }
   const isFollowUp = /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
   // 未指定題號的「再說詳細一點」會沿用最近一次明確題目中的所有教材；若學生只要
   // 其中一題，輸入「2-8」即可縮小範圍，不會把兩筆混為一筆。
-  return isFollowUp ? [...new Set(recentReferences)] : [];
+  const uniqueRecent = [...new Set(recentReferences)];
+  // 沒有題號的追問也只能在上下文只有一份教材時沿用；多份教材時無法安全判斷「那個」。
+  return { references: isFollowUp && uniqueRecent.length === 1 ? uniqueRecent : [], ambiguous: isFollowUp && uniqueRecent.length > 1 };
 }
 
 /** 學生要求「再說詳細一點」時，模型必須改用完整教學模式，而不是重複一段概述。 */
@@ -238,7 +241,13 @@ export default {
           const previousQuestions = previousRows.reverse().map((row) => row.content);
           // 先用規則辨識教材代號。這類問題可直接由 D1 取得教材，不必先為「改寫搜尋句」
           // 再呼叫一次大模型；例如問 102地特-4 或 week2-9 現在只會消耗一次回答模型。
-          const references = conversationMaterialReferences(question, previousQuestions);
+          const selection = conversationMaterialSelection(question, previousQuestions);
+          const { references } = selection;
+          if (selection.ambiguous) {
+            const clarification = "我需要確認你指的是哪一份教材。請寫完整名稱，例如「week2-7」或「習題2-7」，我才不會拿錯題目或圖片來說明。";
+            await persistExchange(clarification);
+            return json({ answer: clarification, sources: [], conversationId });
+          }
           let searchQuestion = question;
           if (!references.length) {
             const normalization = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
