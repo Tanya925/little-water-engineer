@@ -50,6 +50,18 @@ function sameOrigin(request, origin) {
   return !value || value === origin;
 }
 
+/**
+ * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
+ * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
+ */
+function conversationExerciseReference(question, searchQuestion, previousQuestions) {
+  const current = exerciseReference(question) || exerciseReference(searchQuestion);
+  if (current) return current;
+  const isFollowUp = /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
+  if (!isFollowUp) return "";
+  return [...previousQuestions].reverse().map(exerciseReference).find(Boolean) || "";
+}
+
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
@@ -211,8 +223,8 @@ export default {
             if (typeof parsed?.searchQuery === "string" && parsed.searchQuery.trim()) searchQuestion = parsed.searchQuery.trim().slice(0, 4000);
           } catch { /* 模型整理格式失敗時安全地退回原問題。 */ }
           // 題號是比語意更精確的教材身分。仍會先經過 AI 取得檢索問句，但像「習題1-5」
-          // 這種明確指定會優先直接鎖定同名小教材，避免相近題目連同附圖一起混入。
-          const reference = exerciseReference(question) || exerciseReference(searchQuestion);
+          // 或「這個圖」接續習題題號的追問，都會鎖定同一筆小教材，避免相近題目混入。
+          const reference = conversationExerciseReference(question, searchQuestion, previousQuestions);
           const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
           const values = embedding?.data?.[0];
           if (!Array.isArray(values)) throw new Error("Embedding unavailable");
@@ -222,6 +234,21 @@ export default {
             : await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
           if (!chunks.length) return json({ answer: "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！", sources: [], conversationId: crypto.randomUUID() });
           const materials = chunks.map((chunk) => `【${chunk.title}】\n${chunk.content}`).join("\n\n");
+          // 在產生回答前先判斷選中的教材是否真的足夠。這一關明確控制來源與附圖：
+          // 不能回答時絕不回傳 sources，避免「教材不足」旁仍出現不相關的題圖。
+          const relevance = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+            messages: [
+              { role: "system", content: "你是教材相關性判斷器。只依據提供教材，判斷教材是否足夠回答學生目前問題。若學生問圖片、圖示或題目，但教材文字沒有足夠說明，視為不足。只輸出 JSON：{\"sufficient\":true} 或 {\"sufficient\":false}。" },
+              { role: "user", content: `學生問題：${question}\n\n教材：\n${materials}` },
+            ], max_tokens: 30, temperature: 0,
+          });
+          let sufficient = false;
+          try {
+            sufficient = JSON.parse(modelText(relevance))?.sufficient === true;
+          } catch { /* 判斷格式異常時採保守策略，不顯示可能不相關的教材與圖片。 */ }
+          if (!sufficient) {
+            return json({ answer: "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！", sources: [], conversationId });
+          }
           const result = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", { messages: [{ role: "system", content: "你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文，先說重點，再用簡短步驟或例子教學；教材不足時直接說不足。舊問題只用於理解模糊追問，現在的問題優先。" }, { role: "user", content: `最近學生問題：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材：\n${materials}` }], max_tokens: 900, temperature: 0.15 });
           const answer = modelText(result);
           if (!answer) throw new Error("Missing model response");
