@@ -7,7 +7,7 @@
 import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { exerciseReference, resolveAIChunks, resolveExerciseChunks } from "./d1-ai.js";
+import { materialReference, resolveAIChunks, resolveMaterialReferenceChunks, shortMaterialReference } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -54,12 +54,16 @@ function sameOrigin(request, origin) {
  * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
  * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
  */
-function conversationExerciseReference(question, searchQuestion, previousQuestions) {
-  const current = exerciseReference(question) || exerciseReference(searchQuestion);
+function conversationMaterialReference(question, previousQuestions) {
+  // 教材身分只能由學生實際輸入與既有對話決定，不能相信 AI 改寫後的搜尋句子；否則模型
+  // 若自行補上一個題號，會錯誤把回答與題圖鎖到不相干教材。
+  const current = materialReference(question);
   if (current) return current;
+  const recentReferences = [...previousQuestions].reverse().map(materialReference).filter(Boolean);
+  const shortReference = shortMaterialReference(question);
+  if (shortReference) return recentReferences.find((reference) => reference.endsWith(shortReference)) || "";
   const isFollowUp = /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
-  if (!isFollowUp) return "";
-  return [...previousQuestions].reverse().map(exerciseReference).find(Boolean) || "";
+  return isFollowUp ? recentReferences[0] || "" : "";
 }
 
 export default {
@@ -206,6 +210,13 @@ export default {
         const conversationId = typeof body?.conversationId === "string" && /^[a-f0-9-]{16,80}$/i.test(body.conversationId)
           ? body.conversationId
           : crypto.randomUUID();
+        const insufficientAnswer = "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！";
+        // 即使教材不足，學生接著仍可能問「2-7 再說明一次」。每一輪都必須用同一個
+        // conversationId 留下問題，否則承接式追問會失去前一題的教材身分。
+        const persistExchange = (answer) => env.DB.batch([
+          env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "user", question, Date.now()),
+          env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "assistant", answer, Date.now()),
+        ]);
         try {
           const { results: previousRows } = await env.DB.prepare(
             "SELECT content FROM ai_conversation_messages WHERE conversation_id=? AND role='user' ORDER BY sequence DESC LIMIT 3",
@@ -222,17 +233,25 @@ export default {
             const parsed = JSON.parse(modelText(normalization));
             if (typeof parsed?.searchQuery === "string" && parsed.searchQuery.trim()) searchQuestion = parsed.searchQuery.trim().slice(0, 4000);
           } catch { /* 模型整理格式失敗時安全地退回原問題。 */ }
-          // 題號是比語意更精確的教材身分。仍會先經過 AI 取得檢索問句，但像「習題1-5」
-          // 或「這個圖」接續習題題號的追問，都會鎖定同一筆小教材，避免相近題目混入。
-          const reference = conversationExerciseReference(question, searchQuestion, previousQuestions);
-          const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
-          const values = embedding?.data?.[0];
-          if (!Array.isArray(values)) throw new Error("Embedding unavailable");
-          const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
-          const chunks = reference
-            ? (await resolveExerciseChunks(env.DB, reference, 5))
-            : await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
-          if (!chunks.length) return json({ answer: "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！", sources: [], conversationId: crypto.randomUUID() });
+          // 教材代號是比語意更精確的身分。仍會先經過 AI 取得檢索問句，但像「習題1-5」、
+          // 「week2-7」、「108地特-1」或其追問，都會鎖定同一筆教材，避免相近題目混入。
+          const reference = conversationMaterialReference(question, previousQuestions);
+          // 已鎖定教材代號時直接讀取同一筆 D1 教材；不再先做向量搜尋，因此沒有任何
+          // 相似但不同題目的片段、來源或圖片可以混進這一輪。
+          let chunks;
+          if (reference) {
+            chunks = await resolveMaterialReferenceChunks(env.DB, reference, 5);
+          } else {
+            const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
+            const values = embedding?.data?.[0];
+            if (!Array.isArray(values)) throw new Error("Embedding unavailable");
+            const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
+            chunks = await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
+          }
+          if (!chunks.length) {
+            await persistExchange(insufficientAnswer);
+            return json({ answer: insufficientAnswer, sources: [], conversationId });
+          }
           const materials = chunks.map((chunk) => `【${chunk.title}】\n${chunk.content}`).join("\n\n");
           // 在產生回答前先判斷選中的教材是否真的足夠。這一關明確控制來源與附圖：
           // 不能回答時絕不回傳 sources，避免「教材不足」旁仍出現不相關的題圖。
@@ -247,19 +266,23 @@ export default {
             sufficient = JSON.parse(modelText(relevance))?.sufficient === true;
           } catch { /* 判斷格式異常時採保守策略，不顯示可能不相關的教材與圖片。 */ }
           if (!sufficient) {
-            return json({ answer: "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！", sources: [], conversationId });
+            await persistExchange(insufficientAnswer);
+            return json({ answer: insufficientAnswer, sources: [], conversationId });
           }
           const result = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", { messages: [{ role: "system", content: "你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文，先說重點，再用簡短步驟或例子教學；教材不足時直接說不足。舊問題只用於理解模糊追問，現在的問題優先。" }, { role: "user", content: `最近學生問題：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材：\n${materials}` }], max_tokens: 900, temperature: 0.15 });
           const answer = modelText(result);
           if (!answer) throw new Error("Missing model response");
-          // 同一份小教材可能命中多個片段，但回答下方只需顯示一次教材來源與全部附圖。
-          // 來源資料由 resolveAIChunks 在 D1 驗證後提供；images 僅供前端呈現，並不
-          // 會併入 prompt 或改變向量檢索結果，避免圖片網址成為模型回答的依據。
-          const sources = [...new Map(chunks.map((chunk) => [chunk.materialId, { id: chunk.materialId, title: chunk.title, url: chunk.sourceUrl, images: chunk.images || [], excerpts: [chunk.content.slice(0, 180)] }])).values()];
-          await env.DB.batch([
-            env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "user", question, Date.now()),
-            env.DB.prepare("INSERT INTO ai_conversation_messages (conversation_id,role,content,created_at) VALUES (?,?,?,?)").bind(conversationId, "assistant", answer, Date.now()),
-          ]);
+          // 同一份小教材可能命中多個片段，但回答下方只需顯示一次來源。圖片只在題號／
+          // week／國考等明確教材代號成功比對時回傳；一般語意搜尋可以引用多份文字，卻
+          // 不該猜測要顯示哪一題的圖，這可根除不相干教材圖片混入的問題。
+          const sources = [...new Map(chunks.map((chunk) => [chunk.materialId, {
+            id: chunk.materialId,
+            title: chunk.title,
+            url: chunk.sourceUrl,
+            images: reference ? chunk.images || [] : [],
+            excerpts: [chunk.content.slice(0, 180)],
+          }])).values()];
+          await persistExchange(answer);
           return json({ answer, sources, conversationId });
         } catch {
           return json({ error: "AI 服務目前無法連線，請稍後再試。" }, 503);

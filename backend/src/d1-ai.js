@@ -36,16 +36,40 @@ function materialImages(row) {
   return row.imageUrl ? withPreview([{ url: row.imageUrl, caption: "" }]) : [];
 }
 
-/** 將「習題 1-5」「習題1－5」等明確題號統一為可與教材標題比較的鍵。 */
-export function exerciseReference(value) {
-  const found = /習題\s*([0-9０-９]+)\s*[-－–—．.]\s*([0-9０-９]+)/.exec(value || "");
-  if (!found) return "";
-  const digits = (text) => text.replace(/[０-９]/g, (character) => String.fromCharCode(character.charCodeAt(0) - 0xFEE0));
-  return `習題${digits(found[1])}${digits(found[2])}`;
+/** 將全形數字與連字號統一，讓學生自然輸入的「week2－7」也能比對教材標題。 */
+function normalizeReference(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[０-９]/g, (character) => String.fromCharCode(character.charCodeAt(0) - 0xFEE0))
+    .replace(/[\s\-－–—、，,．.]/g, "");
 }
 
-/** 從明確題號直接取得同一筆小教材，避免語意相近的其他習題混入回答和附圖。 */
-export async function resolveExerciseChunks(db, reference, topK) {
+/**
+ * 從學生問句取出可唯一識別小教材的代號。支援習題、week 課程與國考／技師題號；
+ * 單獨的「2-7」故意不在此回傳，因為它可能同時指 week2-7 與習題2-7，必須由
+ * site-worker 依最近對話決定，不能隨便猜其中一筆。
+ */
+export function materialReference(value) {
+  const text = String(value || "");
+  // 資料庫中的 week 標題有「week2-week2-7」的匯入格式，學生則通常輸入 week2-7。
+  // 兩者都直接萃取成 week + 週次 + 單元號，而不是以原字串做模糊包含比對。
+  const week = /week\s*([0-9０-９]+)(?:\s*[-－–—．.]\s*week\s*[0-9０-９]+)?\s*[-－–—．.]\s*([0-9０-９]+)/i.exec(text);
+  if (week) return `week${normalizeReference(week[1])}${normalizeReference(week[2])}`;
+  const patterns = [
+    /習題\s*[0-9０-９]+\s*[-－–—．.]\s*[0-9０-９]+/i,
+    /[0-9０-９]{3}\s*(?:地特|技師)\s*[-－–—．.]\s*[0-9０-９]+/i,
+  ];
+  return normalizeReference(patterns.map((pattern) => text.match(pattern)?.[0]).find(Boolean));
+}
+
+/** 讀取追問中的簡短「2-7」，只用來比對最近已確認教材代號的尾端。 */
+export function shortMaterialReference(value) {
+  const found = /^\s*([0-9０-９]+)\s*[-－–—．.]\s*([0-9０-９]+)/.exec(String(value || ""));
+  return found ? normalizeReference(`${found[1]}-${found[2]}`) : "";
+}
+
+/** 從明確教材代號直接取得同一筆小教材，避免語意相近的其他題目混入回答和附圖。 */
+export async function resolveMaterialReferenceChunks(db, reference, topK) {
   if (!reference) return [];
   const { results } = await db
     .prepare(
@@ -59,6 +83,9 @@ export async function resolveExerciseChunks(db, reference, topK) {
     )
     .bind(`%${reference}%`, topK)
     .all();
+  // 代號搜尋寧可保守地不回答，也不能把兩筆恰好都含相同字串的教材湊在一起。這條
+  // 規則尤其保護題圖：明確代號只允許對應到唯一一份小教材，否則來源與圖片一律不回傳。
+  if (new Set(results.map((row) => row.materialId)).size !== 1) return [];
   return results.map((row) => ({ ...row, images: materialImages(row), score: 1 }));
 }
 
