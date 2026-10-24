@@ -89,6 +89,28 @@ export function shortMaterialReferences(value) {
   return [...new Set(references)];
 }
 
+/**
+ * 以目前 D1 中已發布的小教材標題找出「使用者明確寫出的名稱」。這不是固定名稱清單：
+ * 每次都讀取資料庫，因此老師日後新增任何命名方式的小教材都會自動納入。只採用章節
+ * 分隔符號（｜）後的實際小教材名稱，並要求至少四個正規化字元完全出現在問題中，避免
+ * 「流體力學」這類共同章節字眼把多份教材錯誤鎖在一起。
+ */
+export async function findNamedMaterialIds(db, question) {
+  const normalizedQuestion = normalizeReference(question);
+  if (normalizedQuestion.length < 4) return [];
+  const { results } = await db
+    .prepare("SELECT id,title FROM ai_materials WHERE deleted=0 AND status='published' AND index_state='ready'")
+    .all();
+  return results
+    .filter((row) => {
+      const title = String(row.title || "");
+      const leafTitle = title.split("｜").at(-1) || title;
+      const alias = normalizeReference(leafTitle);
+      return alias.length >= 4 && normalizedQuestion.includes(alias);
+    })
+    .map((row) => row.id);
+}
+
 /** 從明確教材代號直接取得同一筆小教材，避免語意相近的其他題目混入回答和附圖。 */
 export async function resolveMaterialReferenceChunks(db, reference, topK) {
   if (!reference) return [];
@@ -108,6 +130,34 @@ export async function resolveMaterialReferenceChunks(db, reference, topK) {
   // 規則尤其保護題圖：明確代號只允許對應到唯一一份小教材，否則來源與圖片一律不回傳。
   if (new Set(results.map((row) => row.materialId)).size !== 1) return [];
   return results.map((row) => ({ ...row, images: materialImages(row), score: 1 }));
+}
+
+/**
+ * 依已確認的教材 ID 讀取片段。與標題 LIKE 查詢不同，ID 是資料庫主鍵，適合用在任意
+ * 命名的小教材；仍保留發布、索引完成與 revision 檢查，避免老師更新期間回傳舊版本。
+ */
+export async function resolveMaterialIdChunks(db, materialIds, topK) {
+  const ids = [...new Set(materialIds)].filter(Boolean);
+  if (!ids.length) return [];
+  const placeholders = ids.map(() => "?").join(",");
+  const { results } = await db
+    .prepare(
+      `SELECT c.id,c.content,c.revision,c.material_id AS materialId,m.title,m.topic,m.source_url AS sourceUrl,
+        COALESCE(rm.image_url,'') AS imageUrl,COALESCE(rm.images_json,'[]') AS imagesJSON
+       FROM ai_chunks c JOIN ai_materials m ON m.id=c.material_id
+       LEFT JOIN resource_materials rm ON rm.ai_material_id=m.id
+       WHERE c.material_id IN (${placeholders}) AND m.deleted=0 AND m.status='published'
+         AND m.index_state='ready' AND c.revision=m.revision
+       ORDER BY c.material_id,c.id`,
+    )
+    .bind(...ids)
+    .all();
+  const counts = new Map();
+  return results.filter((row) => {
+    const count = counts.get(row.materialId) || 0;
+    counts.set(row.materialId, count + 1);
+    return count < topK;
+  }).map((row) => ({ ...row, images: materialImages(row), score: 1 }));
 }
 
 /**

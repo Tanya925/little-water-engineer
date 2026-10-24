@@ -7,7 +7,7 @@
 import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { materialReferences, resolveAIChunks, resolveMaterialReferenceChunks, shortMaterialReferences } from "./d1-ai.js";
+import { findNamedMaterialIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks, shortMaterialReferences } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -58,6 +58,10 @@ function sameOrigin(request, origin) {
  * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
  * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
  */
+function isFollowUpQuestion(question) {
+  return /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
+}
+
 function conversationMaterialSelection(question, previousQuestions) {
   // 教材身分只能由學生實際輸入與既有對話決定，不能相信 AI 改寫後的搜尋句子；否則模型
   // 若自行補上一個題號，會錯誤把回答與題圖鎖到不相干教材。
@@ -70,7 +74,7 @@ function conversationMaterialSelection(question, previousQuestions) {
     // 相同尾碼可能是不同教材；有歧義時寧可請學生補全名稱，也不能把答案或題圖猜錯。
     return { references: candidates.length === 1 ? candidates : [], ambiguous: candidates.length > 1 };
   }
-  const isFollowUp = /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
+  const isFollowUp = isFollowUpQuestion(question);
   // 未指定題號的「再說詳細一點」會沿用最近一次明確題目中的所有教材；若學生只要
   // 其中一題，輸入「2-8」即可縮小範圍，不會把兩筆混為一筆。
   const uniqueRecent = [...new Set(recentReferences)];
@@ -248,8 +252,27 @@ export default {
             await persistExchange(clarification);
             return json({ answer: clarification, sources: [], conversationId });
           }
+          // 除了 week／習題等結構化代號，也動態比對 D1 裡所有小教材的實際名稱。這讓
+          // 老師未來新增自訂標題時不必回來修改程式；名稱比對成功後同樣以資料庫 ID
+          // 鎖定教材，因此不會落入向量搜尋而混用別題圖片。
+          let namedMaterialIds = references.length ? [] : await findNamedMaterialIds(env.DB, question);
+          if (!namedMaterialIds.length && isFollowUpQuestion(question)) {
+            const priorNamedIds = [...new Set((await Promise.all(previousQuestions.map((previousQuestion) => findNamedMaterialIds(env.DB, previousQuestion)))).flat())];
+            if (priorNamedIds.length === 1) namedMaterialIds = priorNamedIds;
+            if (priorNamedIds.length > 1) {
+              const clarification = "我需要確認你要延續哪一份教材。請在問題中寫出該教材完整名稱，這樣我才能正確引用內容和圖片。";
+              await persistExchange(clarification);
+              return json({ answer: clarification, sources: [], conversationId });
+            }
+          }
+          if (namedMaterialIds.length > 1) {
+            const clarification = "這個名稱可能對應到多份教材。請補上更完整的教材名稱，我才能正確引用內容和圖片。";
+            await persistExchange(clarification);
+            return json({ answer: clarification, sources: [], conversationId });
+          }
+          const hasExactMaterial = references.length > 0 || namedMaterialIds.length > 0;
           let searchQuestion = question;
-          if (!references.length) {
+          if (!hasExactMaterial) {
             const normalization = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
               messages: [
                 { role: "system", content: "將學生目前問題整理成一句適合教材搜尋的繁體中文問句。舊問題只可用來補足『這個、再說明』等模糊指稱；如果現在問題有明確題號或概念，一律以現在問題為主。只輸出 JSON：{\"searchQuery\":\"...\"}。" },
@@ -269,6 +292,8 @@ export default {
           if (references.length) {
             const exactResults = await Promise.all(references.map((reference) => resolveMaterialReferenceChunks(env.DB, reference, 5)));
             chunks = exactResults.flat();
+          } else if (namedMaterialIds.length) {
+            chunks = await resolveMaterialIdChunks(env.DB, namedMaterialIds, 5);
           } else {
             const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
             const values = embedding?.data?.[0];
@@ -284,7 +309,7 @@ export default {
           // 精確代號已在 D1 驗證為同一份已發布教材；不再交給相關性模型猜測它是否足夠，
           // 避免像 102地特-4 明明有完整題目與解法卻被誤判為教材不足。一般語意搜尋才需
           // 這道保守關卡，以避免無關片段被模型勉強拿來回答。
-          let sufficient = references.length > 0;
+          let sufficient = hasExactMaterial;
           if (!sufficient) {
             const relevance = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
               messages: [
@@ -313,7 +338,7 @@ export default {
             id: chunk.materialId,
             title: chunk.title,
             url: chunk.sourceUrl,
-            images: references.length ? chunk.images || [] : [],
+            images: hasExactMaterial ? chunk.images || [] : [],
             excerpts: [chunk.content.slice(0, 180)],
           }])).values()];
           await persistExchange(answer);
