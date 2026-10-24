@@ -69,7 +69,9 @@
           for (const item of images) {
             const figure = make("figure", undefined, "ai-source-image");
             const link = make("a"); link.href = item.url; link.target = "_blank"; link.rel = "noopener noreferrer";
-            const image = make("img"); image.src = item.url; image.alt = item.caption || `教材圖片｜${source.title}`; image.loading = "lazy";
+            // previewUrl 是後端從 Drive 檔案連結產生的可嵌入縮圖；url 保留為點擊時的來源頁。
+            const image = make("img"); image.src = item.previewUrl || item.url; image.alt = item.caption || `教材圖片｜${source.title}`; image.loading = "lazy";
+            image.addEventListener("error", () => figure.remove());
             link.append(image);
             figure.append(link);
             if (item.caption) figure.append(make("figcaption", item.caption));

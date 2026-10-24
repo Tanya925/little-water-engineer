@@ -47,9 +47,12 @@ function addMessage(role, text, sources = []) {
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       const image = document.createElement("img");
-      image.src = item.url;
+      // API 對 Google Drive /view 連結另外提供可作為 img.src 的縮圖網址；原始連結
+      // 僅保留給點擊開啟。縮圖無法讀取時直接移除 figure，避免畫面顯示破圖和網址。
+      image.src = item.previewUrl || item.url;
       image.alt = item.caption || `教材圖片｜${source.title}`;
       image.loading = "lazy";
+      image.addEventListener("error", () => figure.remove());
       link.append(image);
       figure.append(link);
       if (item.caption) figure.append(aiNode("figcaption", item.caption));

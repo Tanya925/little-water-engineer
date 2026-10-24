@@ -7,7 +7,7 @@
 import { modelText } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { resolveAIChunks } from "./d1-ai.js";
+import { exerciseReference, resolveAIChunks, resolveExerciseChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -210,11 +210,16 @@ export default {
             const parsed = JSON.parse(modelText(normalization));
             if (typeof parsed?.searchQuery === "string" && parsed.searchQuery.trim()) searchQuestion = parsed.searchQuery.trim().slice(0, 4000);
           } catch { /* 模型整理格式失敗時安全地退回原問題。 */ }
+          // 題號是比語意更精確的教材身分。仍會先經過 AI 取得檢索問句，但像「習題1-5」
+          // 這種明確指定會優先直接鎖定同名小教材，避免相近題目連同附圖一起混入。
+          const reference = exerciseReference(question) || exerciseReference(searchQuestion);
           const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
           const values = embedding?.data?.[0];
           if (!Array.isArray(values)) throw new Error("Embedding unavailable");
           const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
-          const chunks = await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
+          const chunks = reference
+            ? (await resolveExerciseChunks(env.DB, reference, 5))
+            : await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
           if (!chunks.length) return json({ answer: "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！", sources: [], conversationId: crypto.randomUUID() });
           const materials = chunks.map((chunk) => `【${chunk.title}】\n${chunk.content}`).join("\n\n");
           const result = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", { messages: [{ role: "system", content: "你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文，先說重點，再用簡短步驟或例子教學；教材不足時直接說不足。舊問題只用於理解模糊追問，現在的問題優先。" }, { role: "user", content: `最近學生問題：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材：\n${materials}` }], max_tokens: 900, temperature: 0.15 });
