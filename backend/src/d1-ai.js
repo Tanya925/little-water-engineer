@@ -45,21 +45,30 @@ function normalizeReference(value) {
 }
 
 /**
- * 從學生問句取出可唯一識別小教材的代號。支援習題、week 課程與國考／技師題號；
- * 單獨的「2-7」故意不在此回傳，因為它可能同時指 week2-7 與習題2-7，必須由
- * site-worker 依最近對話決定，不能隨便猜其中一筆。
+ * 從學生問句取出所有可唯一識別的小教材代號。學生可以一次問「week2-8 以及
+ * 102地特-4」；兩筆都必須保留，不能只採用字串中第一個代號。單獨的「2-7」仍
+ * 故意不在此回傳，因為它可能同時指 week2-7 與習題2-7，必須由 site-worker
+ * 依最近對話決定，不能隨便猜其中一筆。
  */
-export function materialReference(value) {
+export function materialReferences(value) {
   const text = String(value || "");
+  const found = [];
   // 資料庫中的 week 標題有「week2-week2-7」的匯入格式，學生則通常輸入 week2-7。
   // 兩者都直接萃取成 week + 週次 + 單元號，而不是以原字串做模糊包含比對。
-  const week = /week\s*([0-9０-９]+)(?:\s*[-－–—．.]\s*week\s*[0-9０-９]+)?\s*[-－–—．.]\s*([0-9０-９]+)/i.exec(text);
-  if (week) return `week${normalizeReference(week[1])}${normalizeReference(week[2])}`;
-  const patterns = [
-    /習題\s*[0-9０-９]+\s*[-－–—．.]\s*[0-9０-９]+/i,
-    /[0-9０-９]{3}\s*(?:地特|技師)\s*[-－–—．.]\s*[0-9０-９]+/i,
-  ];
-  return normalizeReference(patterns.map((pattern) => text.match(pattern)?.[0]).find(Boolean));
+  const weekPattern = /week\s*([0-9０-９]+)(?:\s*[-－–—．.]\s*week\s*[0-9０-９]+)?\s*[-－–—．.]\s*([0-9０-９]+)/gi;
+  for (const match of text.matchAll(weekPattern)) {
+    found.push({ index: match.index, reference: `week${normalizeReference(match[1])}${normalizeReference(match[2])}` });
+  }
+  const namedPattern = /習題\s*[0-9０-９]+\s*[-－–—．.]\s*[0-9０-９]+|[0-9０-９]{3}\s*(?:地特|技師)\s*[-－–—．.]\s*[0-9０-９]+/gi;
+  for (const match of text.matchAll(namedPattern)) {
+    found.push({ index: match.index, reference: normalizeReference(match[0]) });
+  }
+  return [...new Set(found.sort((a, b) => a.index - b.index).map((item) => item.reference))];
+}
+
+/** 相容單一教材呼叫端；需要完整範圍時應使用 materialReferences。 */
+export function materialReference(value) {
+  return materialReferences(value)[0] || "";
 }
 
 /** 讀取追問中的簡短「2-7」，只用來比對最近已確認教材代號的尾端。 */
