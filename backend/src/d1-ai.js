@@ -132,7 +132,7 @@ export async function findRelatedTitles(db, query, limit = 3) {
 }
 
 /** 從明確教材代號直接取得同一筆小教材，避免語意相近的其他題目混入回答和附圖。 */
-export async function resolveMaterialReferenceChunks(db, reference, topK) {
+export async function resolveMaterialReferenceChunks(db, reference) {
   if (!reference) return [];
   const { results } = await db
     .prepare(
@@ -142,9 +142,9 @@ export async function resolveMaterialReferenceChunks(db, reference, topK) {
        LEFT JOIN resource_materials rm ON rm.ai_material_id=m.id
        WHERE m.deleted=0 AND m.status='published' AND m.index_state='ready' AND c.revision=m.revision
          AND replace(replace(replace(replace(m.title,'-',''),'－',''),'–',''),' ','') LIKE ?
-       ORDER BY c.id LIMIT ?`,
+       ORDER BY c.material_id,CAST(substr(c.id,length(c.material_id) + length(CAST(c.revision AS TEXT)) + 3) AS INTEGER)`,
     )
-    .bind(`%${reference}%`, topK)
+    .bind(`%${reference}%`)
     .all();
   // 代號搜尋寧可保守地不回答，也不能把兩筆恰好都含相同字串的教材湊在一起。這條
   // 規則尤其保護題圖：明確代號只允許對應到唯一一份小教材，否則來源與圖片一律不回傳。
@@ -156,7 +156,7 @@ export async function resolveMaterialReferenceChunks(db, reference, topK) {
  * 依已確認的教材 ID 讀取片段。與標題 LIKE 查詢不同，ID 是資料庫主鍵，適合用在任意
  * 命名的小教材；仍保留發布、索引完成與 revision 檢查，避免老師更新期間回傳舊版本。
  */
-export async function resolveMaterialIdChunks(db, materialIds, topK) {
+export async function resolveMaterialIdChunks(db, materialIds, topK = Infinity) {
   const ids = [...new Set(materialIds)].filter(Boolean);
   if (!ids.length) return [];
   const placeholders = ids.map(() => "?").join(",");
@@ -168,7 +168,7 @@ export async function resolveMaterialIdChunks(db, materialIds, topK) {
        LEFT JOIN resource_materials rm ON rm.ai_material_id=m.id
        WHERE c.material_id IN (${placeholders}) AND m.deleted=0 AND m.status='published'
          AND m.index_state='ready' AND c.revision=m.revision
-       ORDER BY c.material_id,c.id`,
+       ORDER BY c.material_id,CAST(substr(c.id,length(c.material_id) + length(CAST(c.revision AS TEXT)) + 3) AS INTEGER)`,
     )
     .bind(...ids)
     .all();

@@ -256,11 +256,11 @@ export default {
           let answerPreviousQuestions = previousQuestions;
           let chunks;
           if (references.length) {
-            const exactResults = await Promise.all(references.map((reference) => resolveMaterialReferenceChunks(env.DB, reference, 5)));
+            const exactResults = await Promise.all(references.map((reference) => resolveMaterialReferenceChunks(env.DB, reference)));
             chunks = exactResults.flat();
-            if (namedMaterialIds.length) chunks.push(...await resolveMaterialIdChunks(env.DB, namedMaterialIds, 5));
+            if (namedMaterialIds.length) chunks.push(...await resolveMaterialIdChunks(env.DB, namedMaterialIds));
           } else if (namedMaterialIds.length) {
-            chunks = await resolveMaterialIdChunks(env.DB, namedMaterialIds, 5);
+            chunks = await resolveMaterialIdChunks(env.DB, namedMaterialIds);
           } else {
             const embedding = await env.AI.run("@cf/baai/bge-m3", { text: [searchQuestion] });
             const values = embedding?.data?.[0];
