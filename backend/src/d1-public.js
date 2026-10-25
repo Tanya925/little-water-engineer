@@ -117,6 +117,7 @@ export async function gradeQuestion(db, id, choice) {
   const answer = question.type === "是非題" ? question.answer.slice(0, 1) : question.answer;
   return {
     id,
+    revision: question.revision,
     choice,
     correct: choice === answer,
     answer,

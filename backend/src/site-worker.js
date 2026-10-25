@@ -6,7 +6,7 @@
  */
 import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
-import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
+import { adminDelete, adminExport, databaseBackup, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
 import { findNamedMaterialIds, findRelatedTitles, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
@@ -129,6 +129,26 @@ export default {
         }
         if (pathname === "/api/admin/export" && request.method === "GET") {
           return json(await adminExport(env.DB), 200, { "Content-Disposition": `attachment; filename="water-content-${new Date().toISOString().slice(0, 10)}.json"` });
+        }
+        if (pathname === "/api/admin/backup" && request.method === "GET") {
+          return new Response(await databaseBackup(env.DB), { headers: { "Content-Type": "application/sql; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Content-Disposition": `attachment; filename="water-d1-backup-${new Date().toISOString().slice(0, 10)}.sql"` } });
+        }
+        if (pathname === "/api/admin/quiz-analytics" && request.method === "GET") {
+          const { results } = await env.DB.prepare(`SELECT question_id AS id, question_revision AS revision, topic, question,
+            SUM(attempts) AS attempts, SUM(CASE WHEN correct=1 THEN attempts ELSE 0 END) AS correct,
+            choice, SUM(attempts) AS choiceCount
+            FROM quiz_answer_stats GROUP BY question_id,question_revision,topic,question,choice
+            ORDER BY question_id,question_revision DESC,choice`).all();
+          const questions = new Map();
+          for (const row of results) {
+            const key = JSON.stringify([row.id, row.revision]);
+            if (!questions.has(key)) questions.set(key, { id: row.id, revision: row.revision, topic: row.topic, question: row.question, attempts: 0, correct: 0, choices: {} });
+            const item = questions.get(key);
+            item.attempts += Number(row.attempts);
+            item.correct += Number(row.correct);
+            item.choices[row.choice] = Number(row.choiceCount);
+          }
+          return json({ questions: [...questions.values()] });
         }
         const page = /^\/api\/admin\/pages\/(about)$/.exec(pathname);
         if (page) {
@@ -371,6 +391,16 @@ export default {
         if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
         const body = await readJSON(request);
         const result = await gradeQuestion(env.DB, body?.id, body?.choice);
+        if (result) {
+          try {
+            await env.DB.prepare(`INSERT INTO quiz_answer_stats (question_id,question_revision,topic,question,choice,correct,day,attempts)
+              SELECT id,revision,topic,question,?,?,date('now'),1 FROM quiz_questions WHERE id=? AND revision=?
+              ON CONFLICT(question_id,question_revision,choice,correct,day) DO UPDATE SET attempts=attempts+1`)
+              .bind(result.choice, result.correct ? 1 : 0, result.id, result.revision).run();
+          } catch (error) {
+            console.error("Quiz analytics unavailable", error);
+          }
+        }
         return result ? json(result) : json({ error: "Not found" }, 404);
       }
       return json({ error: "Not found" }, 404);

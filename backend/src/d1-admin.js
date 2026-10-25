@@ -242,6 +242,34 @@ export async function adminExport(db) {
   };
 }
 
+/** 在同一個 D1 batch 中讀取各應用程式資料表；排除無權讀取的 Cloudflare 內部表。 */
+export async function databaseBackup(db) {
+  const schema = await db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE sql IS NOT NULL AND substr(name,1,7) != 'sqlite_' AND substr(name,1,4) != '_cf_' ORDER BY type,name").all();
+  const tables = schema.results.filter((entry) => entry.type === "table");
+  const statements = tables.map((entry) => db.prepare(`SELECT * FROM "${entry.name.replaceAll('"', '""')}"`));
+  const rows = statements.length ? await db.batch(statements) : [];
+  const identifier = (value) => `"${value.replaceAll('"', '""')}"`;
+  const literal = (value) => {
+    if (value === null) return "NULL";
+    if (typeof value === "number" && Number.isFinite(value)) return String(value);
+    if (typeof value === "string") {
+      if (value.includes("\0")) return `CAST(X'${Array.from(new TextEncoder().encode(value), (byte) => byte.toString(16).padStart(2, "0")).join("")}' AS TEXT)`;
+      return `'${value.replaceAll("'", "''")}'`;
+    }
+    throw new Error("資料庫包含無法匯出的欄位類型，備份已中止。");
+  };
+  const sql = [`-- little-water-engineer backup ${new Date().toISOString()}`, "-- Restore only into a new empty database."];
+  for (const table of tables) sql.push(`${table.sql};`);
+  tables.forEach((table, index) => {
+    for (const row of rows[index].results) {
+      const columns = Object.keys(row);
+      sql.push(`INSERT INTO ${identifier(table.name)} (${columns.map(identifier).join(",")}) VALUES (${columns.map((column) => literal(row[column])).join(",")});`);
+    }
+  });
+  for (const entry of schema.results.filter((entry) => entry.type !== "table")) sql.push(`${entry.sql};`);
+  return `${sql.join("\n")}\n`;
+}
+
 export async function importQuestions(db, input, commit = false) {
   if (!Array.isArray(input) || !input.length || input.length > 1000) throw new Error("請匯入 1–1000 題的 JSON 陣列。");
   const ids = new Set();

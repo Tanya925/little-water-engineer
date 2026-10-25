@@ -17,6 +17,9 @@
   overflow-y: auto;
 }
 
+.analytics-table { overflow-x: auto; }
+.analytics-table td:first-child { white-space: pre-line; min-width: 240px; }
+
 /* AI 教材管理區：卡片清單和全文編輯器共用一般後台表單元件，
  * 這裡只補上教材特有的垂直間距、按鈕換行與長文字輸入高度。 */
 .ai-admin {

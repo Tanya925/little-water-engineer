@@ -14,6 +14,7 @@ const sections = [
   ["honors", "🏆", "小小工程師榮譽榜管理", ""],
   ["knowledge", "💡", "科普知識專區管理", ""],
   ["questions", "❔", "知識小學堂管理", "維護五個冒險主題的題目、答案與解析。"],
+  ["quiz-analytics", "📊", "答題分析", "查看匿名答題表現，幫助改善題目與教材。"],
   ["games", "🎮", "互動小遊戲管理", ""],
   ["about", "👋", "關於我們管理", ""],
   ["export", "↧", "資料匯出", "保存目前的內容資料，方便留存與整理。"],
@@ -180,7 +181,7 @@ async function renderRoute() {
       if (serial !== loadNumber) {
         return;
       }
-      topics = overview.quizTopics;
+      topics = (overview.topics || []).map((item) => item.topic);
       renderOverview(overview);
     } else if (currentSection === "about") {
       const result = await request(`/api/admin/pages/${currentSection}`);
@@ -198,17 +199,25 @@ async function renderRoute() {
       Object.assign(filters, { keyword: "", status: "", topic: "", type: "", difficulty: "" });
       $("page-actions").append(action("＋ 新增最新活動", () => openEditor("updates"), "primary"));
       renderList();
+    } else if (currentSection === "quiz-analytics") {
+      const result = await request("/api/admin/quiz-analytics");
+      if (serial !== loadNumber) return;
+      renderQuizAnalytics(result.questions);
     } else if (currentSection === "export") {
       renderExport();
     } else if (!Object.hasOwn(labels, currentSection)) {
       $("admin-view").replaceChildren(node("p", "管理區已保留，功能尚未開放。", "empty"));
     } else {
       const kind = currentSection;
-      const result = await request(`/api/admin/${kind}`);
+      const [result, overview] = await Promise.all([
+        request(`/api/admin/${kind}`),
+        kind === "questions" ? request("/api/admin/overview") : Promise.resolve(null),
+      ]);
       if (serial !== loadNumber) {
         return;
       }
       records = result.items;
+      if (overview) topics = (overview.topics || []).map((item) => item.topic);
       page = 1;
       Object.assign(filters, { keyword: "", status: "", topic: "", type: "", difficulty: "" });
       $("page-actions").append(
@@ -233,6 +242,44 @@ async function renderRoute() {
       $("admin-view").setAttribute("aria-busy", "false");
     }
   }
+}
+
+function renderQuizAnalytics(questions) {
+  const panel = node("section", undefined, "panel");
+  panel.append(node("p", "只記錄匿名的每題答題次數、正確次數與選項分布；數據從功能上線後開始累積。相同學生重複作答也會計入次數。題目修改後以新版本分開統計。"));
+  if (!questions.length) {
+    panel.append(node("p", "目前還沒有答題紀錄。", "empty"));
+  } else {
+    const total = questions.reduce((sum, item) => sum + item.attempts, 0);
+    const correct = questions.reduce((sum, item) => sum + item.correct, 0);
+    panel.append(node("p", `總作答 ${total} 次，答對 ${correct} 次（${Math.round(correct / total * 100)}%）。`));
+    const topics = new Map();
+    for (const item of questions) {
+      const summary = topics.get(item.topic) || { attempts: 0, correct: 0, choices: {} };
+      summary.attempts += item.attempts; summary.correct += item.correct;
+      for (const [choice, count] of Object.entries(item.choices)) summary.choices[choice] = (summary.choices[choice] || 0) + count;
+      topics.set(item.topic, summary);
+    }
+    panel.append(node("h2", "各主題表現"));
+    for (const [topic, summary] of topics) {
+      panel.append(node("p", `${topic}：${summary.attempts} 次，答對率 ${Math.round(summary.correct / summary.attempts * 100)}%；選項分布 ${Object.entries(summary.choices).map(([choice, count]) => `${choice} ${count} 次`).join("、")}。`));
+    }
+    panel.append(node("h2", "各題表現"));
+    const table = node("table");
+    const header = node("tr");
+    for (const label of ["主題／題目", "作答次數", "答對率", "選項分布"]) header.append(node("th", label));
+    const thead = node("thead"); thead.append(header); table.append(thead);
+    const tbody = node("tbody");
+    for (const item of [...questions].sort((a, b) => a.correct / a.attempts - b.correct / b.attempts || b.attempts - a.attempts)) {
+      const row = node("tr");
+      row.append(node("td", `${item.topic}｜${item.id}（版本 ${item.revision}）\n${item.question}`),
+        node("td", item.attempts), node("td", `${Math.round(item.correct / item.attempts * 100)}%`),
+        node("td", Object.entries(item.choices).map(([choice, count]) => `${choice}：${count} 次`).join("、")));
+      tbody.append(row);
+    }
+    table.append(tbody); const wrapper = node("div", undefined, "analytics-table"); wrapper.append(table); panel.append(wrapper);
+  }
+  $("admin-view").replaceChildren(panel);
 }
 
 /** 將總覽 API 的發布／下架數量建立成摘要卡片。 */
@@ -1135,12 +1182,16 @@ function renderExport() {
     ),
     node(
       "p",
-      "此匯出為內容清單，不含老師帳號、登入資料與封面圖片檔案。完整備份請由網站維護者保存資料目錄。",
+      "此匯出為內容清單，不含老師帳號、登入資料與封面圖片檔案。",
     ),
   );
   const download = link("↧ 下載內容 JSON", "/api/admin/export", "primary");
   download.download = "";
-  panel.append(download);
+  panel.append(download, node("h2", "資料庫完整備份"),
+    node("p", "下載 SQL 備份，包含資料庫結構、帳號密碼雜湊、登入資料與對話紀錄，請妥善保管。請由網站維護者將備份還原至新的空白 D1 資料庫。此備份不包含 Google Drive 檔案、網站程式、Cloudflare 設定或 AI 向量索引；還原後須重新建立索引。"));
+  const backup = link("↧ 下載資料庫備份", "/api/admin/backup", "secondary");
+  backup.download = "";
+  panel.append(backup);
   $("admin-view").replaceChildren(panel);
 }
 
@@ -1256,7 +1307,7 @@ async function initialize() {
     $("signed-in-user").textContent = `${status.username} · 老師管理區`;
     document.body.hidden = false;
     const overview = await request("/api/admin/overview");
-    topics = overview.quizTopics;
+    topics = (overview.topics || []).map((item) => item.topic);
     await renderRoute();
   } catch (error) {
     document.body.hidden = false;
