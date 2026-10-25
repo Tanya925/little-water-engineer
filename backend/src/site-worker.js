@@ -253,6 +253,7 @@ export default {
             }
           }
           const hasExactMaterial = references.length > 0 || namedMaterialIds.length > 0;
+          let answerPreviousQuestions = previousQuestions;
           let chunks;
           if (references.length) {
             const exactResults = await Promise.all(references.map((reference) => resolveMaterialReferenceChunks(env.DB, reference, 5)));
@@ -276,6 +277,7 @@ export default {
             const distinctTitle = strongest?.score >= 3 && (!originalTitleMatches[1] || strongest.score > originalTitleMatches[1].score);
             if (distinctTitle) {
               chunks = await resolveMaterialIdChunks(env.DB, [strongest.id], 5);
+              answerPreviousQuestions = [];
             } else {
               const ids = [...new Set([...originalTitleMatches, ...titleMatches].map((item) => item.id))];
               const titleChunks = await resolveMaterialIdChunks(env.DB, ids, 3);
@@ -297,7 +299,7 @@ export default {
           // relevance 呼叫，既減少一次 AI 用量，也避免兩個模型判斷前後不一致。
           const result = await env.AI.run(TEXT_MODEL, { messages: [
             { role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文。先判斷教材是否足夠回答「現在問題」：若不足、問題要求解讀圖片但教材文字不足、或無法以提供片段支持，輸出 {"sufficient":false,"answer":"","usedChunkIds":[]}。若足夠，輸出 {"sufficient":true,"answer":"你的完整回答","usedChunkIds":["實際使用的片段ID"]}。answer 中不得加入教材未提及的知識；usedChunkIds 只能填提供教材內、且確實支持答案的 ID。只輸出合法 JSON，不得使用 Markdown 或額外文字。${detailInstruction} 舊問題只用於理解模糊追問，現在問題優先。` },
-            { role: "user", content: `最近學生問題（最多兩題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
+            { role: "user", content: `最近學生問題（最多兩題）：${answerPreviousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
           ], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
           const grounded = modelJSON(result);
           const availableChunkIds = new Set(chunks.map((chunk) => chunk.id));
