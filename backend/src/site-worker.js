@@ -7,7 +7,7 @@
 import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { findNamedMaterialIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks, shortMaterialReferences } from "./d1-ai.js";
+import { findNamedMaterialIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -57,46 +57,13 @@ function sameOrigin(request, origin) {
   return !value || value === origin;
 }
 
-/**
- * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
- * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
- */
-export function isFollowUpQuestion(question) {
-  const text = question.trim();
-  // 「那什麼是質量」的「那」只是轉折，明確的新概念應走一般檢索。
-  if (/^(?:那|所以|請問|想問)?\s*(?:什麼|甚麼|啥)是\s*[^？?，,。]+/.test(text)) return false;
-  return /(?:這個|這題|這張|那個|那題|那張|它|上面|剛剛|剛才|前面|再說|再講|再解釋|再詳細|更詳細|詳細一點|解題步驟|圖.*(?:意思|說明))/.test(text)
-    || /^(?:再|為什麼|怎麼|可以|請|幫)/.test(text);
-}
-
-export function conversationMaterialSelection(question, previousQuestions) {
-  // 教材身分只能由學生實際輸入與既有對話決定，不能相信 AI 改寫後的搜尋句子；否則模型
-  // 若自行補上一個題號，會錯誤把回答與題圖鎖到不相干教材。
-  const current = materialReferences(question);
-  if (current.length) return { references: current, ambiguous: false };
-  const recentReferences = [...previousQuestions].reverse().flatMap(materialReferences);
-  const shortReferences = shortMaterialReferences(question);
-  if (shortReferences.length) {
-    const candidates = [...new Set(recentReferences.filter((reference) => shortReferences.some((shortReference) => reference.endsWith(shortReference))))];
-    // 相同尾碼可能是不同教材；有歧義時寧可請學生補全名稱，也不能把答案或題圖猜錯。
-    return { references: candidates.length === 1 ? candidates : [], ambiguous: candidates.length > 1 };
-  }
-  const isFollowUp = isFollowUpQuestion(question);
-  // 未指定題號的「再說詳細一點」會沿用最近一次明確題目中的所有教材；若學生只要
-  // 其中一題，輸入「2-8」即可縮小範圍，不會把兩筆混為一筆。
-  // 只沿用最近一次明確提及題號的問題；較舊的題目不應造成歧義。
-  const latestReferences = [...previousQuestions].reverse().map(materialReferences).find((items) => items.length) || [];
-  let uniqueRecent = [...new Set(latestReferences)];
-  if (/(?:國考|地特|技師)/.test(question)) {
-    const category = /地特/.test(question) ? /地特/ : /技師/.test(question) ? /技師/ : /地特|技師/;
-    uniqueRecent = uniqueRecent.filter((reference) => category.test(reference));
-  } else if (/week/i.test(question)) {
-    uniqueRecent = uniqueRecent.filter((reference) => reference.startsWith("week"));
-  } else if (/習題/.test(question)) {
-    uniqueRecent = uniqueRecent.filter((reference) => reference.startsWith("習題"));
-  }
-  // 沒有題號的追問也只能在上下文只有一份教材時沿用；多份教材時無法安全判斷「那個」。
-  return { references: isFollowUp && uniqueRecent.length === 1 ? uniqueRecent : [], ambiguous: isFollowUp && uniqueRecent.length > 1 };
+/** 模型只能選擇實際問題中出現過的候選教材，不能憑空指定題目或圖片。 */
+export function validatedSearchPlan(result, candidates) {
+  const plan = modelJSON(result);
+  if (!plan || typeof plan.searchQuery !== "string" || !plan.searchQuery.trim() ||
+      typeof plan.ambiguous !== "boolean" || !Array.isArray(plan.materialKeys) ||
+      plan.materialKeys.some((key) => typeof key !== "string" || !candidates.some((candidate) => candidate.key === key))) return null;
+  return { searchQuery: plan.searchQuery.trim().slice(0, 4000), ambiguous: plan.ambiguous, materialKeys: [...new Set(plan.materialKeys)] };
 }
 
 /** 學生要求「再說詳細一點」時，模型必須改用完整教學模式，而不是重複一段概述。 */
@@ -257,58 +224,45 @@ export default {
         ]);
         try {
           const { results: previousRows } = await env.DB.prepare(
-            "SELECT content FROM ai_conversation_messages WHERE conversation_id=? AND role='user' ORDER BY sequence DESC LIMIT 3",
+            "SELECT content FROM ai_conversation_messages WHERE conversation_id=? AND role='user' ORDER BY sequence DESC LIMIT 2",
           ).bind(conversationId).all();
           const previousQuestions = previousRows.reverse().map((row) => row.content);
-          // 先用規則辨識教材代號。這類問題可直接由 D1 取得教材，不必先為「改寫搜尋句」
-          // 再呼叫一次大模型；例如問 102地特-4 或 week2-9 現在只會消耗一次回答模型。
-          const selection = conversationMaterialSelection(question, previousQuestions);
-          const { references } = selection;
-          if (selection.ambiguous) {
-            const clarification = "我需要確認你指的是哪一份教材。請寫完整名稱，例如「week2-7」或「習題2-7」，我才不會拿錯題目或圖片來說明。";
-            await persistExchange(clarification);
-            return json({ answer: clarification, sources: [], conversationId });
-          }
-          // 除了 week／習題等結構化代號，也動態比對 D1 裡所有小教材的實際名稱。這讓
-          // 老師未來新增自訂標題時不必回來修改程式；名稱比對成功後同樣以資料庫 ID
-          // 鎖定教材，因此不會落入向量搜尋而混用別題圖片。
-          let namedMaterialIds = references.length ? [] : await findNamedMaterialIds(env.DB, question);
-          if (!references.length && !namedMaterialIds.length && isFollowUpQuestion(question)) {
-            const priorNamedIds = [...new Set((await Promise.all(previousQuestions.map((previousQuestion) => findNamedMaterialIds(env.DB, previousQuestion)))).flat())];
-            if (priorNamedIds.length === 1) namedMaterialIds = priorNamedIds;
-            if (priorNamedIds.length > 1) {
-              const clarification = "我需要確認你要延續哪一份教材。請在問題中寫出該教材完整名稱，這樣我才能正確引用內容和圖片。";
+          let references = materialReferences(question);
+          let namedMaterialIds = [];
+          let searchQuestion = question;
+          if (!references.length) {
+            // 模型只可選擇學生實際提到過的教材，避免自行編造題號或圖片。
+            const candidates = [];
+            for (const mentionedIn of [...previousQuestions, question]) {
+              for (const reference of materialReferences(mentionedIn)) candidates.push({ key: `ref:${reference}`, mentionedIn });
+              for (const id of await findNamedMaterialIds(env.DB, mentionedIn)) candidates.push({ key: `id:${id}`, mentionedIn });
+            }
+            const normalization = await env.AI.run(TEXT_MODEL, {
+              messages: [
+                { role: "system", content: "根據目前問題和前兩題整理教材搜尋問句。現在問題優先；新概念不要繼承舊教材。若是追問，從候選教材中選出真正指涉的 key；無法確定指哪份時 ambiguous 為 true。新概念或不需指定教材時 materialKeys 為空陣列。不可編造候選 key。只輸出 JSON：{\"searchQuery\":\"完整搜尋問句\",\"materialKeys\":[\"候選key\"],\"ambiguous\":false}。" },
+                { role: "user", content: `${JSON.stringify({ question, previousQuestions, candidates })}\n/no_think` },
+              ], max_tokens: 512, temperature: 0,
+            });
+            const plan = validatedSearchPlan(normalization, candidates);
+            if (!plan) {
+              console.error("AI QA invalid search plan");
+              return json({ error: "AI 無法整理問題，請稍後再試。" }, 503);
+            }
+            if (plan.ambiguous) {
+              const clarification = "我不確定你指的是哪一份教材，請補上教材名稱或題號，我才能正確說明。";
               await persistExchange(clarification);
               return json({ answer: clarification, sources: [], conversationId });
             }
-          }
-          if (namedMaterialIds.length > 1) {
-            const clarification = "這個名稱可能對應到多份教材。請補上更完整的教材名稱，我才能正確引用內容和圖片。";
-            await persistExchange(clarification);
-            return json({ answer: clarification, sources: [], conversationId });
+            searchQuestion = plan.searchQuery;
+            references = plan.materialKeys.filter((key) => key.startsWith("ref:")).map((key) => key.slice(4));
+            namedMaterialIds = plan.materialKeys.filter((key) => key.startsWith("id:")).map((key) => key.slice(3));
           }
           const hasExactMaterial = references.length > 0 || namedMaterialIds.length > 0;
-          let searchQuestion = question;
-          if (!hasExactMaterial) {
-            const normalization = await env.AI.run(TEXT_MODEL, {
-              messages: [
-                { role: "system", content: "將學生目前問題整理成一句適合教材搜尋的繁體中文問句。舊問題只可用來補足『這個、再說明』等模糊指稱；如果現在問題有明確題號或概念，一律以現在問題為主。只輸出 JSON：{\"searchQuery\":\"...\"}。" },
-                { role: "user", content: `${JSON.stringify({ question, previousQuestions })}\n/no_think` },
-              ], max_tokens: 256, temperature: 0,
-            });
-            try {
-              const parsed = modelJSON(normalization);
-              if (typeof parsed?.searchQuery === "string" && parsed.searchQuery.trim()) searchQuestion = parsed.searchQuery.trim().slice(0, 4000);
-            } catch { /* 模型整理格式失敗時安全地退回原問題。 */ }
-          }
-          // 教材代號是比語意更精確的身分。仍會先經過 AI 取得檢索問句，但像「習題1-5」、
-          // 「week2-7」、「108地特-1」或其追問，都會鎖定同一筆教材，避免相近題目混入。
-          // 已鎖定教材代號時直接讀取同一筆 D1 教材；不再先做向量搜尋，因此沒有任何
-          // 相似但不同題目的片段、來源或圖片可以混進這一輪。
           let chunks;
           if (references.length) {
             const exactResults = await Promise.all(references.map((reference) => resolveMaterialReferenceChunks(env.DB, reference, 5)));
             chunks = exactResults.flat();
+            if (namedMaterialIds.length) chunks.push(...await resolveMaterialIdChunks(env.DB, namedMaterialIds, 5));
           } else if (namedMaterialIds.length) {
             chunks = await resolveMaterialIdChunks(env.DB, namedMaterialIds, 5);
           } else {
@@ -333,7 +287,7 @@ export default {
           // relevance 呼叫，既減少一次 AI 用量，也避免兩個模型判斷前後不一致。
           const result = await env.AI.run(TEXT_MODEL, { messages: [
             { role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文。先判斷教材是否足夠回答「現在問題」：若不足、問題要求解讀圖片但教材文字不足、或無法以提供片段支持，輸出 {"sufficient":false,"answer":"","usedChunkIds":[]}。若足夠，輸出 {"sufficient":true,"answer":"你的完整回答","usedChunkIds":["實際使用的片段ID"]}。answer 中不得加入教材未提及的知識；usedChunkIds 只能填提供教材內、且確實支持答案的 ID。只輸出合法 JSON，不得使用 Markdown 或額外文字。${detailInstruction} 舊問題只用於理解模糊追問，現在問題優先。` },
-            { role: "user", content: `最近學生問題（最多三題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
+            { role: "user", content: `最近學生問題（最多兩題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
           ], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
           const grounded = modelJSON(result);
           const availableChunkIds = new Set(chunks.map((chunk) => chunk.id));
