@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
-import { titleMatchScore, findRelatedTitleIds } from "../src/d1-ai.js";
+import { titleMatchScore, findRelatedTitles } from "../src/d1-ai.js";
 
 test("matches partial material names while requiring multiple shared fragments", async () => {
   const rows = [
@@ -10,6 +10,6 @@ test("matches partial material names while requiring multiple shared fragments",
   ];
   const db = { prepare: () => ({ all: async () => ({ results: rows }) }) };
   assert.ok(titleMatchScore(rows[0].title, "國考重點導讀") > titleMatchScore(rows[1].title, "國考重點導讀"));
-  assert.deepEqual(await findRelatedTitleIds(db, "國考重點導讀"), ["guide"]);
-  assert.deepEqual(await findRelatedTitleIds(db, "完全無關"), []);
+  assert.deepEqual((await findRelatedTitles(db, "國考重點導讀")).map((row) => row.id), ["guide"]);
+  assert.deepEqual(await findRelatedTitles(db, "完全無關"), []);
 });

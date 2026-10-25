@@ -7,7 +7,7 @@
 import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { findNamedMaterialIds, findRelatedTitleIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
+import { findNamedMaterialIds, findRelatedTitles, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -265,13 +265,22 @@ export default {
             const values = embedding?.data?.[0];
             if (!Array.isArray(values)) throw new Error("Embedding unavailable");
             const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
-            const [vectorChunks, titleIds, originalTitleIds] = await Promise.all([
+            const [vectorChunks, titleMatches, originalTitleMatches] = await Promise.all([
               resolveAIChunks(env.DB, matches.matches || [], 0.05, 5),
-              findRelatedTitleIds(env.DB, searchQuestion),
-              findRelatedTitleIds(env.DB, question),
+              findRelatedTitles(env.DB, searchQuestion),
+              findRelatedTitles(env.DB, question),
             ]);
-            const titleChunks = await resolveMaterialIdChunks(env.DB, [...new Set([...originalTitleIds, ...titleIds])], 3);
-            chunks = [...new Map([...titleChunks, ...vectorChunks].map((chunk) => [chunk.id, chunk])).values()];
+            // 現在問題若以多個片段明確指向唯一標題，優先讀取該教材；不要讓前文的
+            // 其他主題或語意相近的片段沖淡目前問題。仍不自動附圖，因為這不是完整名稱。
+            const strongest = originalTitleMatches[0];
+            const distinctTitle = strongest?.score >= 3 && (!originalTitleMatches[1] || strongest.score > originalTitleMatches[1].score);
+            if (distinctTitle) {
+              chunks = await resolveMaterialIdChunks(env.DB, [strongest.id], 5);
+            } else {
+              const ids = [...new Set([...originalTitleMatches, ...titleMatches].map((item) => item.id))];
+              const titleChunks = await resolveMaterialIdChunks(env.DB, ids, 3);
+              chunks = [...new Map([...titleChunks, ...vectorChunks].map((chunk) => [chunk.id, chunk])).values()];
+            }
           }
           if (!chunks.length) {
             await persistExchange(insufficientAnswer);
