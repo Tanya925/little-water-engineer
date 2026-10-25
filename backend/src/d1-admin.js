@@ -229,19 +229,6 @@ export async function savePage(db, id, input) {
   return adminPage(db, id);
 }
 
-export async function adminExport(db) {
-  return {
-    format: "little-water-engineer-content",
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    experiments: await adminList(db, "experiments"),
-    resources: await adminList(db, "resources"),
-    questions: await adminList(db, "questions"),
-    updates: await adminList(db, "updates"),
-    pages: [await adminPage(db, "about")],
-  };
-}
-
 /** 在同一個 D1 batch 中讀取各應用程式資料表；排除無權讀取的 Cloudflare 內部表。 */
 export async function databaseBackup(db) {
   const schema = await db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE sql IS NOT NULL AND substr(name,1,7) != 'sqlite_' AND substr(name,1,4) != '_cf_' ORDER BY type,name").all();

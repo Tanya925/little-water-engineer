@@ -17,7 +17,7 @@ const sections = [
   ["quiz-analytics", "📊", "答題分析", "查看匿名答題表現，幫助改善題目與教材。"],
   ["games", "🎮", "互動小遊戲管理", ""],
   ["about", "👋", "關於我們管理", ""],
-  ["export", "↧", "資料匯出", "保存目前的內容資料，方便留存與整理。"],
+  ["export", "↧", "資料庫備份", "下載資料庫備份，方便日後還原。"],
 ];
 const states = { published: "發布", draft: "下架" };
 const indexStates = {
@@ -245,39 +245,83 @@ async function renderRoute() {
 }
 
 function renderQuizAnalytics(questions) {
-  const panel = node("section", undefined, "panel");
-  panel.append(node("p", "只記錄匿名的每題答題次數、正確次數與選項分布；數據從功能上線後開始累積。相同學生重複作答也會計入次數。題目修改後以新版本分開統計。"));
+  const panel = node("section", undefined, "panel analytics");
+  panel.append(node("p", "匿名統計從功能上線後開始累積；重複作答會計入次數，題目修改後分版本統計。樣本較少時，請先累積更多作答再判斷。", "analytics-help"));
   if (!questions.length) {
-    panel.append(node("p", "目前還沒有答題紀錄。", "empty"));
+    panel.append(node("p", "目前還沒有答題紀錄，學生開始作答後就會顯示圖表。", "empty"));
   } else {
     const total = questions.reduce((sum, item) => sum + item.attempts, 0);
     const correct = questions.reduce((sum, item) => sum + item.correct, 0);
-    panel.append(node("p", `總作答 ${total} 次，答對 ${correct} 次（${Math.round(correct / total * 100)}%）。`));
+    const percentage = (count, all) => all ? Math.round(count / all * 100) : 0;
+    const stats = node("div", undefined, "analytics-stats");
+    for (const [label, value, detail] of [["總作答次數", `${total} 次`, "包含重複作答"], ["整體答對率", `${percentage(correct, total)}%`, `答對 ${correct} 次`], ["已有作答的題目", `${questions.length} 題次`, "不同版本分開計算"]]) {
+      const card = node("div", undefined, "analytics-stat");
+      card.append(node("span", label), node("strong", value), node("small", detail));
+      stats.append(card);
+    }
+    panel.append(stats);
+    const bar = (count, all, choice = false) => {
+      const track = node("div", undefined, `analytics-bar${choice ? " choice" : ""}`);
+      track.setAttribute("aria-hidden", "true");
+      const fill = node("span");
+      fill.style.width = `${percentage(count, all)}%`;
+      track.append(fill);
+      return track;
+    };
     const topics = new Map();
     for (const item of questions) {
-      const summary = topics.get(item.topic) || { attempts: 0, correct: 0, choices: {} };
-      summary.attempts += item.attempts; summary.correct += item.correct;
-      for (const [choice, count] of Object.entries(item.choices)) summary.choices[choice] = (summary.choices[choice] || 0) + count;
+      const summary = topics.get(item.topic) || { attempts: 0, correct: 0 };
+      summary.attempts += item.attempts;
+      summary.correct += item.correct;
       topics.set(item.topic, summary);
     }
-    panel.append(node("h2", "各主題表現"));
-    for (const [topic, summary] of topics) {
-      panel.append(node("p", `${topic}：${summary.attempts} 次，答對率 ${Math.round(summary.correct / summary.attempts * 100)}%；選項分布 ${Object.entries(summary.choices).map(([choice, count]) => `${choice} ${count} 次`).join("、")}。`));
+    const topicSection = node("section", undefined, "analytics-section");
+    topicSection.append(node("h2", "各主題答對率"), node("p", "長條越長代表答對率越高，數字顯示答對次數／總作答次數。", "analytics-help"));
+    for (const [topic, summary] of [...topics].sort((a, b) => a[1].correct / a[1].attempts - b[1].correct / b[1].attempts)) {
+      const row = node("div", undefined, "analytics-topic");
+      const heading = node("div", undefined, "analytics-topic-heading");
+      heading.append(node("strong", topic), node("span", `${percentage(summary.correct, summary.attempts)}% · ${summary.correct} / ${summary.attempts} 次`));
+      row.append(heading, bar(summary.correct, summary.attempts));
+      topicSection.append(row);
     }
-    panel.append(node("h2", "各題表現"));
-    const table = node("table");
-    const header = node("tr");
-    for (const label of ["主題／題目", "作答次數", "答對率", "選項分布"]) header.append(node("th", label));
-    const thead = node("thead"); thead.append(header); table.append(thead);
-    const tbody = node("tbody");
-    for (const item of [...questions].sort((a, b) => a.correct / a.attempts - b.correct / b.attempts || b.attempts - a.attempts)) {
-      const row = node("tr");
-      row.append(node("td", `${item.topic}｜${item.id}（版本 ${item.revision}）\n${item.question}`),
-        node("td", item.attempts), node("td", `${Math.round(item.correct / item.attempts * 100)}%`),
-        node("td", Object.entries(item.choices).map(([choice, count]) => `${choice}：${count} 次`).join("、")));
-      tbody.append(row);
+    panel.append(topicSection);
+    const questionSection = node("section", undefined, "analytics-section");
+    questionSection.append(node("h2", "各題作答分析"), node("p", "答對率較低的題目排在前面；選項只顯示曾被選擇的答案。", "analytics-help"));
+    const label = node("label", "篩選主題 ");
+    label.className = "analytics-filter";
+    const select = node("select");
+    const all = node("option", "全部主題");
+    all.value = "";
+    select.append(all);
+    for (const topic of topics.keys()) {
+      const option = node("option", topic);
+      option.value = topic;
+      select.append(option);
     }
-    table.append(tbody); const wrapper = node("div", undefined, "analytics-table"); wrapper.append(table); panel.append(wrapper);
+    label.append(select);
+    const list = node("div", undefined, "analytics-questions");
+    const drawQuestions = () => {
+      list.replaceChildren();
+      for (const item of questions.filter((item) => !select.value || item.topic === select.value).sort((a, b) => a.correct / a.attempts - b.correct / b.attempts || b.attempts - a.attempts)) {
+        const card = node("article", undefined, "analytics-question");
+        const heading = node("div", undefined, "analytics-question-heading");
+        heading.append(node("span", `${item.topic} · ${item.id} · 版本 ${item.revision}`, "analytics-tag"), node("strong", `${percentage(item.correct, item.attempts)}% 答對`));
+        card.append(heading, node("h3", item.question), node("p", `答對 ${item.correct} 次 / 作答 ${item.attempts} 次`, "analytics-help"), bar(item.correct, item.attempts));
+        const choices = node("div", undefined, "analytics-choices");
+        choices.append(node("strong", "選項分布"));
+        for (const [choice, count] of Object.entries(item.choices).sort(([a], [b]) => a.localeCompare(b))) {
+          const row = node("div", undefined, "analytics-choice");
+          row.append(node("span", choice), bar(count, item.attempts, true), node("span", `${count} 次 · ${percentage(count, item.attempts)}%`));
+          choices.append(row);
+        }
+        card.append(choices);
+        list.append(card);
+      }
+    };
+    select.addEventListener("change", drawQuestions);
+    drawQuestions();
+    questionSection.append(label, list);
+    panel.append(questionSection);
   }
   $("admin-view").replaceChildren(panel);
 }
@@ -1171,25 +1215,12 @@ $("editor-form").addEventListener("submit", async (event) => {
   }
 });
 
-/** 建立資料匯出說明與下載入口；JSON 內容由需登入的伺服器端點產生。 */
+/** 建立資料庫備份說明與下載入口。 */
 function renderExport() {
   const panel = node("section", undefined, "panel");
-  panel.append(
-    node("h2", "匯出一份目前的教學內容"),
-    node(
-      "p",
-      "JSON 檔包含最新活動、關於我們、全部影片、教材與題庫，以及發布／下架狀態、答案與來源，可供老師留存或後續整理。",
-    ),
-    node(
-      "p",
-      "此匯出為內容清單，不含老師帳號、登入資料與封面圖片檔案。",
-    ),
-  );
-  const download = link("↧ 下載內容 JSON", "/api/admin/export", "primary");
-  download.download = "";
-  panel.append(download, node("h2", "資料庫完整備份"),
+  panel.append(node("h2", "資料庫完整備份"),
     node("p", "下載 SQL 備份，包含資料庫結構、帳號密碼雜湊、登入資料與對話紀錄，請妥善保管。請由網站維護者將備份還原至新的空白 D1 資料庫。此備份不包含 Google Drive 檔案、網站程式、Cloudflare 設定或 AI 向量索引；還原後須重新建立索引。"));
-  const backup = link("↧ 下載資料庫備份", "/api/admin/backup", "secondary");
+  const backup = link("↧ 下載資料庫備份", "/api/admin/backup", "primary");
   backup.download = "";
   panel.append(backup);
   $("admin-view").replaceChildren(panel);

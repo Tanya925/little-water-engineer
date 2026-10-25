@@ -17,8 +17,26 @@
   overflow-y: auto;
 }
 
-.analytics-table { overflow-x: auto; }
-.analytics-table td:first-child { white-space: pre-line; min-width: 240px; }
+.analytics-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 24px 0 36px; }
+.analytics-stat { display: grid; gap: 7px; padding: 20px; border: 1px solid #dce9df; border-radius: 15px; background: #f4f9f5; color: #57736b; }
+.analytics-stat strong { font-size: 27px; color: #315e50; }
+.analytics-stat small { color: #6c8079; }
+.analytics-section { margin-top: 36px; }
+.analytics .analytics-help { margin: 8px 0 16px; color: #667e78; font-size: 14px; line-height: 1.7; }
+.analytics-topic { max-width: 800px; margin: 20px 0; }
+.analytics-topic-heading, .analytics-question-heading { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; margin-bottom: 9px; }
+.analytics-bar { height: 12px; overflow: hidden; border-radius: 99px; background: #e7eee9; }
+.analytics-bar span { display: block; height: 100%; background: #529779; border-radius: inherit; }
+.analytics-bar.choice span { background: #72a8bf; }
+.analytics-filter { display: inline-flex; gap: 10px; align-items: center; margin: 6px 0 20px; font-weight: 600; }
+.analytics-filter select { max-width: 100%; }
+.analytics-questions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr)); gap: 16px; }
+.analytics-question { min-width: 0; padding: 20px; border: 1px solid #dce9df; border-radius: 15px; background: #fff; }
+.analytics-question h3 { margin: 12px 0 8px; color: #304f48; font-size: 16px; line-height: 1.6; }
+.analytics-question-heading strong { color: #35735c; }
+.analytics-tag { color: #6b837b; font-size: 13px; overflow-wrap: anywhere; }
+.analytics-choices { display: grid; gap: 10px; margin-top: 20px; font-size: 14px; }
+.analytics-choice { display: grid; grid-template-columns: 35px minmax(40px, 1fr) auto; gap: 10px; align-items: center; }
 
 /* AI 教材管理區：卡片清單和全文編輯器共用一般後台表單元件，
  * 這裡只補上教材特有的垂直間距、按鈕換行與長文字輸入高度。 */

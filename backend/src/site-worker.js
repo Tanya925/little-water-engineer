@@ -6,7 +6,7 @@
  */
 import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
-import { adminDelete, adminExport, databaseBackup, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
+import { adminDelete, databaseBackup, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
 import { findNamedMaterialIds, findRelatedTitles, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
@@ -126,9 +126,6 @@ export default {
             })),
           );
           return json({ collections, topics: topics });
-        }
-        if (pathname === "/api/admin/export" && request.method === "GET") {
-          return json(await adminExport(env.DB), 200, { "Content-Disposition": `attachment; filename="water-content-${new Date().toISOString().slice(0, 10)}.json"` });
         }
         if (pathname === "/api/admin/backup" && request.method === "GET") {
           return new Response(await databaseBackup(env.DB), { headers: { "Content-Type": "application/sql; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Content-Disposition": `attachment; filename="water-d1-backup-${new Date().toISOString().slice(0, 10)}.sql"` } });
