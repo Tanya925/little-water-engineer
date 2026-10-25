@@ -1,17 +1,18 @@
 import { test } from "node:test";
 import { strict as assert } from "node:assert";
 import { validatedSearchPlan } from "../src/site-worker.js";
+const previous = ["我不會week2-5和國考102地特-4", "國考那個解題步驟可以再詳細一點嗎"];
+const result = (searchQuery) => ({ response: JSON.stringify({ searchQuery }) });
 
-const candidates = [{ key: "ref:week25", mentionedIn: "week2-5 和 102地特-4" }, { key: "ref:102地特4", mentionedIn: "week2-5 和 102地特-4" }];
-const result = (plan) => ({ response: JSON.stringify(plan) });
-
-test("accepts a model-selected prior reference or a new conceptual query", () => {
-  assert.deepEqual(validatedSearchPlan(result({ searchQuery: "102地特-4 解題步驟", materialKeys: ["ref:102地特4"], ambiguous: false }), candidates), { searchQuery: "102地特-4 解題步驟", materialKeys: ["ref:102地特4"], ambiguous: false });
-  assert.deepEqual(validatedSearchPlan(result({ searchQuery: "質量是什麼", materialKeys: [], ambiguous: false }), candidates), { searchQuery: "質量是什麼", materialKeys: [], ambiguous: false });
+test("retains an earlier reference when the rewritten question identifies it", () => {
+  assert.deepEqual(validatedSearchPlan(result("102地特-4 的解題步驟"), previous, "國考那個詳細點"), { searchQuery: "102地特-4 的解題步驟", references: ["102地特4"] });
 });
 
-test("rejects invented references and invalid model plans", () => {
-  assert.equal(validatedSearchPlan(result({ searchQuery: "題目", materialKeys: ["ref:999地特1"], ambiguous: false }), candidates), null);
-  assert.equal(validatedSearchPlan(result({ searchQuery: "題目", materialKeys: [], ambiguous: "false" }), candidates), null);
-  assert.equal(validatedSearchPlan({ response: "truncated" }, candidates), null);
+test("searches a new concept without inheriting earlier materials", () => {
+  assert.deepEqual(validatedSearchPlan(result("什麼是質量？"), previous, "那所以說啥是質量阿"), { searchQuery: "什麼是質量？", references: [] });
+});
+
+test("never locks to a model-invented reference and rejects invalid plans", () => {
+  assert.deepEqual(validatedSearchPlan(result("999地特-1"), previous, "請解釋"), { searchQuery: "999地特-1", references: [] });
+  assert.equal(validatedSearchPlan({ response: "truncated" }, previous, "請解釋"), null);
 });

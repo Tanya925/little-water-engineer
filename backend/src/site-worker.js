@@ -57,13 +57,14 @@ function sameOrigin(request, origin) {
   return !value || value === origin;
 }
 
-/** 模型只能選擇實際問題中出現過的候選教材，不能憑空指定題目或圖片。 */
-export function validatedSearchPlan(result, candidates) {
+/** 整理問句中只有學生實際提過的題號能作為精確教材身分。 */
+export function validatedSearchPlan(result, previousQuestions, question) {
   const plan = modelJSON(result);
-  if (!plan || typeof plan.searchQuery !== "string" || !plan.searchQuery.trim() ||
-      typeof plan.ambiguous !== "boolean" || !Array.isArray(plan.materialKeys) ||
-      plan.materialKeys.some((key) => typeof key !== "string" || !candidates.some((candidate) => candidate.key === key))) return null;
-  return { searchQuery: plan.searchQuery.trim().slice(0, 4000), ambiguous: plan.ambiguous, materialKeys: [...new Set(plan.materialKeys)] };
+  if (!plan || typeof plan.searchQuery !== "string" || !plan.searchQuery.trim()) return null;
+  const searchQuery = plan.searchQuery.trim().slice(0, 4000);
+  const allowed = new Set([...previousQuestions, question].flatMap(materialReferences));
+  const references = materialReferences(searchQuery).filter((reference) => allowed.has(reference));
+  return { searchQuery, references };
 }
 
 /** 學生要求「再說詳細一點」時，模型必須改用完整教學模式，而不是重複一段概述。 */
@@ -231,31 +232,25 @@ export default {
           let namedMaterialIds = [];
           let searchQuestion = question;
           if (!references.length) {
-            // 模型只可選擇學生實際提到過的教材，避免自行編造題號或圖片。
-            const candidates = [];
-            for (const mentionedIn of [...previousQuestions, question]) {
-              for (const reference of materialReferences(mentionedIn)) candidates.push({ key: `ref:${reference}`, mentionedIn });
-              for (const id of await findNamedMaterialIds(env.DB, mentionedIn)) candidates.push({ key: `id:${id}`, mentionedIn });
-            }
             const normalization = await env.AI.run(TEXT_MODEL, {
               messages: [
-                { role: "system", content: "根據目前問題和前兩題整理教材搜尋問句。現在問題優先；新概念不要繼承舊教材。若是追問，從候選教材中選出真正指涉的 key；無法確定指哪份時 ambiguous 為 true。新概念或不需指定教材時 materialKeys 為空陣列。不可編造候選 key。只輸出 JSON：{\"searchQuery\":\"完整搜尋問句\",\"materialKeys\":[\"候選key\"],\"ambiguous\":false}。" },
-                { role: "user", content: `${JSON.stringify({ question, previousQuestions, candidates })}\n/no_think` },
+                { role: "system", content: "把目前問題整理成適合搜尋教材的完整繁體中文問句。參考前兩題來理解模糊追問，確定指涉哪個題目時保留原有完整題號。若目前問題已明確提出新的概念，以現在的概念為主，不要加入舊題號。不要回答問題或憑空編造題號。只輸出 JSON：{\"searchQuery\":\"整理後的問句\"}。" },
+                { role: "user", content: `${JSON.stringify({ question, previousQuestions })}\n/no_think` },
               ], max_tokens: 512, temperature: 0,
             });
-            const plan = validatedSearchPlan(normalization, candidates);
+            const plan = validatedSearchPlan(normalization, previousQuestions, question);
             if (!plan) {
               console.error("AI QA invalid search plan");
               return json({ error: "AI 無法整理問題，請稍後再試。" }, 503);
             }
-            if (plan.ambiguous) {
-              const clarification = "我不確定你指的是哪一份教材，請補上教材名稱或題號，我才能正確說明。";
-              await persistExchange(clarification);
-              return json({ answer: clarification, sources: [], conversationId });
-            }
             searchQuestion = plan.searchQuery;
-            references = plan.materialKeys.filter((key) => key.startsWith("ref:")).map((key) => key.slice(4));
-            namedMaterialIds = plan.materialKeys.filter((key) => key.startsWith("id:")).map((key) => key.slice(3));
+            references = plan.references;
+            if (!references.length) {
+              const mentionedIds = new Set((await Promise.all([...previousQuestions, question].map((text) => findNamedMaterialIds(env.DB, text)))).flat());
+              const matchedIds = await findNamedMaterialIds(env.DB, searchQuestion);
+              namedMaterialIds = matchedIds.filter((id) => mentionedIds.has(id));
+              if (namedMaterialIds.length > 1) namedMaterialIds = [];
+            }
           }
           const hasExactMaterial = references.length > 0 || namedMaterialIds.length > 0;
           let chunks;
