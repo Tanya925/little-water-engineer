@@ -111,6 +111,26 @@ export async function findNamedMaterialIds(db, question) {
     .map((row) => row.id);
 }
 
+/** 將標題與查詢中的文字片段交叉比對，補足向量搜尋對不完整教材名稱的漏召回。 */
+export function titleMatchScore(title, query) {
+  const normalizedTitle = normalizeReference(String(title || "").split("｜").at(-1));
+  const normalizedQuery = normalizeReference(query);
+  const grams = new Set();
+  for (let i = 0; i < normalizedTitle.length - 1; i++) {
+    const gram = normalizedTitle.slice(i, i + 2);
+    if (/^[\p{Script=Han}a-z0-9]{2}$/u.test(gram) && normalizedQuery.includes(gram)) grams.add(gram);
+  }
+  return grams.size;
+}
+
+export async function findRelatedTitleIds(db, query, limit = 3) {
+  const { results } = await db.prepare("SELECT id,title FROM ai_materials WHERE deleted=0 AND status='published' AND index_state='ready'").all();
+  return results.map((row) => ({ id: row.id, score: titleMatchScore(row.title, query) }))
+    .filter((row) => row.score >= 2)
+    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
+    .slice(0, limit).map((row) => row.id);
+}
+
 /** 從明確教材代號直接取得同一筆小教材，避免語意相近的其他題目混入回答和附圖。 */
 export async function resolveMaterialReferenceChunks(db, reference, topK) {
   if (!reference) return [];

@@ -7,7 +7,7 @@
 import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
-import { findNamedMaterialIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
+import { findNamedMaterialIds, findRelatedTitleIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks } from "./d1-ai.js";
 import {
   deleteResourceMaterial,
   deleteResourceMaterials,
@@ -265,7 +265,12 @@ export default {
             const values = embedding?.data?.[0];
             if (!Array.isArray(values)) throw new Error("Embedding unavailable");
             const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
-            chunks = await resolveAIChunks(env.DB, matches.matches || [], 0.05, 5);
+            const [vectorChunks, titleIds] = await Promise.all([
+              resolveAIChunks(env.DB, matches.matches || [], 0.05, 5),
+              findRelatedTitleIds(env.DB, searchQuestion),
+            ]);
+            const titleChunks = await resolveMaterialIdChunks(env.DB, titleIds, 3);
+            chunks = [...new Map([...titleChunks, ...vectorChunks].map((chunk) => [chunk.id, chunk])).values()];
           }
           if (!chunks.length) {
             await persistExchange(insufficientAnswer);
