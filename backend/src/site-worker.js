@@ -4,7 +4,7 @@
  * 委派到 d1-* 模組。任何改變資料的請求都必須同時通過 session 與 same-origin 檢查；
  * 瀏覽器從不取得 D1、Vectorize 或 Workers AI 的綁定資訊。
  */
-import { modelText } from "./ai-utils.js";
+import { modelJSON } from "./ai-utils.js";
 import { authenticate, sessionFor, signIn, signOut } from "./d1-auth.js";
 import { adminDelete, adminExport, adminFind, adminList, adminPage, adminSave, importQuestions, savePage } from "./d1-admin.js";
 import { findNamedMaterialIds, materialReferences, resolveAIChunks, resolveMaterialIdChunks, resolveMaterialReferenceChunks, shortMaterialReferences } from "./d1-ai.js";
@@ -37,8 +37,8 @@ const json = (body, status = 200, headers = {}) =>
 const quizTopics = ["柏努利與基礎流力", "搶救堰塞湖", "大地在搖晃", "超級颱風眼", "迷你都市淹水大作戰"];
 // 問答模型的單次輸出上限。教材已先由檢索縮小範圍，不需要為每個問題保留過長的
 // 生成額度；較小上限可避免少數冗長回覆快速耗盡 Workers AI 的共享額度。
-const ANSWER_TOKEN_LIMIT = 360;
-const DETAILED_ANSWER_TOKEN_LIMIT = 800;
+const ANSWER_TOKEN_LIMIT = 800;
+const DETAILED_ANSWER_TOKEN_LIMIT = 1200;
 // 同一個模型同時負責搜尋問句整理與最終教材回答。集中成常數可避免兩個流程意外
 // 使用不同模型，並讓日後做模型評估或切換時只需修改一處。
 const TEXT_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
@@ -63,23 +63,6 @@ function sameOrigin(request, origin) {
  */
 function isFollowUpQuestion(question) {
   return /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
-}
-
-/**
- * 將回答模型要求的 JSON 安全還原。模型偶爾仍會包上 Markdown 程式碼區塊；這裡只
- * 移除最外層包裝，不會嘗試猜測或修復內容。格式無效時回傳 null，呼叫端會採取
- * 「教材不足」的保守結果，而不是把未驗證文字或來源顯示給學生。
- */
-function parseGroundedAnswer(result) {
-  const text = modelText(result)?.trim();
-  if (!text) return null;
-  const jsonText = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-  try {
-    const parsed = JSON.parse(jsonText);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
-  }
 }
 
 function conversationMaterialSelection(question, previousQuestions) {
@@ -296,11 +279,11 @@ export default {
             const normalization = await env.AI.run(TEXT_MODEL, {
               messages: [
                 { role: "system", content: "將學生目前問題整理成一句適合教材搜尋的繁體中文問句。舊問題只可用來補足『這個、再說明』等模糊指稱；如果現在問題有明確題號或概念，一律以現在問題為主。只輸出 JSON：{\"searchQuery\":\"...\"}。" },
-                { role: "user", content: JSON.stringify({ question, previousQuestions }) },
-              ], max_tokens: 80, temperature: 0,
+                { role: "user", content: `${JSON.stringify({ question, previousQuestions })}\n/no_think` },
+              ], max_tokens: 256, temperature: 0,
             });
             try {
-              const parsed = JSON.parse(modelText(normalization));
+              const parsed = modelJSON(normalization);
               if (typeof parsed?.searchQuery === "string" && parsed.searchQuery.trim()) searchQuestion = parsed.searchQuery.trim().slice(0, 4000);
             } catch { /* 模型整理格式失敗時安全地退回原問題。 */ }
           }
@@ -336,15 +319,19 @@ export default {
           // relevance 呼叫，既減少一次 AI 用量，也避免兩個模型判斷前後不一致。
           const result = await env.AI.run(TEXT_MODEL, { messages: [
             { role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文。先判斷教材是否足夠回答「現在問題」：若不足、問題要求解讀圖片但教材文字不足、或無法以提供片段支持，輸出 {"sufficient":false,"answer":"","usedChunkIds":[]}。若足夠，輸出 {"sufficient":true,"answer":"你的完整回答","usedChunkIds":["實際使用的片段ID"]}。answer 中不得加入教材未提及的知識；usedChunkIds 只能填提供教材內、且確實支持答案的 ID。只輸出合法 JSON，不得使用 Markdown 或額外文字。${detailInstruction} 舊問題只用於理解模糊追問，現在問題優先。` },
-            { role: "user", content: `最近學生問題（最多三題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}` },
+            { role: "user", content: `最近學生問題（最多三題）：${previousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
           ], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
-          const grounded = parseGroundedAnswer(result);
+          const grounded = modelJSON(result);
           const availableChunkIds = new Set(chunks.map((chunk) => chunk.id));
           const usedChunkIds = [...new Set(Array.isArray(grounded?.usedChunkIds)
             ? grounded.usedChunkIds.filter((id) => typeof id === "string" && availableChunkIds.has(id))
             : [])];
           const answer = typeof grounded?.answer === "string" ? grounded.answer.trim() : "";
-          if (grounded?.sufficient !== true || !answer || !usedChunkIds.length) {
+          if (!grounded || typeof grounded.sufficient !== "boolean" || (grounded.sufficient && (!answer || !usedChunkIds.length))) {
+            console.error("AI QA invalid model output", { hasJSON: !!grounded, sufficient: grounded?.sufficient, hasAnswer: !!answer, validSourceCount: usedChunkIds.length, finishReason: result?.choices?.[0]?.finish_reason });
+            return json({ error: "AI 回覆格式異常，請稍後再試。" }, 503);
+          }
+          if (!grounded.sufficient) {
             await persistExchange(insufficientAnswer);
             return json({ answer: insufficientAnswer, sources: [], conversationId });
           }

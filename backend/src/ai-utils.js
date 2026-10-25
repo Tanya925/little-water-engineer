@@ -9,3 +9,18 @@ export function modelText(result) {
   if (output && typeof output === "object" && !Array.isArray(output)) return JSON.stringify(output);
   return null;
 }
+
+// Qwen3 有時會在最終內容前附上思考區塊。只移除完整的區塊，避免把截斷的
+// 思考內容誤當成答案；沒有完整 JSON 時仍由呼叫端判定為服務異常。
+export function modelJSON(result) {
+  const text = modelText(result)?.trim();
+  if (!text) return null;
+  const jsonText = text.replace(/^(?:<think>[\s\S]*?<\/think>\s*)+/i, "")
+    .replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  try {
+    const parsed = JSON.parse(jsonText);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
