@@ -225,7 +225,7 @@ export default {
         ]);
         try {
           const { results: previousRows } = await env.DB.prepare(
-            "SELECT content FROM ai_conversation_messages WHERE conversation_id=? AND role='user' ORDER BY sequence DESC LIMIT 2",
+            "SELECT content FROM ai_conversation_messages WHERE conversation_id=? AND role='user' ORDER BY sequence DESC LIMIT 3",
           ).bind(conversationId).all();
           const previousQuestions = previousRows.reverse().map((row) => row.content);
           let references = materialReferences(question);
@@ -234,7 +234,7 @@ export default {
           if (!references.length) {
             const normalization = await env.AI.run(TEXT_MODEL, {
               messages: [
-                { role: "system", content: "將目前問題改寫成完整教材搜尋問句。前兩題只在目前問題指涉舊內容時用來補上明確名稱或題號。若前題提到多項，依目前問題描述選擇相關的一項，將它的完整題號原樣保留。若目前問題提出新主題，不要混入舊主題。例：前題『week3-2和110技師-1』，現在問『技師那題的步驟』，整理為『110技師-1解題步驟』。例：前題討論密度，現在問『導讀怎麼學』，整理為『導讀怎麼學』。不要回答或編造題號。只輸出 JSON：{\"searchQuery\":\"整理後的問句\"}。" },
+                { role: "system", content: "將目前問題改寫成完整教材搜尋問句。前三題只在目前問題指涉舊內容時用來補上明確名稱或題號。若前題提到多項，依目前問題描述選擇相關的一項，將它的完整題號原樣保留。若目前問題提出新主題，不要混入舊主題。例：前題『week3-2和110技師-1』，現在問『技師那題的步驟』，整理為『110技師-1解題步驟』。例：前題討論密度，現在問『導讀怎麼學』，整理為『導讀怎麼學』。不要回答或編造題號。只輸出 JSON：{\"searchQuery\":\"整理後的問句\"}。" },
                 { role: "user", content: `${JSON.stringify({ question, previousQuestions })}\n/no_think` },
               ], max_tokens: 512, temperature: 0,
             });
@@ -299,7 +299,7 @@ export default {
           // relevance 呼叫，既減少一次 AI 用量，也避免兩個模型判斷前後不一致。
           const result = await env.AI.run(TEXT_MODEL, { messages: [
             { role: "system", content: `你是國小高年級教材問答夥伴。只能依據提供教材回答，使用繁體中文。先判斷教材是否足夠回答「現在問題」：若不足、問題要求解讀圖片但教材文字不足、或無法以提供片段支持，輸出 {"sufficient":false,"answer":"","usedChunkIds":[]}。若足夠，輸出 {"sufficient":true,"answer":"你的完整回答","usedChunkIds":["實際使用的片段ID"]}。answer 中不得加入教材未提及的知識；usedChunkIds 只能填提供教材內、且確實支持答案的 ID。只輸出合法 JSON，不得使用 Markdown 或額外文字。${detailInstruction} 舊問題只用於理解模糊追問，現在問題優先。` },
-            { role: "user", content: `最近學生問題（最多兩題）：${answerPreviousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
+            { role: "user", content: `最近學生問題（最多三題）：${answerPreviousQuestions.join("\n") || "（無）"}\n\n整理後搜尋問題：${searchQuestion}\n\n現在問題：${question}\n\n教材片段：\n${materials}\n/no_think` },
           ], max_tokens: requestsDetailedExplanation(question) ? DETAILED_ANSWER_TOKEN_LIMIT : ANSWER_TOKEN_LIMIT, temperature: 0.15 });
           const grounded = modelJSON(result);
           const availableChunkIds = new Set(chunks.map((chunk) => chunk.id));

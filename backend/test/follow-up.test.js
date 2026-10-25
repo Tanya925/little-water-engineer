@@ -8,6 +8,11 @@ test("retains an earlier reference when the rewritten question identifies it", (
   assert.deepEqual(validatedSearchPlan(result("102地特-4 的解題步驟"), previous, "國考那個詳細點"), { searchQuery: "102地特-4 的解題步驟", references: ["102地特4"] });
 });
 
+test("accepts a reference from the third most recent question", () => {
+  const history = ["請教我 102地特-4", "什麼是邊界層", "為什麼要積分"];
+  assert.deepEqual(validatedSearchPlan(result("102地特-4 解題步驟"), history, "再詳細說明"), { searchQuery: "102地特-4 解題步驟", references: ["102地特4"] });
+});
+
 test("searches a new concept without inheriting earlier materials", () => {
   assert.deepEqual(validatedSearchPlan(result("什麼是質量？"), previous, "那所以說啥是質量阿"), { searchQuery: "什麼是質量？", references: [] });
 });
