@@ -143,7 +143,10 @@ $("admin-menu").replaceChildren(
   }),
 );
 
-/** 從網址 hash 取得合法管理區；未知值回到總覽，不組合任意 API 路徑。 */
+/**
+ * 從網址 hash 取得合法管理區；未知值回到總覽，不組合任意 API 路徑。
+ * 舊版獨立答題分析的書籤仍映射至題庫管理，讓舊連結可開啟合併後的畫面。
+ */
 function routeId() {
   const id = location.hash.slice(1) === "quiz-analytics" ? "questions" : location.hash.slice(1);
 
@@ -204,6 +207,8 @@ async function renderRoute() {
       $("admin-view").replaceChildren(node("p", "管理區已保留，功能尚未開放。", "empty"));
     } else {
       const kind = currentSection;
+      // 題庫頁同時需要題目清單、可用主題與匿名統計；其他清單不需載入後兩者。
+      // 統計載入失敗只影響圖表區，保留題目管理；清單與主題失敗仍交給外層處理。
       const [result, overview, analytics] = await Promise.all([
         request(`/api/admin/${kind}`),
         kind === "questions" ? request("/api/admin/overview") : Promise.resolve(null),
@@ -223,6 +228,7 @@ async function renderRoute() {
         $("page-actions").append(action("匯入題庫", openImport));
       }
       renderList();
+      // 先建立既有題目清單，再把概況放在前面；篩選與分頁只重畫清單，不覆蓋圖表。
       if (kind === "questions") $("admin-view").prepend(renderQuizAnalytics(analytics?.questions));
     }
   } catch (error) {
@@ -241,9 +247,15 @@ async function renderRoute() {
   }
 }
 
+/**
+ * 將後端按題目版本彙總的匿名統計轉成題庫頁的概況卡片。
+ * questions 為 undefined 代表請求失敗，空陣列代表尚無作答，兩種情況分別提示。
+ * attempts 是作答次數而非人數；同一學生重複作答與不同題目版本都會累計。
+ * 回傳 DOM 節點供呼叫者插入，不改動題庫清單或原始統計資料。
+ */
 function renderQuizAnalytics(questions) {
   const panel = node("section", undefined, "panel analytics");
-  panel.append(node("h2", "答題概況"), node("p", "匿名統計自功能上線後開始累積，重複作答也會計入；作答次數較少時，結果僅供參考。", "analytics-help"));
+  panel.append(node("h2", "答題概況"));
   if (!questions) {
     panel.append(node("p", "答題分析暫時無法載入，請稍後重新整理。", "empty"));
     return panel;
@@ -252,6 +264,7 @@ function renderQuizAnalytics(questions) {
     panel.append(node("p", "目前還沒有答題紀錄，學生開始作答後就會顯示圖表。", "empty"));
     return panel;
   }
+  // 所有題目版本的作答、答對次數相加；整體答對率須用總次數加權，不能平均各題百分比。
   const total = questions.reduce((sum, item) => sum + item.attempts, 0);
   const correct = questions.reduce((sum, item) => sum + item.correct, 0);
   const percent = (value, count) => count ? Math.round(value / count * 100) : 0;
@@ -259,6 +272,8 @@ function renderQuizAnalytics(questions) {
   const overall = node("div", undefined, "analytics-overall");
   overall.append(node("h3", "整體答題結果"));
   const pie = node("div", undefined, "analytics-pie");
+  // CSS 以實際比例畫圓環，畫面文字則四捨五入；答錯次數由總數減去答對數。
+  // 圖形對輔助技術隱藏，旁邊的圖例與總次數以文字提供相同資訊。
   pie.style.setProperty("--correct-rate", `${correct / total * 100}%`);
   pie.setAttribute("aria-hidden", "true");
   pie.append(node("strong", `${percent(correct, total)}%`), node("span", "答對率"));
@@ -267,6 +282,7 @@ function renderQuizAnalytics(questions) {
   overall.append(pie, legend, node("p", `共作答 ${total} 次`, "analytics-help"));
   const topicSection = node("div", undefined, "analytics-topics");
   topicSection.append(node("h3", "各主題答對率"));
+  // 先按主題累加分子與分母，再計算答對率，避免不同題目作答次數不同時造成偏差。
   const topics = new Map();
   for (const item of questions) {
     const summary = topics.get(item.topic) || { attempts: 0, correct: 0 };
@@ -274,11 +290,13 @@ function renderQuizAnalytics(questions) {
     summary.correct += item.correct;
     topics.set(item.topic, summary);
   }
+  // 答對率較低的主題先顯示；每列同時呈現原始次數，讓老師判斷樣本是否充足。
   for (const [topic, summary] of [...topics].sort((a, b) => a[1].correct / a[1].attempts - b[1].correct / b[1].attempts)) {
     const row = node("div", undefined, "analytics-topic");
     const heading = node("div", undefined, "analytics-topic-heading");
     heading.append(node("strong", topic), node("span", `${percent(summary.correct, summary.attempts)}%（${summary.correct} / ${summary.attempts} 次）`));
     const track = node("div", undefined, "analytics-bar");
+    // 長條僅是視覺輔助，實際百分比和次數由同一列的文字呈現。
     track.setAttribute("aria-hidden", "true");
     const fill = node("span");
     fill.style.width = `${percent(summary.correct, summary.attempts)}%`;
