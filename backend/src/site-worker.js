@@ -216,7 +216,7 @@ export default {
         const conversationId = typeof body?.conversationId === "string" && /^[a-f0-9-]{16,80}$/i.test(body.conversationId)
           ? body.conversationId
           : crypto.randomUUID();
-        const insufficientAnswer = "目前老師提供的教材沒有足夠資訊回答這個問題。你可以換個問法，或請老師補充相關教材喔！";
+        const insufficientAnswer = "目前老師提供的教材沒有足夠資訊回答這個問題。你可以試著把問題寫得更完整，例如補上教材名稱或題號，也可以換個問法，或請老師補充相關教材喔！";
         // 即使教材不足，學生接著仍可能問「2-7 再說明一次」。每一輪都必須用同一個
         // conversationId 留下問題，否則承接式追問會失去前一題的教材身分。
         const persistExchange = (answer) => env.DB.batch([
