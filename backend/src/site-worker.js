@@ -61,11 +61,15 @@ function sameOrigin(request, origin) {
  * 只有明顯的追問才沿用最近一題的題號。例如「這個圖是什麼意思」必須繼續查剛剛的
  * 習題 1-5；全新的完整問題則不應被舊題號綁住，仍交給 AI 整理後做一般語意檢索。
  */
-function isFollowUpQuestion(question) {
-  return /^(?:這|那|它|圖|上面|剛剛|再|為什麼|怎麼|可以|請|幫)/.test(question.trim());
+export function isFollowUpQuestion(question) {
+  const text = question.trim();
+  // 「那什麼是質量」的「那」只是轉折，明確的新概念應走一般檢索。
+  if (/^(?:那|所以|請問|想問)?\s*(?:什麼|甚麼|啥)是\s*[^？?，,。]+/.test(text)) return false;
+  return /(?:這個|這題|這張|那個|那題|那張|它|上面|剛剛|剛才|前面|再說|再講|再解釋|再詳細|更詳細|詳細一點|解題步驟|圖.*(?:意思|說明))/.test(text)
+    || /^(?:再|為什麼|怎麼|可以|請|幫)/.test(text);
 }
 
-function conversationMaterialSelection(question, previousQuestions) {
+export function conversationMaterialSelection(question, previousQuestions) {
   // 教材身分只能由學生實際輸入與既有對話決定，不能相信 AI 改寫後的搜尋句子；否則模型
   // 若自行補上一個題號，會錯誤把回答與題圖鎖到不相干教材。
   const current = materialReferences(question);
@@ -80,7 +84,17 @@ function conversationMaterialSelection(question, previousQuestions) {
   const isFollowUp = isFollowUpQuestion(question);
   // 未指定題號的「再說詳細一點」會沿用最近一次明確題目中的所有教材；若學生只要
   // 其中一題，輸入「2-8」即可縮小範圍，不會把兩筆混為一筆。
-  const uniqueRecent = [...new Set(recentReferences)];
+  // 只沿用最近一次明確提及題號的問題；較舊的題目不應造成歧義。
+  const latestReferences = [...previousQuestions].reverse().map(materialReferences).find((items) => items.length) || [];
+  let uniqueRecent = [...new Set(latestReferences)];
+  if (/(?:國考|地特|技師)/.test(question)) {
+    const category = /地特/.test(question) ? /地特/ : /技師/.test(question) ? /技師/ : /地特|技師/;
+    uniqueRecent = uniqueRecent.filter((reference) => category.test(reference));
+  } else if (/week/i.test(question)) {
+    uniqueRecent = uniqueRecent.filter((reference) => reference.startsWith("week"));
+  } else if (/習題/.test(question)) {
+    uniqueRecent = uniqueRecent.filter((reference) => reference.startsWith("習題"));
+  }
   // 沒有題號的追問也只能在上下文只有一份教材時沿用；多份教材時無法安全判斷「那個」。
   return { references: isFollowUp && uniqueRecent.length === 1 ? uniqueRecent : [], ambiguous: isFollowUp && uniqueRecent.length > 1 };
 }
@@ -259,7 +273,7 @@ export default {
           // 老師未來新增自訂標題時不必回來修改程式；名稱比對成功後同樣以資料庫 ID
           // 鎖定教材，因此不會落入向量搜尋而混用別題圖片。
           let namedMaterialIds = references.length ? [] : await findNamedMaterialIds(env.DB, question);
-          if (!namedMaterialIds.length && isFollowUpQuestion(question)) {
+          if (!references.length && !namedMaterialIds.length && isFollowUpQuestion(question)) {
             const priorNamedIds = [...new Set((await Promise.all(previousQuestions.map((previousQuestion) => findNamedMaterialIds(env.DB, previousQuestion)))).flat())];
             if (priorNamedIds.length === 1) namedMaterialIds = priorNamedIds;
             if (priorNamedIds.length > 1) {
