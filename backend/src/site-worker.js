@@ -234,7 +234,7 @@ export default {
           if (!references.length) {
             const normalization = await env.AI.run(TEXT_MODEL, {
               messages: [
-                { role: "system", content: "把目前問題整理成適合搜尋教材的完整繁體中文問句。參考前兩題來理解模糊追問，確定指涉哪個題目時保留原有完整題號。若目前問題已明確提出新的概念，以現在的概念為主，不要加入舊題號。不要回答問題或憑空編造題號。只輸出 JSON：{\"searchQuery\":\"整理後的問句\"}。" },
+                { role: "system", content: "將目前問題改寫成完整教材搜尋問句。前兩題只在目前問題指涉舊內容時用來補上明確名稱或題號。若前題提到多項，依目前問題描述選擇相關的一項，將它的完整題號原樣保留。若目前問題提出新主題，不要混入舊主題。例：前題『week3-2和110技師-1』，現在問『技師那題的步驟』，整理為『110技師-1解題步驟』。例：前題討論密度，現在問『導讀怎麼學』，整理為『導讀怎麼學』。不要回答或編造題號。只輸出 JSON：{\"searchQuery\":\"整理後的問句\"}。" },
                 { role: "user", content: `${JSON.stringify({ question, previousQuestions })}\n/no_think` },
               ], max_tokens: 512, temperature: 0,
             });
@@ -265,11 +265,12 @@ export default {
             const values = embedding?.data?.[0];
             if (!Array.isArray(values)) throw new Error("Embedding unavailable");
             const matches = await env.VECTORIZE.query(values, { topK: 20, returnValues: false, returnMetadata: "none", namespace: env.VECTOR_NAMESPACE || "water-materials-v1" });
-            const [vectorChunks, titleIds] = await Promise.all([
+            const [vectorChunks, titleIds, originalTitleIds] = await Promise.all([
               resolveAIChunks(env.DB, matches.matches || [], 0.05, 5),
               findRelatedTitleIds(env.DB, searchQuestion),
+              findRelatedTitleIds(env.DB, question),
             ]);
-            const titleChunks = await resolveMaterialIdChunks(env.DB, titleIds, 3);
+            const titleChunks = await resolveMaterialIdChunks(env.DB, [...new Set([...originalTitleIds, ...titleIds])], 3);
             chunks = [...new Map([...titleChunks, ...vectorChunks].map((chunk) => [chunk.id, chunk])).values()];
           }
           if (!chunks.length) {
