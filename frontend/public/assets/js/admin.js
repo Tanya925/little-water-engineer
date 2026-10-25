@@ -14,7 +14,6 @@ const sections = [
   ["honors", "🏆", "小小工程師榮譽榜管理", ""],
   ["knowledge", "💡", "科普知識專區管理", ""],
   ["questions", "❔", "知識小學堂管理", "維護五個冒險主題的題目、答案與解析。"],
-  ["quiz-analytics", "📊", "答題分析", "查看匿名答題表現，幫助改善題目與教材。"],
   ["games", "🎮", "互動小遊戲管理", ""],
   ["about", "👋", "關於我們管理", ""],
   ["export", "↧", "資料庫備份", "下載資料庫備份，方便日後還原。"],
@@ -146,7 +145,7 @@ $("admin-menu").replaceChildren(
 
 /** 從網址 hash 取得合法管理區；未知值回到總覽，不組合任意 API 路徑。 */
 function routeId() {
-  const id = location.hash.slice(1);
+  const id = location.hash.slice(1) === "quiz-analytics" ? "questions" : location.hash.slice(1);
 
   return sections.some((section) => section[0] === id) ? id : "overview";
 }
@@ -199,19 +198,16 @@ async function renderRoute() {
       Object.assign(filters, { keyword: "", status: "", topic: "", type: "", difficulty: "" });
       $("page-actions").append(action("＋ 新增最新活動", () => openEditor("updates"), "primary"));
       renderList();
-    } else if (currentSection === "quiz-analytics") {
-      const result = await request("/api/admin/quiz-analytics");
-      if (serial !== loadNumber) return;
-      renderQuizAnalytics(result.questions);
     } else if (currentSection === "export") {
       renderExport();
     } else if (!Object.hasOwn(labels, currentSection)) {
       $("admin-view").replaceChildren(node("p", "管理區已保留，功能尚未開放。", "empty"));
     } else {
       const kind = currentSection;
-      const [result, overview] = await Promise.all([
+      const [result, overview, analytics] = await Promise.all([
         request(`/api/admin/${kind}`),
         kind === "questions" ? request("/api/admin/overview") : Promise.resolve(null),
+        kind === "questions" ? request("/api/admin/quiz-analytics").catch(() => null) : Promise.resolve(null),
       ]);
       if (serial !== loadNumber) {
         return;
@@ -227,6 +223,7 @@ async function renderRoute() {
         $("page-actions").append(action("匯入題庫", openImport));
       }
       renderList();
+      if (kind === "questions") $("admin-view").prepend(renderQuizAnalytics(analytics?.questions));
     }
   } catch (error) {
     if (serial !== loadNumber) {
@@ -246,84 +243,52 @@ async function renderRoute() {
 
 function renderQuizAnalytics(questions) {
   const panel = node("section", undefined, "panel analytics");
-  panel.append(node("p", "匿名統計從功能上線後開始累積；重複作答會計入次數，題目修改後分版本統計。樣本較少時，請先累積更多作答再判斷。", "analytics-help"));
+  panel.append(node("h2", "答題概況"), node("p", "匿名統計自功能上線後開始累積，重複作答也會計入；作答次數較少時，結果僅供參考。", "analytics-help"));
+  if (!questions) {
+    panel.append(node("p", "答題分析暫時無法載入，請稍後重新整理。", "empty"));
+    return panel;
+  }
   if (!questions.length) {
     panel.append(node("p", "目前還沒有答題紀錄，學生開始作答後就會顯示圖表。", "empty"));
-  } else {
-    const total = questions.reduce((sum, item) => sum + item.attempts, 0);
-    const correct = questions.reduce((sum, item) => sum + item.correct, 0);
-    const percentage = (count, all) => all ? Math.round(count / all * 100) : 0;
-    const stats = node("div", undefined, "analytics-stats");
-    for (const [label, value, detail] of [["總作答次數", `${total} 次`, "包含重複作答"], ["整體答對率", `${percentage(correct, total)}%`, `答對 ${correct} 次`], ["已有作答的題目", `${questions.length} 題次`, "不同版本分開計算"]]) {
-      const card = node("div", undefined, "analytics-stat");
-      card.append(node("span", label), node("strong", value), node("small", detail));
-      stats.append(card);
-    }
-    panel.append(stats);
-    const bar = (count, all, choice = false) => {
-      const track = node("div", undefined, `analytics-bar${choice ? " choice" : ""}`);
-      track.setAttribute("aria-hidden", "true");
-      const fill = node("span");
-      fill.style.width = `${percentage(count, all)}%`;
-      track.append(fill);
-      return track;
-    };
-    const topics = new Map();
-    for (const item of questions) {
-      const summary = topics.get(item.topic) || { attempts: 0, correct: 0 };
-      summary.attempts += item.attempts;
-      summary.correct += item.correct;
-      topics.set(item.topic, summary);
-    }
-    const topicSection = node("section", undefined, "analytics-section");
-    topicSection.append(node("h2", "各主題答對率"), node("p", "長條越長代表答對率越高，數字顯示答對次數／總作答次數。", "analytics-help"));
-    for (const [topic, summary] of [...topics].sort((a, b) => a[1].correct / a[1].attempts - b[1].correct / b[1].attempts)) {
-      const row = node("div", undefined, "analytics-topic");
-      const heading = node("div", undefined, "analytics-topic-heading");
-      heading.append(node("strong", topic), node("span", `${percentage(summary.correct, summary.attempts)}% · ${summary.correct} / ${summary.attempts} 次`));
-      row.append(heading, bar(summary.correct, summary.attempts));
-      topicSection.append(row);
-    }
-    panel.append(topicSection);
-    const questionSection = node("section", undefined, "analytics-section");
-    questionSection.append(node("h2", "各題作答分析"), node("p", "答對率較低的題目排在前面；選項只顯示曾被選擇的答案。", "analytics-help"));
-    const label = node("label", "篩選主題 ");
-    label.className = "analytics-filter";
-    const select = node("select");
-    const all = node("option", "全部主題");
-    all.value = "";
-    select.append(all);
-    for (const topic of topics.keys()) {
-      const option = node("option", topic);
-      option.value = topic;
-      select.append(option);
-    }
-    label.append(select);
-    const list = node("div", undefined, "analytics-questions");
-    const drawQuestions = () => {
-      list.replaceChildren();
-      for (const item of questions.filter((item) => !select.value || item.topic === select.value).sort((a, b) => a.correct / a.attempts - b.correct / b.attempts || b.attempts - a.attempts)) {
-        const card = node("article", undefined, "analytics-question");
-        const heading = node("div", undefined, "analytics-question-heading");
-        heading.append(node("span", `${item.topic} · ${item.id} · 版本 ${item.revision}`, "analytics-tag"), node("strong", `${percentage(item.correct, item.attempts)}% 答對`));
-        card.append(heading, node("h3", item.question), node("p", `答對 ${item.correct} 次 / 作答 ${item.attempts} 次`, "analytics-help"), bar(item.correct, item.attempts));
-        const choices = node("div", undefined, "analytics-choices");
-        choices.append(node("strong", "選項分布"));
-        for (const [choice, count] of Object.entries(item.choices).sort(([a], [b]) => a.localeCompare(b))) {
-          const row = node("div", undefined, "analytics-choice");
-          row.append(node("span", choice), bar(count, item.attempts, true), node("span", `${count} 次 · ${percentage(count, item.attempts)}%`));
-          choices.append(row);
-        }
-        card.append(choices);
-        list.append(card);
-      }
-    };
-    select.addEventListener("change", drawQuestions);
-    drawQuestions();
-    questionSection.append(label, list);
-    panel.append(questionSection);
+    return panel;
   }
-  $("admin-view").replaceChildren(panel);
+  const total = questions.reduce((sum, item) => sum + item.attempts, 0);
+  const correct = questions.reduce((sum, item) => sum + item.correct, 0);
+  const percent = (value, count) => count ? Math.round(value / count * 100) : 0;
+  const layout = node("div", undefined, "analytics-layout");
+  const overall = node("div", undefined, "analytics-overall");
+  overall.append(node("h3", "整體答題結果"));
+  const pie = node("div", undefined, "analytics-pie");
+  pie.style.setProperty("--correct-rate", `${correct / total * 100}%`);
+  pie.setAttribute("aria-hidden", "true");
+  pie.append(node("strong", `${percent(correct, total)}%`), node("span", "答對率"));
+  const legend = node("p", undefined, "analytics-legend");
+  legend.append(node("span", `答對 ${correct} 次`, "analytics-correct"), node("span", `答錯 ${total - correct} 次`, "analytics-incorrect"));
+  overall.append(pie, legend, node("p", `共作答 ${total} 次`, "analytics-help"));
+  const topicSection = node("div", undefined, "analytics-topics");
+  topicSection.append(node("h3", "各主題答對率"));
+  const topics = new Map();
+  for (const item of questions) {
+    const summary = topics.get(item.topic) || { attempts: 0, correct: 0 };
+    summary.attempts += item.attempts;
+    summary.correct += item.correct;
+    topics.set(item.topic, summary);
+  }
+  for (const [topic, summary] of [...topics].sort((a, b) => a[1].correct / a[1].attempts - b[1].correct / b[1].attempts)) {
+    const row = node("div", undefined, "analytics-topic");
+    const heading = node("div", undefined, "analytics-topic-heading");
+    heading.append(node("strong", topic), node("span", `${percent(summary.correct, summary.attempts)}%（${summary.correct} / ${summary.attempts} 次）`));
+    const track = node("div", undefined, "analytics-bar");
+    track.setAttribute("aria-hidden", "true");
+    const fill = node("span");
+    fill.style.width = `${percent(summary.correct, summary.attempts)}%`;
+    track.append(fill);
+    row.append(heading, track);
+    topicSection.append(row);
+  }
+  layout.append(overall, topicSection);
+  panel.append(layout);
+  return panel;
 }
 
 /** 將總覽 API 的發布／下架數量建立成摘要卡片。 */
