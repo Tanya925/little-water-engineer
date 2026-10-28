@@ -1390,13 +1390,14 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   .feature-banner[data-scene="quiz"] .feature-banner-scene {
-    z-index: 0;
+    /* Keep the clipboard artwork above the cloud layer below it. */
+    z-index: 2;
   }
 
   .feature-banner[data-scene="quiz"] > .back,
   .feature-banner[data-scene="quiz"] > .page-heading {
     position: relative;
-    z-index: 1;
+    z-index: 3;
   }
 
   /* The quiz artwork owns the complete phone canvas. */
@@ -3126,6 +3127,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     display: block !important;
     background:
       url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
+      url("../images/quiz-flower-border.svg") center bottom / auto 155px repeat-x,
       linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
     opacity: .9 !important;
   }
@@ -3203,6 +3205,12 @@ body:has(#quiz-content:not([hidden])) .site-header {
     background: linear-gradient(180deg, #d4e8ce 0%, #c7e0bb 22%, #b9d99f 100%) !important;
   }
 
+  /* The white learning-panel background created a hard break between the
+     sky-blue heading and the garden.  One shared gradient keeps it seamless. */
+  #quiz-setup.learning-panel {
+    background: linear-gradient(180deg, #e4f1ff 0%, #e9f3ee 18%, #dcebd9 47%, transparent 72%) !important;
+  }
+
   /* The count card must sit below difficulty; a late legacy translate used
      to pull it back upward. */
   #quiz-setup .quiz-departure-area .quiz-prep-count {
@@ -3218,6 +3226,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-adventure-pass .quiz-backpack-empty {
     font-size: 15px !important;
+    transform: translateY(9px);
   }
 
   #quiz-setup .quiz-final-step #quiz-start {
