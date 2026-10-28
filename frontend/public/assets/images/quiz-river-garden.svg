@@ -1,13 +1,6 @@
 <!-- 知識小學堂背包區專用背景：柔和小溪、草地與接到頁尾的花園。 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -220 1600 920">
   <defs>
-    <linearGradient id="creek" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#cfe5c3" stop-opacity="0" />
-      <stop offset=".2" stop-color="#cce5df" stop-opacity=".48" />
-      <stop offset=".5" stop-color="#91c9d7" stop-opacity=".78" />
-      <stop offset=".8" stop-color="#cce5df" stop-opacity=".48" />
-      <stop offset="1" stop-color="#cfe5c3" stop-opacity="0" />
-    </linearGradient>
     <g id="flower">
       <path d="M0 10v45M0 42C-20 18-26 26-15 42M0 34C18 16 25 25 12 39" fill="none" stroke="#6f9b6c" stroke-width="4" stroke-linecap="round" />
       <g fill="currentColor"><ellipse cy="-10" rx="12" ry="18" /><ellipse cx="15" cy="-2" rx="18" ry="12" /><ellipse cx="10" cy="13" rx="12" ry="18" /><ellipse cx="-10" cy="13" rx="12" ry="18" /><ellipse cx="-15" cy="-2" rx="18" ry="12" /></g>
@@ -15,12 +8,7 @@
     </g>
   </defs>
 
-  <!-- 靠近背包的寬小溪：兩岸以透明色漸融，並在花園前收住。 -->
-  <!-- 擴充上方畫布後，只移動水面；完整曲線不會在右上方被裁成直線。 -->
-  <g transform="translate(0 -165) scale(1 1.16)">
-    <path d="M-80 350C166 315 355 270 540 196 737 117 1042 61 1690 10L1710 188C1214 244 946 294 761 367 574 441 316 472-80 486Z" fill="#a7d1d5" opacity=".22" />
-    <path d="M-80 365C164 327 351 285 548 209 746 133 1046 80 1690 31L1700 156C1222 209 956 257 772 329 579 404 320 436-80 452Z" fill="url(#creek)" opacity=".72" />
-  </g>
+  <!-- 水面層已移除：行動版會顯示成突兀的橫向淡色帶；保留完整花園與小徑。 -->
   <!-- 河岸與花園底圖固定在原位。 -->
     <path d="M0 322Q200 292 410 330T805 315T1215 337T1600 304V700H0Z" fill="#d2e6ce" opacity=".26" />
     <path d="M0 430Q220 394 430 428T840 410T1240 435T1600 400V700H0Z" fill="#c5dfbd" opacity=".18" />

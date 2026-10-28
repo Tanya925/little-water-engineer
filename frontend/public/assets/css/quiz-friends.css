@@ -1387,6 +1387,8 @@ body:has(#quiz-content:not([hidden])) .site-header {
   .feature-banner[data-scene="quiz"] {
     isolation: isolate;
     overflow: visible;
+    position: relative;
+    z-index: 5;
   }
 
   .feature-banner[data-scene="quiz"] .feature-banner-scene {
@@ -3127,7 +3129,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     display: block !important;
     background:
       url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
-      url("../images/quiz-flower-border.svg") center bottom / auto 155px repeat-x,
+      url("../images/quiz-river-garden.svg") center bottom / auto 640px no-repeat,
       linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
     opacity: .9 !important;
   }
@@ -3170,7 +3172,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     position: relative;
     row-gap: clamp(28px, 5vw, 42px) !important;
     column-gap: clamp(14px, 3vw, 22px) !important;
-    background: linear-gradient(180deg, #eaf4e9 0%, #dcebd9 48%, #c9e1be 100%) !important;
+    background: linear-gradient(180deg, #e2f0ff 0%, #e9f3ee 18%, #dcebd9 42%, #c9e1be 100%) !important;
   }
 
   #quiz-topic-picks::before {
@@ -3197,6 +3199,11 @@ body:has(#quiz-content:not([hidden])) .site-header {
     --topic-drift-x: -11px;
     --topic-drift-x-return: 11px;
     --topic-rise: 14px;
+  }
+
+  /* The typhoon-world card itself continuously turns clockwise. */
+  #quiz-setup .quiz-topic-pick[data-world="4"] {
+    animation: map-cyclone var(--topic-period, 12s) linear infinite !important;
   }
 
   #quiz-setup .quiz-departure-area {
@@ -3230,7 +3237,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-setup .quiz-final-step #quiz-start {
-    margin-top: 190px !important;
+    margin-top: 52px !important;
   }
 }
 
