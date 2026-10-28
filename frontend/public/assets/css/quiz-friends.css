@@ -3172,7 +3172,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     position: relative;
     row-gap: clamp(48px, 7vw, 60px) !important;
     column-gap: clamp(14px, 3vw, 22px) !important;
-    background: linear-gradient(180deg, #e2f0ff 0%, #e9f3ee 18%, #dcebd9 42%, #c9e1be 100%) !important;
+    background: linear-gradient(180deg, #e2f0ff 0%, #d9ebcc 42%, #d9ebcc 100%) !important;
   }
 
   #quiz-topic-picks::before {
