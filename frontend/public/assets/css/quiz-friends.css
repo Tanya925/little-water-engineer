@@ -1382,7 +1382,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .quiz-friends-stage {
     height: 590px;
   }
@@ -2960,7 +2960,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .quiz-friends-stage {
     height: 590px;
     --speech-width: min(158px, calc(100vw - 48px));
@@ -3665,6 +3665,9 @@ body:has(#quiz-content:not([hidden])) .site-header {
   .quiz-friends-stage .quiz-walking-trails,
   .quiz-friends-stage::after { display: none !important; }
 
+  .quiz-friends-stage .friend-earth,
+  .quiz-friends-stage .friend-wind { display: none !important; }
+
   .quiz-friend-speech {
     position: relative !important;
     width: min(calc(100% - 32px), 420px) !important;
@@ -4012,4 +4015,77 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area .quiz-backpack {
     width: min(calc(100% - 52px), 360px) !important;
   }
+}
+
+/* Narrow-device scene: use the real route SVG and move the single companion
+   across it, matching the walking treatment used on the other feature pages. */
+@media (max-width: 900px) {
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(calc(100% - 36px), 520px) !important;
+  }
+
+  #quiz-topic-picks::before {
+    background:
+      url("../images/quiz-map-texture.svg") center / cover no-repeat,
+      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
+      linear-gradient(180deg, #e7f2e5, #d2e6ce) !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .quiz-friends-stage {
+    height: 400px !important;
+    overflow: hidden !important;
+    background: url("../images/quiz-sky.svg") center bottom / cover no-repeat !important;
+  }
+
+  .quiz-friends-stage .quiz-walking-trails {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    translate: none !important;
+  }
+
+  .quiz-friends-stage .quiz-walking-trails path {
+    stroke: #77a9aa !important;
+    stroke-width: 3 !important;
+    stroke-dasharray: none !important;
+    opacity: .72 !important;
+  }
+
+  .quiz-friends-stage::after { display: none !important; }
+
+  .quiz-friends-stage .friend-earth,
+  .quiz-friends-stage .friend-wind { display: none !important; }
+
+  .quiz-friends-stage .friend-water {
+    position: absolute !important;
+    top: 205px !important;
+    left: 22px !important;
+    width: 108px !important;
+    translate: none !important;
+    transform: none !important;
+    animation: quiz-mobile-route-walk 8s ease-in-out infinite !important;
+  }
+
+  .quiz-friends-stage .quiz-friend-speech { top: 18px !important; }
+
+}
+
+@media (max-width: 600px) {
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(calc(100% - 20px), 360px) !important;
+  }
+}
+
+@keyframes quiz-mobile-route-walk {
+  0%, 100% { left: 22px; transform: translateY(0); }
+  45% { transform: translateY(-10px); }
+  50% { left: calc(100% - 130px); transform: translateY(0); }
+  55% { transform: translateY(-10px); }
 }
