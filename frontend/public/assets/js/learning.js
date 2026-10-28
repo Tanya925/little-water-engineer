@@ -102,6 +102,7 @@ new ResizeObserver(drawFriendTrails).observe(friendStage);
 // mobile guide with an inline important value instead, so the little water
 // drop always walks from side to side just like the guides on other pages.
 const mobileWalkingFriend = learningElement("quiz-water-friend");
+const mobileFriendSpeech = document.querySelector(".quiz-friend-speech");
 function walkMobileFriend(timestamp) {
   const compactScene = matchMedia("(max-width: 900px)").matches;
   const visible = friendStage.offsetParent !== null;
@@ -110,11 +111,23 @@ function walkMobileFriend(timestamp) {
     const routeWidth = Math.max(0, friendStage.clientWidth - mobileWalkingFriend.offsetWidth - sidePadding * 2);
     const progress = (Math.sin(timestamp / 1432 - Math.PI / 2) + 1) / 2;
     const hop = Math.sin(timestamp / 358) * 7;
-    mobileWalkingFriend.style.setProperty("left", `${sidePadding + routeWidth * progress}px`, "important");
+    const friendLeft = sidePadding + routeWidth * progress;
+    mobileWalkingFriend.style.setProperty("left", `${friendLeft}px`, "important");
     mobileWalkingFriend.style.setProperty("transform", `translateY(${-Math.abs(hop)}px) rotate(${hop / 7 * 2}deg)`, "important");
+    // Keep the moving speech bubble on-screen near either end of the route.
+    // It remains attached to the water drop, but shifts within its container
+    // only when its natural centred position would cross the viewport edge.
+    const speechWidth = Math.min(390, Math.max(0, friendStage.clientWidth - 28));
+    const stageSpeechLeft = Math.max(14, Math.min(friendStage.clientWidth - speechWidth - 14, friendLeft + mobileWalkingFriend.offsetWidth / 2 - speechWidth / 2));
+    mobileFriendSpeech.style.setProperty("left", `${stageSpeechLeft - friendLeft}px`, "important");
+    mobileFriendSpeech.style.setProperty("width", `${speechWidth}px`, "important");
+    mobileFriendSpeech.style.setProperty("translate", "none", "important");
   } else {
     mobileWalkingFriend.style.removeProperty("left");
     mobileWalkingFriend.style.removeProperty("transform");
+    mobileFriendSpeech.style.removeProperty("left");
+    mobileFriendSpeech.style.removeProperty("width");
+    mobileFriendSpeech.style.removeProperty("translate");
   }
   requestAnimationFrame(walkMobileFriend);
 }

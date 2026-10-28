@@ -3409,7 +3409,15 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   .feature-page:has(#quiz-content:not([hidden])) {
+    width: 100%;
+    max-width: none;
+    padding-right: 0;
+    padding-left: 0;
     background: linear-gradient(180deg, #dceeff 0%, #edf6ef 31%, #dcebd9 58%, #bfdcae 100%) !important;
+  }
+
+  body:has(#quiz-content:not([hidden])) {
+    background: linear-gradient(180deg, #dceeff 0%, #edf6ef 31%, #dcebd9 58%, #bfdcae 100%);
   }
 
   #quiz-content .quiz-friends-stage {
@@ -3436,6 +3444,10 @@ body:has(#quiz-content:not([hidden])) .site-header {
     stroke: #c4d9df !important;
     stroke-width: 5 !important;
     opacity: .9 !important;
+  }
+
+  #quiz-content .quiz-friends-stage::after {
+    display: none !important;
   }
 
   /* The speech bubble is a child of the moving water drop, rather than a
@@ -3479,6 +3491,12 @@ body:has(#quiz-content:not([hidden])) .site-header {
     margin: 0 !important;
   }
 
+  #quiz-setup .quiz-departure-area .quiz-filters legend {
+    white-space: nowrap;
+    letter-spacing: 0;
+    font-size: clamp(13px, 3.25vw, 20px);
+  }
+
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
     box-sizing: border-box !important;
@@ -3504,14 +3522,18 @@ body:has(#quiz-content:not([hidden])) .site-header {
     width: 100% !important;
     max-width: 100% !important;
     margin: 8px 0 0 !important;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
     padding-inline: 8px !important;
     overflow: hidden;
   }
 
   #quiz-setup .quiz-pass-settings span {
+    flex: 1 1 0;
     min-width: 0;
-    padding-inline: 7px !important;
-    font-size: clamp(12px, 2.2vw, 16px) !important;
+    padding-inline: 4px !important;
+    font-size: clamp(11px, 2vw, 15px) !important;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -3527,12 +3549,16 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
-    top: -168px !important;
+    top: -142px !important;
     width: min(84vw, 340px) !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters {
     gap: 16px !important;
+  }
+
+  #quiz-topic-picks {
+    gap: 32px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
@@ -3541,6 +3567,6 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 64px), 330px) !important;
+    width: min(calc(100% - 64px), 420px) !important;
   }
 }
