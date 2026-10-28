@@ -1683,6 +1683,17 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 }
 
+/* Compact topic cards drift independently in both directions. */
+@keyframes mobile-topic-drift {
+  0%,
+  100% {
+    transform: translate(var(--topic-drift-x), var(--map-shift)) rotate(calc(var(--map-tilt) - 1deg));
+  }
+  50% {
+    transform: translate(var(--topic-drift-x-return), calc(var(--map-shift) - var(--topic-rise))) rotate(calc(var(--map-tilt) + 1.5deg));
+  }
+}
+
 @keyframes map-airflow {
   0%,
   100% {
@@ -2715,10 +2726,6 @@ body:has(#quiz-content:not([hidden])) .site-header {
   transform: rotate(-3deg);
 }
 
-#quiz-setup .quiz-departure-area .quiz-prep-count {
-  translate: 0 -38px;
-}
-
 #quiz-setup .quiz-final-step {
   grid-template-columns: minmax(0, 1fr);
   gap: 20px;
@@ -3118,7 +3125,6 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area::before {
     display: block !important;
     background:
-      url("../images/quiz-river-garden.svg") center calc(100% + 180px) / auto 460px no-repeat,
       url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
       linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
     opacity: .9 !important;
@@ -3171,9 +3177,24 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-setup .quiz-topic-pick {
-    animation: map-compass var(--topic-period, 5s) ease-in-out infinite !important;
+    --topic-drift-x: -8px;
+    --topic-drift-x-return: 8px;
+    --topic-rise: 13px;
+    animation: mobile-topic-drift var(--topic-period, 5s) ease-in-out infinite !important;
     animation-play-state: running !important;
     will-change: transform;
+  }
+
+  #quiz-setup .quiz-topic-pick:nth-child(2n) {
+    --topic-drift-x: 9px;
+    --topic-drift-x-return: -9px;
+    --topic-rise: 15px;
+  }
+
+  #quiz-setup .quiz-topic-pick:nth-child(3n) {
+    --topic-drift-x: -11px;
+    --topic-drift-x-return: 11px;
+    --topic-rise: 14px;
   }
 
   #quiz-setup .quiz-departure-area {
@@ -3182,8 +3203,25 @@ body:has(#quiz-content:not([hidden])) .site-header {
     background: linear-gradient(180deg, #d4e8ce 0%, #c7e0bb 22%, #b9d99f 100%) !important;
   }
 
+  /* The count card must sit below difficulty; a late legacy translate used
+     to pull it back upward. */
+  #quiz-setup .quiz-departure-area .quiz-prep-count {
+    margin-top: 36px !important;
+    translate: 0 0 !important;
+  }
+
+  /* Keep the selection pass wholly inside the illustrated backpack. */
+  #quiz-setup .quiz-adventure-pass #quiz-selection-note {
+    transform: translateY(-30px) scale(.9);
+    transform-origin: center top;
+  }
+
+  #quiz-setup .quiz-adventure-pass .quiz-backpack-empty {
+    font-size: 15px !important;
+  }
+
   #quiz-setup .quiz-final-step #quiz-start {
-    margin-top: 34px !important;
+    margin-top: 190px !important;
   }
 }
 
@@ -3208,7 +3246,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   /* Give the question-count stop its own breathing room below difficulty. */
   #quiz-setup .quiz-departure-area .quiz-prep-count {
-    margin-top: 20px !important;
+    margin-top: 42px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
