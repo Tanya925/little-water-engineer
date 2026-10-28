@@ -3024,7 +3024,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
      separately positioned stage element. */
   #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
     position: absolute !important;
-    top: -142px !important;
+    top: -132px !important;
     bottom: auto !important;
     left: 50% !important;
     right: auto !important;
@@ -3142,7 +3142,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
-    top: -118px !important;
+    top: -100px !important;
     width: min(84vw, 340px) !important;
   }
 
