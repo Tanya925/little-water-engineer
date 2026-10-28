@@ -4,4 +4,4 @@
  * 決定此頁初始顯示方式；本檔刻意不重複任何測驗邏輯。
  */
 
-import "./learning.js";
+import "./learning.js?v=20261028-36";

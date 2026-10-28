@@ -2995,7 +2995,8 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-content .quiz-friends-stage {
-    height: 350px !important;
+    /* Reserve a real ground area under the moving water drop for its path. */
+    height: 400px !important;
     overflow: visible !important;
     /* quiz-sky.svg is transparent: it adds clouds above the shared page
        illustration without introducing a separate coloured backdrop. */
@@ -3117,7 +3118,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area::before {
     display: block !important;
     background:
-      url("../images/quiz-river-garden.svg") center bottom / auto 640px no-repeat,
+      url("../images/quiz-river-garden.svg") center calc(100% + 180px) / auto 460px no-repeat,
       url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
       linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
     opacity: .9 !important;
@@ -3171,6 +3172,8 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-topic-pick {
     animation: map-compass var(--topic-period, 5s) ease-in-out infinite !important;
+    animation-play-state: running !important;
+    will-change: transform;
   }
 
   #quiz-setup .quiz-departure-area {
@@ -3190,7 +3193,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-content .quiz-friends-stage {
-    height: 330px !important;
+    height: 390px !important;
   }
 
   #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {

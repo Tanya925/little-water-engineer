@@ -88,11 +88,16 @@ friendTrail.setAttribute("aria-hidden", "true");
 friendStage.prepend(friendTrail);
 function drawFriendTrails() {
   const width = friendStage.clientWidth;
-  if (!width) return;
-  friendTrail.setAttribute("viewBox", `0 0 ${width} ${friendStage.clientHeight}`);
+  const height = friendStage.clientHeight;
+  if (!width || !height) return;
+  friendTrail.setAttribute("viewBox", `0 0 ${width} ${height}`);
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const compact = matchMedia("(max-width: 900px)").matches;
+  const baseline = compact ? Math.max(220, height - 22) : 309;
+  const crest = compact ? baseline - 15 : 290;
+  const trough = compact ? baseline + 11 : 327;
   // 路線從舞台的左右邊界開始與結束，避免寬螢幕上看起來像少了一截。
-  path.setAttribute("d", `M0,309 C${width * .3},290 ${width * .7},327 ${width},305`);
+  path.setAttribute("d", `M0,${baseline} C${width * .3},${crest} ${width * .7},${trough} ${width},${baseline - 4}`);
   friendTrail.replaceChildren(path);
 }
 new ResizeObserver(drawFriendTrails).observe(friendStage);
