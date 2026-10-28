@@ -3170,7 +3170,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
      visible horizontal cut. */
   #quiz-topic-picks {
     position: relative;
-    row-gap: clamp(28px, 5vw, 42px) !important;
+    row-gap: clamp(48px, 7vw, 60px) !important;
     column-gap: clamp(14px, 3vw, 22px) !important;
     background: linear-gradient(180deg, #e2f0ff 0%, #e9f3ee 18%, #dcebd9 42%, #c9e1be 100%) !important;
   }
@@ -3291,7 +3291,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-topic-picks {
-    row-gap: 30px !important;
+    row-gap: 48px !important;
     column-gap: 18px !important;
   }
 
