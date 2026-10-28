@@ -1383,6 +1383,22 @@ body:has(#quiz-content:not([hidden])) .site-header {
 }
 
 @media (max-width: 900px) {
+  /* Keep the laptop artwork above the responsive scene layers. */
+  .feature-banner[data-scene="quiz"] {
+    isolation: isolate;
+    overflow: visible;
+  }
+
+  .feature-banner[data-scene="quiz"] .feature-banner-scene {
+    z-index: 0;
+  }
+
+  .feature-banner[data-scene="quiz"] > .back,
+  .feature-banner[data-scene="quiz"] > .page-heading {
+    position: relative;
+    z-index: 1;
+  }
+
   /* The quiz artwork owns the complete phone canvas. */
   html,
   body[data-page="quiz"],
@@ -3094,6 +3110,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area::before {
     display: block !important;
     background:
+      url("../images/quiz-river-garden.svg") center bottom / auto 640px no-repeat,
       url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
       linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
     opacity: .9 !important;
@@ -3130,6 +3147,20 @@ body:has(#quiz-content:not([hidden])) .site-header {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  /* Adjacent illustrated worlds share a gentle transition rather than a
+     visible horizontal cut. */
+  #quiz-topic-picks {
+    position: relative;
+    gap: clamp(14px, 3vw, 22px) !important;
+    background: linear-gradient(180deg, #e7f2e5 0%, #dcebd9 70%, #d4e8ce 100%);
+  }
+
+  #quiz-setup .quiz-departure-area {
+    margin-top: -1px;
+    padding-top: 58px !important;
+    background: linear-gradient(180deg, #d4e8ce 0%, #c7e0bb 22%, #b9d99f 100%) !important;
+  }
 }
 
 @media (max-width: 600px) {
@@ -3148,7 +3179,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-filters {
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: 24px !important;
+    gap: 42px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
@@ -3174,5 +3205,9 @@ body:has(#quiz-content:not([hidden])) .site-header {
     min-height: 42px !important;
     padding: 8px 3px !important;
     font-size: 13px !important;
+  }
+
+  #quiz-topic-picks {
+    gap: 18px !important;
   }
 }

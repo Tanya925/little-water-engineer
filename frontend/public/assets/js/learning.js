@@ -113,7 +113,7 @@ function walkMobileFriend(timestamp) {
     // Reserve enough of the route for the bubble on either side.  The bubble
     // can therefore stay centred on (and travel with) the water drop instead
     // of being independently pinned to the stage.
-    const speechWidth = Math.min(390, Math.max(0, friendStage.clientWidth - 28));
+    const speechWidth = Math.min(280, Math.max(0, friendStage.clientWidth - 28));
     const sidePadding = Math.max(20, Math.ceil((speechWidth - mobileWalkingFriend.offsetWidth) / 2) + 14);
     const routeWidth = Math.max(0, friendStage.clientWidth - mobileWalkingFriend.offsetWidth - sidePadding * 2);
     const progress = (Math.sin(timestamp / 1432 - Math.PI / 2) + 1) / 2;
