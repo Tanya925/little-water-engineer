@@ -1383,7 +1383,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 }
 
 @media (max-width: 900px) {
-  .quiz-friends-stage {
+  #quiz-content .quiz-friends-stage {
     height: 590px;
   }
 
@@ -3402,7 +3402,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
 /* 小螢幕的對話固定在夥伴場景上方；它不跟著角色容器翻轉，也不會落到場景外。 */
 @media (max-width: 900px) {
-  .quiz-friends-stage .quiz-friend-speech {
+  #quiz-content .quiz-friends-stage .quiz-friend-speech {
     position: absolute;
     z-index: 6;
     top: 28px;
@@ -3924,7 +3924,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 /* learning.js nests the speech bubble in the stage.  Tablet and phone both
    need the same centred anchor; otherwise the desktop speech offset wins. */
 @media (max-width: 900px) {
-  .quiz-friends-stage .quiz-friend-speech {
+  #quiz-content .quiz-friends-stage .quiz-friend-speech {
     position: absolute !important;
     top: 14px !important;
     right: auto !important;
@@ -4041,7 +4041,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     background: url("../images/quiz-sky.svg") center bottom / cover no-repeat !important;
   }
 
-  .quiz-friends-stage .quiz-walking-trails {
+  #quiz-content .quiz-friends-stage .quiz-walking-trails {
     display: block !important;
     position: absolute;
     inset: 0;
@@ -4050,7 +4050,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     translate: none !important;
   }
 
-  .quiz-friends-stage .quiz-walking-trails path {
+  #quiz-content .quiz-friends-stage .quiz-walking-trails path {
     stroke: #77a9aa !important;
     stroke-width: 3 !important;
     stroke-dasharray: none !important;
@@ -4088,4 +4088,126 @@ body:has(#quiz-content:not([hidden])) .site-header {
   45% { transform: translateY(-10px); }
   50% { left: calc(100% - 130px); transform: translateY(0); }
   55% { transform: translateY(-10px); }
+}
+
+/*
+ * Small-screen scene baseline.
+ *
+ * The rules above intentionally keep the original desktop illustration, but
+ * older experiments also leave several competing phone compositions behind.
+ * Keep this last: the scene is a real, full-width stage; the speech stays in
+ * its own upper lane; and the visible character always has an unobstructed
+ * route to walk on.  Content below remains in normal document flow.
+ */
+@media (max-width: 900px) {
+  .feature-page:has(#quiz-content:not([hidden])) {
+    width: 100%;
+    max-width: none;
+    padding-inline: 0;
+    overflow-x: clip;
+    background: linear-gradient(180deg, #dceeff 0%, #edf8ff 32%, #dceccc 68%, #b7d697 100%);
+  }
+
+  #quiz-content,
+  #quiz-content > #quiz-setup {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .quiz-friends-grove {
+    width: 100%;
+    margin: 0 0 28px;
+  }
+
+  #quiz-content .quiz-friends-stage {
+    display: block !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    height: 390px !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    background: url("../images/quiz-sky.svg") center bottom / cover no-repeat !important;
+  }
+
+  #quiz-content .quiz-friends-stage .quiz-friend-speech {
+    position: absolute !important;
+    z-index: 5;
+    top: 16px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    width: min(calc(100% - 36px), 460px) !important;
+    margin: 0 !important;
+    translate: -50% 0 !important;
+    transform: none !important;
+  }
+
+  #quiz-content .quiz-friends-stage .quiz-walking-trails {
+    display: block !important;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    translate: none !important;
+  }
+
+  #quiz-content .quiz-friends-stage .quiz-walking-trails path {
+    stroke: #5d9c9c !important;
+    stroke-width: 3 !important;
+    opacity: .65 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #quiz-content .quiz-friends-stage {
+    height: 330px !important;
+  }
+
+  #quiz-content .quiz-friends-stage .friend-earth,
+  #quiz-content .quiz-friends-stage .friend-wind {
+    display: none !important;
+  }
+
+  #quiz-content .quiz-friends-stage .friend-water {
+    display: flex !important;
+    position: absolute !important;
+    z-index: 2;
+    top: 184px !important;
+    left: 20px !important;
+    width: 108px !important;
+    translate: none !important;
+    transform: none !important;
+    animation: quiz-phone-water-walk 9s ease-in-out infinite !important;
+  }
+
+  #quiz-content .quiz-friends-stage .quiz-friend-speech {
+    width: min(calc(100% - 28px), 340px) !important;
+  }
+}
+
+@keyframes quiz-phone-water-walk {
+  0%, 100% { left: 20px; transform: translateY(0) rotate(-2deg); }
+  25% { transform: translateY(-11px) rotate(2deg); }
+  50% { left: calc(100% - 128px); transform: translateY(0) rotate(2deg); }
+  75% { transform: translateY(-11px) rotate(-2deg); }
+}
+
+/* The previous desktop bubble uses a long offset selector.  Match its
+   specificity on narrow screens so it cannot ever be positioned off canvas. */
+@media (max-width: 900px) {
+  #feature-page #quiz-content .quiz-welcome .quiz-friends-stage .quiz-friend-speech {
+    inset: 16px 18px auto !important;
+    box-sizing: border-box;
+    width: auto !important;
+    max-width: 460px !important;
+    margin-inline: auto !important;
+    translate: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #feature-page #quiz-content .quiz-welcome .quiz-friends-stage .quiz-friend-speech {
+    inset: 12px 14px auto !important;
+    max-width: 340px !important;
+  }
 }
