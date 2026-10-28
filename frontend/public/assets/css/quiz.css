@@ -1,9 +1,0 @@
-/*
- * 知識小學堂的入口。learning.css 提供題目、選項及評分回饋，page-shell.css 提供頁面
- * 外框；舊首頁的探險角色場景另由 quiz-friends.css 使用，獨立頁新增的測驗規則請放此處。
- */
-@import url("./styles.css");
-@import url("./learning.css");
-@import url("./page-shell.css");
-
-/* 選題、作答與結果畫面的頁面專屬調整請寫在此處。 */

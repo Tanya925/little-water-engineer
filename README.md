@@ -181,7 +181,6 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `assets/js/ai-qa-page.js` | 獨立 AI 問答頁的訊息、等待狀態與來源顯示。 | 對話 ID 僅作脈絡識別，不能當帳號。 |
 | `assets/js/about-page.js` | 取得並渲染關於我們 D1 內容。 | 使用共用安全 DOM 工具。 |
 | `assets/js/activities-page.js` | 取得並渲染公開活動。 | 外部活動連結需加安全 rel。 |
-| `assets/js/index-page.js` | 首頁拆頁入口與導覽標示。 | 大型首頁互動應集中於此。 |
 | `assets/js/knowledge-page.js` | 科普知識預告與未來文章功能入口。 | 新增文章 API 時由此發起。 |
 | `assets/js/honors-page.js` | 榮譽榜預告與未來成果功能入口。 | 避免直接公開學生個資。 |
 | `assets/js/games-page.js` | 遊戲預告與未來關卡功能入口。 | 得分不可僅由前端判定。 |
@@ -202,10 +201,8 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `assets/css/ai.css` | AI 對話泡泡、來源、輸入區與等待狀態共用外觀。 | 不改變訊息的安全文字插入方式。 |
 | `assets/css/admin.css` | 老師後台完整桌面／手機版面、清單、dialog 與教材收合卡。 | 與 `admin.html`／`admin.js` class 同步。 |
 | `assets/css/login.css` | 老師登入卡片、表單與錯誤訊息。 | 只影響登入頁。 |
-| `assets/css/index.css` | 首頁拆頁入口樣式。 | 大型首頁設計仍多由共用樣式控制。 |
 | `assets/css/experiments.css` | 影片頁入口樣式。 | 配合影片搜尋與卡片。 |
 | `assets/css/resources.css` | 教材下載頁入口樣式。 | 配合教材清單與空狀態。 |
-| `assets/css/quiz.css` | 獨立題庫頁入口樣式。 | 配合設定、題目與結果區。 |
 | `assets/css/ai-qa.css` | 獨立 AI 問答頁入口樣式。 | 匯入／搭配 `ai.css`。 |
 | `assets/css/activities.css` | 活動紀錄頁入口樣式。 | 未來活動卡片調整位置。 |
 | `assets/css/about.css` | 關於我們頁入口樣式。 | 內容來自 D1，不應依文字硬編排。 |
