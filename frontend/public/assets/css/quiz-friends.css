@@ -2997,10 +2997,10 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-content .quiz-friends-stage {
     height: 350px !important;
     overflow: visible !important;
-    /* Preserve the illustration's proportions instead of stretching clouds. */
-    background-size: auto 100% !important;
-    background-repeat: repeat-x !important;
-    background-color: #e9f5ff;
+    /* The scene inherits the page illustration; no opaque cloud layer sits
+       between the companion and the laptop-style background. */
+    background-image: none !important;
+    background-color: transparent;
   }
 
   #quiz-content .quiz-map-decor span:nth-child(1),
@@ -3152,8 +3152,18 @@ body:has(#quiz-content:not([hidden])) .site-header {
      visible horizontal cut. */
   #quiz-topic-picks {
     position: relative;
-    gap: clamp(14px, 3vw, 22px) !important;
+    row-gap: clamp(28px, 5vw, 42px) !important;
+    column-gap: clamp(14px, 3vw, 22px) !important;
     background: linear-gradient(180deg, #e7f2e5 0%, #dcebd9 70%, #d4e8ce 100%);
+  }
+
+  #quiz-topic-picks::before {
+    bottom: 0;
+    background: linear-gradient(180deg, #e7f2e5 0%, #dcebd9 70%, #d4e8ce 100%) !important;
+  }
+
+  #quiz-setup .quiz-topic-pick {
+    animation: none !important;
   }
 
   #quiz-setup .quiz-departure-area {
@@ -3179,7 +3189,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-filters {
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: 42px !important;
+    gap: 56px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
@@ -3193,8 +3203,8 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 52px), 430px) !important;
-    height: 370px !important;
+    width: min(calc(100% - 80px), 420px) !important;
+    height: 330px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters legend {
@@ -3208,6 +3218,13 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-topic-picks {
-    gap: 18px !important;
+    row-gap: 30px !important;
+    column-gap: 18px !important;
+  }
+
+  #quiz-setup .quiz-pass-settings span {
+    padding-inline: 2px !important;
+    font-size: 11px !important;
+    white-space: nowrap;
   }
 }
