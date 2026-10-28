@@ -2997,9 +2997,12 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-content .quiz-friends-stage {
     height: 350px !important;
     overflow: visible !important;
-    /* The scene inherits the page illustration; no opaque cloud layer sits
-       between the companion and the laptop-style background. */
-    background-image: none !important;
+    /* quiz-sky.svg is transparent: it adds clouds above the shared page
+       illustration without introducing a separate coloured backdrop. */
+    background-image: url("../images/quiz-sky.svg") !important;
+    background-size: auto 170px !important;
+    background-position: center top !important;
+    background-repeat: repeat-x !important;
     background-color: transparent;
   }
 
