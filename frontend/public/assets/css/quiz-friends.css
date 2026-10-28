@@ -3170,6 +3170,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
      visible horizontal cut. */
   #quiz-topic-picks {
     position: relative;
+    margin-bottom: 0 !important;
     row-gap: clamp(48px, 7vw, 60px) !important;
     column-gap: clamp(14px, 3vw, 22px) !important;
     background: linear-gradient(180deg, #e2f0ff 0%, #d9ebcc 42%, #d9ebcc 100%) !important;
