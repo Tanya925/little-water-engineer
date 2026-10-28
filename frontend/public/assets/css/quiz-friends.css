@@ -4261,3 +4261,36 @@ body:has(#quiz-content:not([hidden])) .site-header {
     width: min(76vw, 290px) !important;
   }
 }
+
+/* Keep the compact scene visually continuous instead of cutting from sky blue
+   to green at the first topic card. */
+@media (max-width: 900px) {
+  #quiz-setup .quiz-topic-heading {
+    background: linear-gradient(180deg, #e1efff 0%, #e9f3ed 100%);
+  }
+
+  #quiz-topic-picks {
+    background: linear-gradient(180deg, #e9f3ed 0%, #dcebd9 135px, #cfe4cf 100%);
+  }
+
+  #quiz-topic-picks::before {
+    opacity: .62 !important;
+  }
+
+  #quiz-content .quiz-walking-trails path {
+    stroke: #c4d9df !important;
+    stroke-width: 5 !important;
+    stroke-dasharray: none !important;
+    opacity: .9 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* This matches the laptop bag's broad silhouette, only at a smaller scale. */
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(88vw, 360px) !important;
+    min-height: 315px !important;
+    aspect-ratio: 1 / 1.08 !important;
+  }
+}

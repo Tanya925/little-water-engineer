@@ -101,6 +101,7 @@ new ResizeObserver(drawFriendTrails).observe(friendStage);
 // mobile guide with an inline important value instead, so the little water
 // drop always walks from side to side just like the guides on other pages.
 const mobileWalkingFriend = learningElement("quiz-water-friend");
+const mobileFriendSpeech = document.querySelector(".quiz-friend-speech");
 function walkMobileFriend(timestamp) {
   const compactScene = matchMedia("(max-width: 600px)").matches;
   const visible = friendStage.offsetParent !== null;
@@ -111,9 +112,21 @@ function walkMobileFriend(timestamp) {
     const hop = Math.sin(timestamp / 358) * 7;
     mobileWalkingFriend.style.setProperty("left", `${sidePadding + routeWidth * progress}px`, "important");
     mobileWalkingFriend.style.setProperty("transform", `translateY(${-Math.abs(hop)}px) rotate(${hop / 7 * 2}deg)`, "important");
+    const speechWidth = Math.min(340, Math.max(0, friendStage.clientWidth - 28));
+    const speechLeft = Math.max(14, Math.min(friendStage.clientWidth - speechWidth - 14, sidePadding + routeWidth * progress + mobileWalkingFriend.offsetWidth / 2 - speechWidth / 2));
+    mobileFriendSpeech.style.setProperty("left", `${speechLeft}px`, "important");
+    mobileFriendSpeech.style.setProperty("right", "auto", "important");
+    mobileFriendSpeech.style.setProperty("top", "12px", "important");
+    mobileFriendSpeech.style.setProperty("width", `${speechWidth}px`, "important");
+    mobileFriendSpeech.style.setProperty("translate", "none", "important");
   } else {
     mobileWalkingFriend.style.removeProperty("left");
     mobileWalkingFriend.style.removeProperty("transform");
+    mobileFriendSpeech.style.removeProperty("left");
+    mobileFriendSpeech.style.removeProperty("right");
+    mobileFriendSpeech.style.removeProperty("top");
+    mobileFriendSpeech.style.removeProperty("width");
+    mobileFriendSpeech.style.removeProperty("translate");
   }
   requestAnimationFrame(walkMobileFriend);
 }
