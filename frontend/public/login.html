@@ -2,7 +2,8 @@
 <!-- 主要功能：定義老師首次設定帳號與後續登入的表單、訊息及頁面結構。 -->
 <!--
   只定義登入／首次設定表單，login.js 查詢帳號狀態再決定呈現方式。
-  欄位 id 對應 JavaScript；真正的帳號驗證、密碼雜湊與 Cookie 建立在 server.mjs。
+  欄位 id 對應 login.js；真正的帳號驗證、密碼雜湊與 Cookie 建立由
+  backend/src/site-worker.js 路由與 backend/src/d1-auth.js 處理。
   表單不保存密碼；成功後由伺服器設定 HttpOnly Cookie，再導向受保護的 admin.html。
   body 不含後台資料，即使直接開啟此檔也無法略過管理 API 的 session 檢查；密碼欄位
   的 autocomplete 與 type 屬性不可任意移除，以維持瀏覽器密碼管理與遮罩行為。

@@ -3,11 +3,6 @@
  * experiments、resources 與 quiz 會共用本檔，但各自的資料載入和評分流程仍由其
  * JavaScript 處理；正確答案的 class 只能在伺服器完成評分後由程式加入。
  */
-/*
- * 教材卡片、選題表單、題目選項、評分回饋及結果回顧的基本樣式。
- * 狀態 class 由各功能頁自己的 JavaScript 切換；正確答案標記只在收到伺服器評分後出現。
- * experiments.html、resources.html、quiz.html 共用本檔，再各自由頁面程式建立所需內容。
- */
 .learning-intro {
   line-height: 1.8;
   margin: 0 0 26px;

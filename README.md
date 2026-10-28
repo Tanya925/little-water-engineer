@@ -147,6 +147,8 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `backend/migrations/0002_teacher_auth.sql` | 建立老師帳號與 session 資料表。 | 只儲存雜湊與 salt，絕不加入明碼密碼。 |
 | `backend/migrations/0003_ai_conversations.sql` | 建立 AI 對話訊息資料表，保存最近脈絡。 | 不要把敏感個資放入對話欄位。 |
 | `backend/migrations/0004_resource_material_images.sql` | 為小教材新增圖片清單與圖說欄位。 | 舊有 `image_url` 會保留，確保既有教材圖片不遺失。 |
+| `backend/migrations/0005_quiz_analytics.sql` | 建立按題目版本、選項與日期彙總的匿名答題統計表。 | 只保存彙總次數，不加入學生識別資料。 |
+| `backend/migrations/0006_showcase_pages.sql` | 建立可發布的學生成果與活動紀錄資料表。 | 圖片與發布狀態須經 Worker 驗證。 |
 
 ### HTML 頁面
 
@@ -177,7 +179,7 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `assets/js/login.js` | 查詢登入狀態、送出登入資料並導向後台。 | 密碼僅 POST 至同源 API，不存 localStorage。 |
 | `assets/js/experiments.js` | 讀取、搜尋、建立影片卡片與播放器。 | Drive ID 同時決定影片連結與本機封面檔名。 |
 | `assets/js/resources-page.js` | 建立公開教材章節卡片與資料夾連結。 | 只顯示已發布章節。 |
-| `assets/js/quiz-page.js` | 獨立小學堂的選題、作答與解析流程。 | 任何答案判定都應交由 API。 |
+| `assets/js/quiz-page.js` | 獨立小學堂的入口，載入與首頁共用的 `learning.js`。 | 選題、作答與解析邏輯集中在 `learning.js`，答案判定交由 API。 |
 | `assets/js/ai-qa-page.js` | 獨立 AI 問答頁的訊息、等待狀態與來源顯示。 | 對話 ID 僅作脈絡識別，不能當帳號。 |
 | `assets/js/about-page.js` | 取得並渲染關於我們 D1 內容。 | 使用共用安全 DOM 工具。 |
 | `assets/js/activities-page.js` | 取得並渲染公開活動。 | 外部活動連結需加安全 rel。 |
@@ -188,6 +190,7 @@ Migration 是可依序執行的資料庫變更紀錄，不是教材內容。新�
 | `assets/js/shared/site-shell.js` | 公開頁共用導覽目前頁標示。 | 保持輕量，不放頁面商業邏輯。 |
 | `frontend/scripts/check-syntax.mjs` | 遞迴以 Node `--check` 檢查前端 JS／MJS。 | 新增前端程式資料夾才需調整掃描目錄。 |
 | `frontend/scripts/generate-page-scenes.mjs` | 以固定 SVG 模板重建九張功能頁場景圖。 | 僅在重建場景時手動執行。 |
+| `frontend/scripts/preview-public.mjs` | 從本機提供靜態前端，並把公開 API 的 GET 請求轉送正式 Worker。 | 預覽會讀取線上資料；不是離線測試或正式部署入口。 |
 
 ### CSS
 

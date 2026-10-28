@@ -1,6 +1,9 @@
+# 相依套件、執行資料、部署快取與機密檔不屬於自行維護的原始碼。
 node_modules/
 frontend/.data/
 backend/.wrangler/
+# SVG 與照片是圖像資產；格式化可能改變產生器輸出或增加無意義的差異。
 frontend/public/assets/images/
+# 此鎖定檔由 npm 產生，應交給 npm 更新，不由 Prettier 重排。
 backend/package-lock.json
 .env
