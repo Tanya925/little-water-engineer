@@ -58,8 +58,10 @@ const quizFriendVisits = { earth: 0, water: 0, wind: 0 };
 function speakQuizFriend(friend, message) {
   const actor = learningElement(`quiz-${friend}-friend`);
   const speech = document.querySelector(".quiz-friend-speech");
-  if (matchMedia("(max-width: 900px)").matches) document.querySelector(".quiz-friends-stage").append(speech);
-  else actor.append(speech);
+  // The bubble belongs to the active companion at every breakpoint.  In the
+  // compact scene the water drop moves along the path, so appending this to
+  // the stage would leave the message behind at a fixed screen coordinate.
+  actor.append(speech);
   learningElement("quiz-speech-speaker").textContent = quizFriendNames[friend];
   learningElement("quiz-buddy-message").textContent = message;
   document.querySelectorAll(".quiz-walking-friend").forEach(button => button.setAttribute("aria-pressed", String(button.id === `quiz-${friend}-friend`)));
@@ -69,8 +71,7 @@ learningElement("quiz-water-friend").append(document.querySelector(".quiz-friend
 function placeQuizSpeech() {
   const speech = document.querySelector(".quiz-friend-speech");
   const selected = document.querySelector(".quiz-walking-friend[aria-pressed='true']") || learningElement("quiz-water-friend");
-  if (matchMedia("(max-width: 900px)").matches) document.querySelector(".quiz-friends-stage").append(speech);
-  else selected.append(speech);
+  selected.append(speech);
 }
 placeQuizSpeech();
 window.addEventListener("resize", placeQuizSpeech);
@@ -101,7 +102,6 @@ new ResizeObserver(drawFriendTrails).observe(friendStage);
 // mobile guide with an inline important value instead, so the little water
 // drop always walks from side to side just like the guides on other pages.
 const mobileWalkingFriend = learningElement("quiz-water-friend");
-const mobileFriendSpeech = document.querySelector(".quiz-friend-speech");
 function walkMobileFriend(timestamp) {
   const compactScene = matchMedia("(max-width: 900px)").matches;
   const visible = friendStage.offsetParent !== null;
@@ -112,21 +112,9 @@ function walkMobileFriend(timestamp) {
     const hop = Math.sin(timestamp / 358) * 7;
     mobileWalkingFriend.style.setProperty("left", `${sidePadding + routeWidth * progress}px`, "important");
     mobileWalkingFriend.style.setProperty("transform", `translateY(${-Math.abs(hop)}px) rotate(${hop / 7 * 2}deg)`, "important");
-    const speechWidth = Math.min(520, Math.max(0, friendStage.clientWidth - 36));
-    const speechLeft = Math.max(14, Math.min(friendStage.clientWidth - speechWidth - 14, sidePadding + routeWidth * progress + mobileWalkingFriend.offsetWidth / 2 - speechWidth / 2));
-    mobileFriendSpeech.style.setProperty("left", `${speechLeft}px`, "important");
-    mobileFriendSpeech.style.setProperty("right", "auto", "important");
-    mobileFriendSpeech.style.setProperty("top", "12px", "important");
-    mobileFriendSpeech.style.setProperty("width", `${speechWidth}px`, "important");
-    mobileFriendSpeech.style.setProperty("translate", "none", "important");
   } else {
     mobileWalkingFriend.style.removeProperty("left");
     mobileWalkingFriend.style.removeProperty("transform");
-    mobileFriendSpeech.style.removeProperty("left");
-    mobileFriendSpeech.style.removeProperty("right");
-    mobileFriendSpeech.style.removeProperty("top");
-    mobileFriendSpeech.style.removeProperty("width");
-    mobileFriendSpeech.style.removeProperty("translate");
   }
   requestAnimationFrame(walkMobileFriend);
 }

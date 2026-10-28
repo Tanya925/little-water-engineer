@@ -3400,953 +3400,147 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 }
 
-/* 小螢幕的對話固定在夥伴場景上方；它不跟著角色容器翻轉，也不會落到場景外。 */
+/* Compact quiz page: a single, deliberate mobile composition.  This lives at
+   the end of the stylesheet to supersede the earlier exploratory breakpoints. */
 @media (max-width: 900px) {
-  #quiz-content .quiz-friends-stage .quiz-friend-speech {
-    position: absolute;
-    z-index: 6;
-    top: 28px;
-    bottom: auto;
-    left: 50%;
-    width: min(520px, calc(100% - 36px));
-    max-width: none;
-    margin: 0;
-    padding: 13px 16px;
-    translate: -50% 0;
+  .feature-banner[data-scene="quiz"] .feature-banner-backdrop {
+    -webkit-mask-image: linear-gradient(#000 0 45%, transparent 100%);
+    mask-image: linear-gradient(#000 0 45%, transparent 100%);
   }
 
-  /* 只保留一套地面色彩，避免河岸插畫與容器漸層疊成第二片背景。 */
-  #quiz-setup .quiz-departure-area::before { display: none; }
-}
-
-/* 所有頁面的步道路徑採用相同的細虛線、圓角與透明度。 */
-.companion-road path,
-.quiz-walking-trails path {
-  stroke: #77a9aa;
-  stroke-width: 3;
-  stroke-dasharray: 8 7;
-  stroke-linecap: round;
-  opacity: .5;
-}
-
-/* 平板、手機沿用桌機的河岸場景；不再額外包一層圓角漸層容器。 */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-departure-area {
-    border-radius: 0;
-    background: transparent;
-  }
-  #quiz-setup .quiz-departure-area::before {
-    display: block;
-    background: url("../images/quiz-river-garden.svg") center bottom / 100% 920px no-repeat;
-    opacity: 1;
-  }
-
-  /* 背包維持桌機原比例，只以可用寬度等比縮小。 */
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: clamp(310px, 82%, 560px);
-    min-height: 0;
-    aspect-ratio: 4 / 5;
-    margin-top: 54px;
-  }
-  #quiz-setup .quiz-departure-area .quiz-bag-strap {
-    top: 77px;
-    bottom: 29px;
-    width: 58px;
-    border-width: 15px;
-  }
-  #quiz-setup .quiz-departure-area .quiz-bag-strap-left { left: -35px; }
-  #quiz-setup .quiz-departure-area .quiz-bag-strap-right { right: -35px; }
-}
-
-@media (max-width: 420px) {
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack { width: min(84vw, 360px); }
-}
-
-/* 窄版仍是同一條探險路線：時間軸、花圃與內容保留，只縮小間距。 */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-story-timeline { display: block !important; }
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-left: clamp(66px, 10vw, 86px); }
-  #quiz-topic-picks { padding-left: clamp(74px, 11vw, 94px); }
-
-  /* 三位夥伴都沿著同一條虛線慢走；不用翻轉角色，也不靠失效的 left 動畫。 */
-  .quiz-friends-stage .friend-earth { animation: quiz-earth-walk 22s ease-in-out infinite !important; }
-  .quiz-friends-stage .friend-water { animation: quiz-water-walk 25s ease-in-out infinite !important; }
-  .quiz-friends-stage .friend-wind { animation: quiz-wind-walk 24s ease-in-out infinite !important; }
-}
-
-@keyframes quiz-earth-walk { 0%,100% { transform: translateX(0) scale(1.15); } 50% { transform: translateX(54px) scale(1.15); } }
-@keyframes quiz-water-walk { 0%,100% { transform: translateX(-42px) scale(1.15); } 50% { transform: translateX(42px) scale(1.15); } }
-@keyframes quiz-wind-walk { 0%,100% { transform: translateX(-54px) scale(1.15); } 50% { transform: translateX(0) scale(1.15); } }
-
-@media (max-width: 600px) {
-  .quiz-friends-stage .friend-water { animation: quiz-mobile-water-walk 22s ease-in-out infinite !important; }
-}
-
-/* 時間軸有自己的左側欄位，步驟號與卡片不再壓在軸線上。 */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-left: 104px; }
-  #quiz-topic-picks { padding-left: 116px; }
-  #quiz-setup .quiz-step-number {
-    position: absolute;
-    left: -66px;
-    top: 50%;
-    translate: 0 -50%;
-  }
-  #quiz-setup .quiz-topic-heading h2,
-  #quiz-setup .quiz-prep-title { position: relative; }
-  .quiz-friends-stage .friend-earth { animation-duration: 20s !important; }
-  .quiz-friends-stage .friend-water { animation-duration: 23s !important; }
-  .quiz-friends-stage .friend-wind { animation-duration: 21s !important; }
-}
-
-@media (max-width: 600px) {
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-left: 82px; }
-  #quiz-topic-picks { padding-left: 92px; }
-  #quiz-setup .quiz-step-number { left: -54px; }
-}
-
-/*
- * Narrow-screen source of truth.  The map originally accumulated several
- * experimental tablet rules: some scaled a desktop canvas with `zoom`, while
- * others reintroduced absolute step markers.  A quiz is read top-to-bottom on
- * a small screen, so keep the artwork but let every interactive control take
- * part in the normal document flow.
- */
-@media (max-width: 900px) {
-  #quiz-content,
-  #quiz-content > #quiz-setup,
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area,
-  #quiz-topic-picks,
-  #quiz-setup .quiz-departure-area .quiz-filters,
-  #quiz-setup .quiz-departure-area .quiz-launch-row {
-    box-sizing: border-box;
-    min-width: 0;
-  }
-
-  #quiz-content > #quiz-setup {
-    zoom: 1 !important;
-    width: min(100%, 720px) !important;
-    max-width: 720px !important;
-    margin-inline: auto !important;
-  }
-
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area {
-    width: 100% !important;
-    max-width: none !important;
-    padding-inline: clamp(18px, 5vw, 34px) !important;
-  }
-
-  #quiz-setup .quiz-topic-heading h2,
-  #quiz-setup .quiz-prep-title {
-    display: flex !important;
-    align-items: center;
-    text-align: left;
-  }
-
-  #quiz-setup .quiz-step-number {
-    position: static !important;
-    translate: none !important;
-    flex: 0 0 auto;
-  }
-
-  #quiz-setup .quiz-story-timeline,
-  #quiz-setup .quiz-central-tree,
-  #quiz-setup .quiz-departure-area::before,
-  #quiz-setup .quiz-departure-area::after {
-    display: none !important;
-  }
-
-  #quiz-topic-picks {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 24px !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 32px clamp(18px, 5vw, 34px) 48px !important;
-  }
-
-  #quiz-topic-picks::before { display: none !important; }
-
-  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) {
-    grid-column: auto !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 168px !important;
-    margin: 0 !important;
-  }
-
-  #quiz-setup .quiz-departure-area {
-    display: block !important;
-    padding-top: 32px !important;
-    padding-bottom: 64px !important;
-    background: transparent !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-filters {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 22px !important;
-    width: 100% !important;
-    max-width: none !important;
-    padding: 0 !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-filters fieldset,
-  #quiz-setup .quiz-departure-area .quiz-prep-type,
-  #quiz-setup .quiz-departure-area .quiz-prep-difficulty,
-  #quiz-setup .quiz-departure-area .quiz-prep-count {
-    grid-column: 1 !important;
-    grid-row: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-    translate: none !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-launch-row {
-    display: flex !important;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 28px;
-    width: 100%;
-    padding: 36px 0 0 !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-backpack,
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass {
-    box-sizing: border-box;
-    width: min(100%, 520px) !important;
-    min-height: 0 !important;
-    aspect-ratio: auto !important;
-    margin: 0 auto !important;
-  }
-
-  #quiz-setup .quiz-final-step {
-    display: flex !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .quiz-friends-stage {
-    display: flex !important;
-    align-items: flex-end;
-    justify-content: space-around;
-    box-sizing: border-box;
-    width: 100% !important;
-    height: 220px !important;
-    margin: 0 !important;
-    padding: 0 8px 18px;
-    overflow: hidden;
-  }
-
-  .quiz-friends-stage .quiz-walking-friend,
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-water,
-  .quiz-friends-stage .friend-wind {
-    display: flex !important;
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: min(30%, 96px) !important;
-    translate: none !important;
-    transform: none !important;
-    animation: none !important;
-  }
-
-  .quiz-friends-stage .quiz-walking-trails,
-  .quiz-friends-stage::after { display: none !important; }
-
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-wind { display: none !important; }
-
-  .quiz-friend-speech {
-    position: relative !important;
-    width: min(calc(100% - 32px), 420px) !important;
-    margin: 14px auto 0 !important;
-    translate: none !important;
-  }
-
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-inline: 18px !important; }
-
-  #quiz-topic-picks {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 18px !important;
-    padding: 24px 18px 38px !important;
-  }
-
-  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) { min-height: 150px !important; }
-
-  #quiz-setup .quiz-departure-area .quiz-filters fieldset {
-    padding: 20px 16px 24px !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-setting-choice {
-    min-width: 0;
-    font-size: 15px;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-backpack,
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass {
-    width: min(100%, 360px) !important;
-  }
-}
-
-/* Final responsive scene composition: the controls stay in flow while the
-   scenery reaches both viewport edges.  This deliberately comes last so an
-   older experimental map rule cannot reintroduce clipping or overlap. */
-@media (max-width: 900px) {
   .feature-page:has(#quiz-content:not([hidden])) {
-    overflow-x: clip;
-    background: linear-gradient(180deg, #dceeff 0%, #eef8ff 31%, #e5f1d9 68%, #c5dea9 100%);
-  }
-
-  .quiz-friends-grove {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin: 0 0 28px;
-  }
-
-  .quiz-friend-speech {
-    order: 1;
-    position: relative !important;
-    z-index: 3;
-    width: min(calc(100% - 36px), 520px) !important;
-    max-width: none;
-    margin: 0 auto -12px !important;
-    translate: none !important;
-  }
-
-  .quiz-friends-stage {
-    order: 2;
-    position: relative;
-    display: flex !important;
-    align-items: flex-end;
-    justify-content: space-around;
-    box-sizing: border-box;
-    width: 100% !important;
-    height: clamp(220px, 34vw, 300px) !important;
-    margin: 0 !important;
-    padding: 0 clamp(10px, 3vw, 24px) 28px;
-    overflow: hidden;
-    background-size: cover;
-    border-radius: 0;
-  }
-
-  .quiz-friends-stage .quiz-walking-friend,
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-water,
-  .quiz-friends-stage .friend-wind {
-    display: flex !important;
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    width: min(30%, 112px) !important;
-    translate: none !important;
-    transform: none !important;
-    animation: quiz-friend-bob 3.2s ease-in-out infinite !important;
-  }
-
-  .quiz-friends-stage .friend-water { animation-delay: -1.1s !important; }
-  .quiz-friends-stage .friend-wind { animation-delay: -2.2s !important; }
-  .quiz-friends-stage .quiz-walking-trails { display: none !important; }
-
-  .quiz-friends-stage::after {
-    content: "";
-    display: block !important;
-    position: absolute;
-    right: 11%;
-    bottom: 30px;
-    left: 11%;
-    height: 18px;
-    border-top: 3px solid #77a9aa;
-    border-radius: 50%;
-    opacity: .72;
-    pointer-events: none;
-  }
-
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-inline: clamp(18px, 5vw, 34px) !important; }
-
-  #quiz-setup .quiz-departure-area {
-    position: relative;
-    isolation: isolate;
-    overflow: visible;
-    padding-top: 36px !important;
-    padding-bottom: 72px !important;
-    background: transparent !important;
-  }
-
-  #quiz-setup .quiz-departure-area::before {
-    content: "";
-    display: block !important;
-    position: absolute;
-    inset: 0 auto 0 50%;
-    width: 100vw;
-    height: 100%;
-    translate: -50% 0;
-    z-index: -1;
-    background: linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
-    opacity: 1 !important;
-    pointer-events: none;
-  }
-
-  #quiz-setup .quiz-departure-area::after,
-  #quiz-setup .quiz-story-timeline,
-  #quiz-setup .quiz-central-tree,
-  #quiz-setup .quiz-launch-row::before { display: none !important; }
-
-  #quiz-setup .quiz-departure-area .quiz-launch-row {
-    overflow: visible;
-    padding-top: 34px !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-backpack,
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass {
-    overflow: visible;
-    width: min(100%, 500px) !important;
-    margin: 0 auto !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .quiz-friends-stage {
-    height: 235px !important;
-    padding-bottom: 28px;
-  }
-
-  .quiz-friends-stage .quiz-walking-friend,
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-water,
-  .quiz-friends-stage .friend-wind { width: min(30%, 94px) !important; }
-
-  .quiz-friend-speech { margin-bottom: -8px !important; }
-  .quiz-friends-stage::after { right: 12%; bottom: 28px; left: 12%; }
-
-  #quiz-setup .quiz-topic-heading,
-  #quiz-setup .quiz-departure-area { padding-inline: 18px !important; }
-}
-
-@keyframes quiz-friend-bob {
-  0%, 100% { transform: translate3d(-10px, 0, 0); }
-  50% { transform: translate3d(10px, -12px, 0); }
-}
-
-/* Phone finishing pass: one clear companion, proportionate backpack, and
-   decorative scenery behind—not on top of—the reading and controls. */
-@media (max-width: 900px) {
-  #quiz-topic-picks {
-    position: relative;
-    isolation: isolate;
-  }
-
-  #quiz-topic-picks::before {
-    content: "";
-    display: block !important;
-    position: absolute;
-    inset: 0 auto 0 50%;
-    width: 100vw;
-    translate: -50% 0;
-    z-index: -1;
-    background: url("../images/quiz-forest.svg") center bottom / cover no-repeat;
-    opacity: .76;
-    pointer-events: none;
-  }
-
-  #quiz-setup .quiz-departure-area::before {
-    background:
-      url("../images/quiz-forest-center.svg") center bottom / cover no-repeat,
-      linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    flex: 0 0 auto !important;
-    width: min(calc(100% - 68px), 440px) !important;
-    height: auto !important;
-    min-height: 0 !important;
-    aspect-ratio: 4 / 5 !important;
-    margin: 14px auto 0 !important;
-  }
-
-  #quiz-setup .quiz-pass-content {
-    box-sizing: border-box;
-    min-height: 100%;
-  }
-}
-
-@media (max-width: 600px) {
-  /* A single character has enough room to hop, and its message remains above it. */
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-wind { display: none !important; }
-
-  .quiz-friends-stage .friend-water {
-    display: flex !important;
-    width: 108px !important;
-    animation: quiz-water-hop 2.7s ease-in-out infinite !important;
-  }
-
-  .quiz-friends-stage {
-    justify-content: center !important;
-    height: 250px !important;
-  }
-
-  .quiz-friend-speech {
-    width: min(calc(100% - 32px), 360px) !important;
-    margin-bottom: -4px !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 52px), 360px) !important;
-    aspect-ratio: 4 / 5 !important;
-  }
-}
-
-@keyframes quiz-water-hop {
-  0%, 100% { transform: translate3d(-16px, 0, 0) rotate(-2deg); }
-  50% { transform: translate3d(16px, -18px, 0) rotate(2deg); }
-}
-
-/* The quiz route uses the same calm solid path as the other feature pages. */
-.quiz-walking-trails path { stroke-dasharray: none !important; }
-
-/* learning.js nests the speech bubble in the stage.  Tablet and phone both
-   need the same centred anchor; otherwise the desktop speech offset wins. */
-@media (max-width: 900px) {
-  #quiz-content .quiz-friends-stage .quiz-friend-speech {
-    position: absolute !important;
-    top: 14px !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: 50% !important;
-    width: min(calc(100% - 40px), 440px) !important;
-    max-width: none !important;
-    margin: 0 !important;
-    translate: -50% 0 !important;
-    transform: none !important;
-  }
-
-  /* Reserve an upper speech lane so it never covers the companions. */
-  .quiz-friends-stage {
-    height: clamp(320px, 48vw, 370px) !important;
-  }
-}
-
-/* The dialogue node is moved into the stage by learning.js.  Pin it to the
-   stage centre on phones so old left/right offsets cannot push it off-screen. */
-@media (max-width: 600px) {
-  .quiz-friends-stage .quiz-friend-speech {
-    position: absolute !important;
-    top: 12px !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: 50% !important;
-    width: min(calc(100% - 28px), 320px) !important;
-    margin: 0 !important;
-    translate: -50% 0 !important;
-    transform: none !important;
-  }
-
-  .quiz-friends-stage { height: 330px !important; }
-}
-
-/* Narrow devices: never reserve a fake fixed-height backpack.  Its content
-   determines its height, so the following departure step cannot overlap it. */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    display: block !important;
-    flex: 0 0 auto !important;
-    width: min(calc(100% - 68px), 440px) !important;
-    height: auto !important;
-    min-height: 0 !important;
-    aspect-ratio: auto !important;
-    margin: 18px auto 0 !important;
-  }
-
-  #quiz-setup .quiz-pass-content { min-height: 0 !important; }
-
-  #quiz-setup .quiz-departure-area .quiz-launch-row {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 42px !important;
-  }
-
-  #quiz-setup .quiz-final-step {
-    position: static !important;
-    display: flex !important;
-    clear: both;
-    margin: 0 !important;
-    padding: 0 0 16px !important;
-  }
-
-  /* Keep the original scenery visible behind content, without placing a
-     flower strip over any text or controls. */
-  #quiz-topic-picks::before {
-    background:
-      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
-      linear-gradient(180deg, #e7f2e5, #d2e6ce) !important;
-    opacity: .9 !important;
-  }
-
-  #quiz-setup .quiz-departure-area::before {
-    background:
-      url("../images/quiz-river-garden.svg") center bottom / auto 650px no-repeat,
-      url("../images/quiz-forest-center.svg") center 18% / auto 780px no-repeat,
-      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
-      linear-gradient(180deg, #dceccf, #b9d99f) !important;
-  }
-}
-
-@media (max-width: 600px) {
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 52px), 360px) !important;
-  }
-}
-
-/* Narrow-device scene: use the real route SVG and move the single companion
-   across it, matching the walking treatment used on the other feature pages. */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 36px), 520px) !important;
-  }
-
-  #quiz-topic-picks::before {
-    background:
-      url("../images/quiz-map-texture.svg") center / cover no-repeat,
-      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
-      linear-gradient(180deg, #e7f2e5, #d2e6ce) !important;
-    opacity: 1 !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .quiz-friends-stage {
-    height: 400px !important;
-    overflow: hidden !important;
-    background: url("../images/quiz-sky.svg") center bottom / cover no-repeat !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-walking-trails {
-    display: block !important;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    translate: none !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-walking-trails path {
-    stroke: #77a9aa !important;
-    stroke-width: 3 !important;
-    stroke-dasharray: none !important;
-    opacity: .72 !important;
-  }
-
-  .quiz-friends-stage::after { display: none !important; }
-
-  .quiz-friends-stage .friend-earth,
-  .quiz-friends-stage .friend-wind { display: none !important; }
-
-  .quiz-friends-stage .friend-water {
-    position: absolute !important;
-    top: 205px !important;
-    left: 22px !important;
-    width: 108px !important;
-    translate: none !important;
-    transform: none !important;
-    animation: quiz-mobile-route-walk 8s ease-in-out infinite !important;
-  }
-
-  .quiz-friends-stage .quiz-friend-speech { top: 18px !important; }
-
-}
-
-@media (max-width: 600px) {
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 20px), 360px) !important;
-  }
-}
-
-@keyframes quiz-mobile-route-walk {
-  0%, 100% { left: 22px; transform: translateY(0); }
-  45% { transform: translateY(-10px); }
-  50% { left: calc(100% - 130px); transform: translateY(0); }
-  55% { transform: translateY(-10px); }
-}
-
-/*
- * Small-screen scene baseline.
- *
- * The rules above intentionally keep the original desktop illustration, but
- * older experiments also leave several competing phone compositions behind.
- * Keep this last: the scene is a real, full-width stage; the speech stays in
- * its own upper lane; and the visible character always has an unobstructed
- * route to walk on.  Content below remains in normal document flow.
- */
-@media (max-width: 900px) {
-  .feature-page:has(#quiz-content:not([hidden])) {
-    width: 100%;
-    max-width: none;
-    padding-inline: 0;
-    overflow-x: clip;
-    background: linear-gradient(180deg, #dceeff 0%, #edf8ff 32%, #dceccc 68%, #b7d697 100%);
-  }
-
-  #quiz-content,
-  #quiz-content > #quiz-setup {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-
-  .quiz-friends-grove {
-    width: 100%;
-    margin: 0 0 28px;
+    background: linear-gradient(180deg, #dceeff 0%, #edf6ef 31%, #dcebd9 58%, #bfdcae 100%) !important;
   }
 
   #quiz-content .quiz-friends-stage {
-    display: block !important;
-    box-sizing: border-box;
-    width: 100% !important;
-    height: 390px !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-    background: url("../images/quiz-sky.svg") center bottom / cover no-repeat !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-friend-speech {
-    position: absolute !important;
-    z-index: 5;
-    top: 16px !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: 50% !important;
-    width: min(calc(100% - 36px), 460px) !important;
-    margin: 0 !important;
-    translate: -50% 0 !important;
-    transform: none !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-walking-trails {
-    display: block !important;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    translate: none !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-walking-trails path {
-    stroke: #5d9c9c !important;
-    stroke-width: 3 !important;
-    opacity: .65 !important;
-  }
-}
-
-@media (max-width: 600px) {
-  #quiz-content .quiz-friends-stage {
-    height: 330px !important;
-  }
-
-  #quiz-content .quiz-friends-stage .friend-earth,
-  #quiz-content .quiz-friends-stage .friend-wind {
-    display: none !important;
+    height: 350px !important;
+    overflow: visible !important;
+    background-size: cover !important;
   }
 
   #quiz-content .quiz-friends-stage .friend-water {
     display: flex !important;
     position: absolute !important;
-    z-index: 2;
-    top: 184px !important;
-    left: 20px !important;
+    top: 210px !important;
     width: 108px !important;
-    translate: none !important;
-    transform: none !important;
-    animation: quiz-phone-water-walk 9s ease-in-out infinite !important;
-  }
-
-  #quiz-content .quiz-friends-stage .quiz-friend-speech {
-    width: min(calc(100% - 28px), 340px) !important;
-  }
-}
-
-@keyframes quiz-phone-water-walk {
-  0%, 100% { left: 20px; transform: translateY(0) rotate(-2deg); }
-  25% { transform: translateY(-11px) rotate(2deg); }
-  50% { left: calc(100% - 128px); transform: translateY(0) rotate(2deg); }
-  75% { transform: translateY(-11px) rotate(-2deg); }
-}
-
-/* The previous desktop bubble uses a long offset selector.  Match its
-   specificity on narrow screens so it cannot ever be positioned off canvas. */
-@media (max-width: 900px) {
-  #feature-page #quiz-content .quiz-welcome .quiz-friends-stage .quiz-friend-speech {
-    inset: 16px 18px auto !important;
-    box-sizing: border-box;
-    width: auto !important;
-    max-width: 460px !important;
-    margin-inline: auto !important;
-    translate: none !important;
-  }
-}
-
-@media (max-width: 600px) {
-  #feature-page #quiz-content .quiz-welcome .quiz-friends-stage .quiz-friend-speech {
-    inset: 12px 14px auto !important;
-    max-width: 340px !important;
-  }
-}
-
-/* Final narrow-layout safeguards: preserve illustration proportions, keep
-   cards separate, and let the bag take only the space its contents need. */
-@media (max-width: 900px) {
-  #quiz-content .quiz-friends-stage {
-    background-color: #e9f5ff !important;
-    background-position: center bottom !important;
-    background-size: auto 100% !important;
-  }
-
-  #quiz-topic-picks {
-    gap: 28px !important;
-  }
-
-  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) {
-    min-height: 164px !important;
-    margin: 0 !important;
-    transform: none !important;
+    z-index: 3;
     animation: none !important;
   }
 
+  #quiz-content .quiz-friends-stage .quiz-walking-trails {
+    display: block !important;
+    overflow: visible;
+  }
+
+  #quiz-content .quiz-friends-stage .quiz-walking-trails path {
+    stroke: #c4d9df !important;
+    stroke-width: 5 !important;
+    opacity: .9 !important;
+  }
+
+  /* The speech bubble is a child of the moving water drop, rather than a
+     separately positioned stage element. */
+  #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
+    position: absolute !important;
+    top: -176px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    width: min(78vw, 390px) !important;
+    margin: 0 !important;
+    translate: -50% 0 !important;
+    transform: none !important;
+    pointer-events: none;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-filters {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 24px !important;
+    width: min(100%, 860px) !important;
+    margin: 0 auto !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-filters > .quiz-step-intro,
+  #quiz-setup .quiz-departure-area .quiz-prep-count {
+    grid-column: 1 / -1 !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-prep-type,
+  #quiz-setup .quiz-departure-area .quiz-prep-difficulty {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    margin: 0 !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-filters fieldset {
+    width: auto !important;
+    min-width: 0;
+    margin: 0 !important;
+  }
+
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(68vw, 340px) !important;
-    min-width: 0 !important;
+    box-sizing: border-box !important;
+    width: min(calc(100% - 96px), 390px) !important;
     min-height: 0 !important;
     height: auto !important;
     aspect-ratio: auto !important;
+    margin: 30px auto 0 !important;
   }
 
   #quiz-setup .quiz-pass-content {
+    box-sizing: border-box;
     min-height: 0 !important;
-    padding-bottom: 24px;
-  }
-}
-
-@media (max-width: 600px) {
-  #quiz-topic-picks {
-    gap: 24px !important;
-  }
-
-  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) {
-    min-height: 156px !important;
-  }
-
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(76vw, 290px) !important;
-  }
-}
-
-/* Keep the compact scene visually continuous instead of cutting from sky blue
-   to green at the first topic card. */
-@media (max-width: 900px) {
-  #quiz-setup .quiz-topic-heading {
-    background: linear-gradient(180deg, #e1efff 0%, #e9f3ed 100%);
-  }
-
-  #quiz-topic-picks {
-    background: linear-gradient(180deg, #e9f3ed 0%, #dcebd9 135px, #cfe4cf 100%);
-  }
-
-  #quiz-topic-picks::before {
-    opacity: .62 !important;
-  }
-
-  #quiz-content .quiz-walking-trails path {
-    stroke: #c4d9df !important;
-    stroke-width: 5 !important;
-    stroke-dasharray: none !important;
-    opacity: .9 !important;
-  }
-}
-
-@media (max-width: 600px) {
-  /* This matches the laptop bag's broad silhouette, only at a smaller scale. */
-  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
-  #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(92vw, 390px) !important;
-    min-height: 0 !important;
-    aspect-ratio: 1.55 / 1 !important;
-  }
-
-  #quiz-setup .quiz-pass-content {
-    padding: 0 14px 16px !important;
+    padding: 0 22px 24px !important;
   }
 
   #quiz-setup .quiz-bag-flap {
-    margin: -3px -17px 18px !important;
-    padding: 19px 12px 17px !important;
-  }
-
-  #quiz-setup .quiz-bag-flap h3 {
-    font-size: 20px;
-  }
-
-  #quiz-setup .quiz-backpack-topics {
-    min-height: 48px !important;
-    padding: 3px 0 9px !important;
-  }
-
-  #quiz-setup .quiz-backpack-empty {
-    font-size: 14px;
+    margin: -3px -25px 24px !important;
   }
 
   #quiz-setup .quiz-pass-settings {
-    flex-wrap: nowrap !important;
-    gap: 4px !important;
-    padding: 18px 4px 7px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 8px 0 0 !important;
+    padding-inline: 8px !important;
+    overflow: hidden;
   }
 
   #quiz-setup .quiz-pass-settings span {
-    flex: 1 1 0;
     min-width: 0;
-    padding: 7px 3px !important;
-    font-size: clamp(11px, 3.5vw, 14px) !important;
-    white-space: nowrap;
+    padding-inline: 7px !important;
+    font-size: clamp(12px, 2.2vw, 16px) !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
-/* Softly overlap the decorative scene layers, avoiding visible horizontal
-   seams between the map and preparation sections. */
-@media (max-width: 900px) {
-  #quiz-topic-picks {
-    margin-bottom: -1px !important;
-    padding-bottom: 70px !important;
-    background: linear-gradient(180deg, #e9f3ed 0%, #dcebd9 55%, #cfe4cf 100%) !important;
+@media (max-width: 600px) {
+  .feature-banner[data-scene="quiz"] > .back {
+    margin-left: 18px !important;
   }
 
-  #quiz-setup .quiz-departure-area {
-    margin-top: -1px;
-    padding-top: 70px !important;
-    background: linear-gradient(180deg, #cfe4cf 0%, #c7dfbe 100%) !important;
+  #quiz-content .quiz-friends-stage {
+    height: 330px !important;
   }
 
-  #quiz-setup .quiz-departure-area::before {
-    opacity: .72 !important;
+  #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
+    top: -168px !important;
+    width: min(84vw, 340px) !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-filters {
+    gap: 16px !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-filters fieldset {
+    padding: 20px 14px 22px !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(calc(100% - 64px), 330px) !important;
   }
 }
