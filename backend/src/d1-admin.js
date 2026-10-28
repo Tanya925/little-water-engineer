@@ -8,6 +8,8 @@ const tables = {
   resources: "teaching_resources",
   questions: "quiz_questions",
   updates: "latest_updates",
+  honors: "honor_showcases",
+  activities: "activity_records",
 };
 const parse = (value, fallback) => {
   try {
@@ -37,6 +39,25 @@ function validGoogleUrl(value, label, imageOnly = false) {
   if (url.protocol !== "https:" || !allowed.includes(url.hostname) || url.username || url.password || url.port) {
     throw new Error(`${label}需使用 Google Drive${imageOnly ? " 圖片檔" : " 或 Google 文件"}的 HTTPS 連結。`);
   }
+  return url.href;
+}
+
+function validateStoredImages(input, label, maximum = 3) {
+  if (!Array.isArray(input) || input.length > maximum) throw new Error(`${label}最多可上傳 ${maximum} 張。`);
+  return input.map((image, index) => {
+    if (typeof image !== "string" || !/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(image) || image.length > 1_500_000) {
+      throw new Error(`第 ${index + 1} 張${label}格式不正確或檔案過大。`);
+    }
+    return image;
+  });
+}
+
+function validExternalUrl(value, label) {
+  const text = cleanText(value || "", label, 1500, false);
+  if (!text) return "";
+  let url;
+  try { url = new URL(text); } catch { throw new Error(`${label}格式不正確。`); }
+  if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error(`${label}需為安全的網站連結。`);
   return url.href;
 }
 
@@ -146,6 +167,8 @@ async function decode(db, kind, row) {
   if (kind === "updates") {
     return { ...common, title: row.title, description: row.description, eventDate: row.event_date, linkUrl: row.link_url, sortOrder: Number(row.sort_order) };
   }
+  if (kind === "honors") return { ...common, title: row.title, studentName: row.student_name, description: row.description, designIdea: row.design_idea, images: parse(row.images_json, []), sortOrder: Number(row.sort_order) };
+  if (kind === "activities") return { ...common, title: row.title, description: row.description, eventDate: row.event_date, location: row.location, images: parse(row.images_json, []), albumUrl: row.album_url, sortOrder: Number(row.sort_order) };
   return { ...common, type: row.type, topic: row.topic, difficulty: row.difficulty, question: row.question, options: parse(row.options_json, {}), answer: row.answer, answerText: row.answer_text, explanation: row.explanation, basis: row.basis, sources: parse(row.sources_json, []) };
 }
 
@@ -161,6 +184,8 @@ const fields = {
   resources: ["title", "folder_url", "description", "sections_json", "sort_order", "status"],
   questions: ["type", "topic", "difficulty", "question", "options_json", "answer", "answer_text", "explanation", "basis", "sources_json", "status"],
   updates: ["title", "description", "event_date", "link_url", "sort_order", "status"],
+  honors: ["title", "student_name", "description", "design_idea", "images_json", "sort_order", "status"],
+  activities: ["title", "description", "event_date", "location", "images_json", "album_url", "sort_order", "status"],
 };
 
 function state(value) {
@@ -173,6 +198,8 @@ function value(kind, input) {
   if (kind === "experiments") return { title: cleanText(input.title, "影片標題", 200), description: cleanText(input.description || "", "影片簡介", 3000, false), drive_file_id: cleanText(input.driveFileId, "Google Drive 影片", 1000), filename: cleanText(input.filename || input.title, "檔名", 255), mime_type: input.mimeType === "video/quicktime" ? "video/quicktime" : "video/mp4", size_bytes: Math.max(0, Number(input.sizeBytes) || 0), source_folder_id: String(input.sourceFolderId || ""), sort_order: Math.max(0, Number(input.sortOrder) || 0), cover_path: String(input.coverPath || ""), status };
   if (kind === "resources") return { title: cleanText(input.title, "章節標題", 200), folder_url: validGoogleUrl(input.folderUrl, "教材資料夾連結"), description: cleanText(input.description || "", "教材簡介", 3000, false), sections_json: JSON.stringify(Array.isArray(input.sections) ? input.sections.map((entry) => String(entry).trim()).filter(Boolean) : []), sort_order: Math.max(0, Number(input.sortOrder) || 0), status };
   if (kind === "questions") return { type: ["選擇題", "是非題"].includes(input.type) ? input.type : "選擇題", topic: cleanText(input.topic, "主題", 100), difficulty: ["易", "中", "難"].includes(input.difficulty) ? input.difficulty : "中", question: cleanText(input.question, "題目", 5000), options_json: JSON.stringify(input.options || {}), answer: cleanText(input.answer, "答案", 20), answer_text: String(input.answerText || ""), explanation: cleanText(input.explanation, "解析", 10000), basis: String(input.basis || ""), sources_json: JSON.stringify(Array.isArray(input.sources) ? input.sources : []), status };
+  if (kind === "honors") return { title: cleanText(input.title, "作品名稱", 200), student_name: cleanText(input.studentName || "", "學生／團隊", 200, false), description: cleanText(input.description || "", "作品介紹", 5000, false), design_idea: cleanText(input.designIdea || "", "設計理念", 5000, false), images_json: JSON.stringify(validateStoredImages(input.images || [], "作品照片")), sort_order: Math.max(0, Number(input.sortOrder) || 0), status };
+  if (kind === "activities") return { title: cleanText(input.title, "活動名稱", 200), description: cleanText(input.description || "", "活動介紹", 5000, false), event_date: cleanText(input.eventDate || "", "活動日期", 20, false), location: cleanText(input.location || "", "活動地點", 200, false), images_json: JSON.stringify(validateStoredImages(input.images || [], "精選照片")), album_url: validExternalUrl(input.albumUrl, "完整相簿連結"), sort_order: Math.max(0, Number(input.sortOrder) || 0), status };
   return { title: cleanText(input.title, "活動標題", 200), description: cleanText(input.description || "", "活動簡介", 5000, false), event_date: String(input.eventDate || ""), link_url: String(input.linkUrl || ""), sort_order: Math.max(0, Number(input.sortOrder) || 0), status };
 }
 
@@ -181,7 +208,8 @@ export async function adminSave(db, kind, id, input) {
   const columns = fields[kind];
   if (!table) return null;
   const data = value(kind, input);
-  const recordId = id || (kind === "experiments" ? null : `${kind.slice(0, -1)}-${crypto.randomUUID()}`);
+  const prefixes = { resources: "resource", questions: "question", updates: "update", honors: "honor", activities: "activity" };
+  const recordId = id || (kind === "experiments" ? null : `${prefixes[kind]}-${crypto.randomUUID()}`);
   if (!id) {
     const names = recordId ? ["id", ...columns] : columns;
     const values = recordId ? [recordId, ...columns.map((key) => data[key])] : columns.map((key) => data[key]);
@@ -208,7 +236,7 @@ export async function adminDelete(db, kind, id) {
   return { success: true };
 }
 
-// 關於我們頁保留結構化 JSON；瀏覽器端以 textContent 呈現，不能把老師輸入當成 HTML。
+// 關於我們只管理可能變動的介紹文字、名單與照片網址；前台仍以安全文字節點呈現。
 export async function adminPage(db, id) {
   if (id !== "about") return null;
   const row = await db.prepare("SELECT * FROM site_pages WHERE id=?").bind(id).first();
@@ -221,8 +249,23 @@ export async function savePage(db, id, input) {
   if (!Number.isInteger(input?.revision)) throw new Error("頁面已被更新，請重新載入後再儲存。");
   const title = cleanText(input.title, "頁面標題", 200);
   if (!Array.isArray(input.sections) || input.sections.length > 40) throw new Error("頁面區塊格式不正確。");
-  const sections = JSON.stringify(input.sections);
-  if (sections.length > 500000) throw new Error("頁面內容過長。");
+  let imageBytes = 0;
+  const checkedSections = input.sections.map((section) => ({
+    ...section,
+    items: Array.isArray(section?.items)
+      ? section.items.map((item) => {
+          const imageUrl = typeof item?.imageUrl === "string" ? item.imageUrl : "";
+          if (imageUrl && (!/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/.test(imageUrl) || imageUrl.length > 1_500_000)) {
+            throw new Error("人物或學校照片格式不正確，請重新上傳 JPG、PNG 或 WebP 圖片。");
+          }
+          imageBytes += imageUrl.length;
+          return { ...item, imageUrl };
+        })
+      : [],
+  }));
+  if (imageBytes > 4_500_000) throw new Error("關於我們的照片總量過大，請改用較小的照片後再儲存。");
+  const sections = JSON.stringify(checkedSections);
+  if (sections.length > 5_000_000) throw new Error("頁面內容過長。");
   const status = state(input.status);
   const result = await db.prepare("UPDATE site_pages SET title=?,sections_json=?,status=?,revision=revision+1,updated_at=CURRENT_TIMESTAMP WHERE id=? AND revision=?").bind(title, sections, status, id, input.revision).run();
   if (!result.meta.changes) throw new Error("頁面已被更新，請重新載入後再儲存。");

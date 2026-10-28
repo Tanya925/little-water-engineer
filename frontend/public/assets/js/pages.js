@@ -45,7 +45,12 @@
       chapter.tabIndex = -1;
       chapter.setAttribute("aria-label", displayTitle(section.title));
       const heading = make("header", undefined, "chapter-heading");
-      if (section.label && section.layout !== "experiments") heading.append(make("h4", displayTitle(section.label), "chapter-subtitle"));
+      if (id === "about") {
+        heading.append(make("h3", displayTitle(section.title), "about-major-heading"));
+        if (section.label) heading.append(make("h4", displayTitle(section.label), "about-minor-heading"));
+      } else if (section.label && section.layout !== "experiments") {
+        heading.append(make("h4", displayTitle(section.label), "chapter-subtitle"));
+      }
       if (heading.childElementCount) chapter.append(heading);
       const intro = make("div", undefined, "chapter-intro"); text(intro, section.paragraphs); chapter.append(intro);
       if (section.layout === "experiments") {
@@ -71,22 +76,11 @@
         }
         chapter.append(overview); target.append(chapter); continue;
       }
-      if (section.layout === "kpi") chapter.append(make("p", "預期量化成果｜執行期滿目標，非實際達成進度", "expected-note"));
-      if (section.layout === "team") {
-        const org = make("div", undefined, "team-map"); org.setAttribute("aria-label", "主持團隊關係總覽");
-        section.items.forEach((item, index) => {
-          const person = make("div", undefined, index === 0 ? "team-lead" : "");
-          person.append(make("small", item.label), make("strong", item.title)); org.append(person);
-        }); chapter.append(org);
-      }
-      if (section.layout === "archive") {
-        const flow = make("ol", undefined, "archive-flow");
-        section.items.forEach(item => flow.append(make("li", `${item.icon} ${item.title}`))); chapter.append(flow);
-      }
       const grid = make(section.layout === "timeline" ? "ol" : "div", undefined, "chapter-items");
       section.items.forEach((item, index) => {
         const expandable = section.layout === "experiments";
         const card = make(expandable ? "details" : section.layout === "timeline" ? "li" : "article", undefined, "editorial-item");
+        if (section.layout === "kpi") card.classList.add(`kpi-item-${index + 1}`);
         if (expandable) {
           const summary = make("summary"); summary.append(make("span", item.icon, "experiment-symbol"), make("span", item.title)); card.append(summary);
           text(card, item.paragraphs);
@@ -97,10 +91,23 @@
             const number = make("div", undefined, "editorial-number"); number.append(make("strong", item.value), make("span", item.unit)); body.append(number);
           } else if (item.icon && ["goals", "cooperation"].includes(section.layout)) body.append(make("span", item.icon, "goal-icon"));
           if (item.label && section.layout !== "challenges") body.append(make("small", item.label, "item-label"));
-          if (item.title) body.append(make("h4", displayTitle(item.title)));
+          if (item.title) {
+            const itemTitle = make("h4");
+            if (section.layout === "archive" && item.icon) itemTitle.append(make("span", item.icon, "archive-item-icon"), " ");
+            itemTitle.append(displayTitle(item.title));
+            body.append(itemTitle);
+          }
           if (section.layout === "students") {
             body.append(make("p", "團隊成員：")); const list = make("ul"); item.paragraphs.forEach(p => list.append(make("li", p))); body.append(list);
           } else text(body, item.paragraphs);
+          if (id === "about" && typeof item.imageUrl === "string" && item.imageUrl) {
+            const photo = document.createElement("img");
+            photo.className = "about-item-photo";
+              photo.src = item.imageUrl;
+              photo.alt = `${item.title || item.label || "計畫夥伴"}照片`;
+              photo.loading = "lazy";
+            card.append(photo);
+          }
           card.append(body);
         }
         grid.append(card);
@@ -151,6 +158,11 @@
     "ai-qa": ["我是小水滴！把好奇的問題告訴我吧！", "我會從老師提供的教材裡找線索，回答後也會附上來源喔！", "教材還沒提到的事，我會老實告訴你，讓我們一起向老師請教。"],
     about: ["來認識陪著我們探索科學的老師與夥伴吧！", "土、風、水探險隊，和大家一起把科學帶進校園！", "每一場科學冒險，背後都有一起努力的老師和夥伴！"],
   };
+  const guideKinds = {
+    experiments: ["wind", "water"], resources: ["water"], activities: ["earth", "wind"],
+    honors: ["water", "earth", "wind"], knowledge: ["wind", "water"], games: ["earth", "water"],
+    "ai-qa": ["water", "wind", "earth"], about: ["earth", "water"],
+  };
   const ribbon = make("aside", undefined, "page-companion"); ribbon.hidden = true;
   document.querySelector(".page-heading").after(ribbon);
 
@@ -182,14 +194,27 @@
     ribbon.hidden = !messages[id];
     if (!messages[id] || lastRoute === id) return;
     lastRoute = id;
-    const kind = ({ experiments: "wind", resources: "water", activities: "earth", honors: "water", knowledge: "wind", games: "earth", "ai-qa": "water", about: "earth" })[id];
-    const speech = make("div", undefined, "companion-speech"); speech.setAttribute("role", "status"); speech.setAttribute("aria-live", "polite"); let visit = 0;
-    const line = make("p", messages[id][0]); speech.append(make("strong", names[kind]), line);
-    const track = make("div", undefined, "companion-walking-track");
+    const kinds = guideKinds[id] || ["water"];
+    const track = make("div", undefined, `companion-walking-track has-${kinds.length}`);
     const road = walkingRoad("companion-road");
-    const walker = make("div", undefined, "companion-walker");
-    walker.append(speech, friendButton(kind, () => { line.textContent = messages[id][++visit % messages[id].length]; }));
-    track.append(road, walker);
+    track.append(road);
+    kinds.forEach((guideKind, index) => {
+      const lane = ["", " companion-walker-secondary", " companion-walker-tertiary"][index];
+      const walker = make("div", undefined, `companion-walker${lane}`);
+      const start = index === 1 ? "var(--guide-end)" : index === 2 ? "35%" : "var(--guide-start)";
+      const end = index === 1 ? "var(--guide-start)" : index === 2 ? "60%" : "var(--guide-end)";
+      walker.style.setProperty("--walk-from", start);
+      walker.style.setProperty("--walk-to", end);
+      // 每位夥伴在每次進入頁面時採不同的慢速步調，避免同步走路又不會太快。
+      walker.style.setProperty("--walk-duration", `${18 + Math.floor(Math.random() * 13)}s`);
+      walker.style.setProperty("--walk-delay", `${-Math.floor(Math.random() * 12)}s`);
+      const speech = make("div", undefined, "companion-speech"); speech.setAttribute("role", "status"); speech.setAttribute("aria-live", "polite");
+      const line = make("p", messages[id][index % messages[id].length]);
+      speech.append(make("strong", names[guideKind]), line);
+      let visit = index;
+      walker.append(speech, friendButton(guideKind, () => { line.textContent = messages[id][++visit % messages[id].length]; }));
+      track.append(walker);
+    });
     ribbon.replaceChildren(track);
   }
   const heroArt = document.querySelector(".hero-art");
@@ -198,7 +223,7 @@
   const homeSpeech = make("p", "土土、風咻咻、小水滴探險隊，和你一起出發！", "home-friend-speech"); homeSpeech.setAttribute("aria-live", "polite");
   const homeLines = {
     earth: ["我是土土！一起觀察大地，認識山與土壤的力量！", "土壤遇到水，會出現哪些變化呢？", "動手試試看，從觀察中找出防災的小秘密！"],
-    water: ["我是小水滴！和我一起探索水的流動，解開防災的秘密！", "水會往哪裡流？我們一起找找生活中的線索！", "想看更多實驗嗎？到科普實驗影片找我吧！"],
+    water: ["我是小水滴！和我一起探索水的流動，解開防災的秘密！", "水會往哪裡流？我們一起找找生活中的線索！", "想看更多實驗嗎？到實驗影片找我吧！"],
     wind: ["我是風咻咻！看不見的空氣，也藏著好多科學秘密！", "輕輕吹一口氣，猜猜紙條會往哪裡跑？", "跟著土、風、水探險隊，一起把好奇變成發現！"],
   };
   const homeVisits = { earth: 0, water: 0, wind: 0 };
@@ -221,12 +246,66 @@
     }
 
     about.hidden = id !== "about";
+    ["activities", "honors"].forEach((kind) => {
+      document.getElementById(`${kind}-content`).hidden = id !== kind;
+    });
     if (id === "about" && pageTitles.has(id)) document.getElementById("page-title").textContent = pageTitles.get(id);
     companion(id);
     if (id === "about") load("about");
+    else if (["activities", "honors"].includes(id)) loadShowcase(id);
     else if (!["experiments", "resources", "activities", "honors", "knowledge", "quiz", "games", "ai-qa"].includes(id)) { load("home"); loadUpdates(); }
   }
   let updatesLoaded = false;
+  const showcaseLoaded = new Set();
+  const showcasePending = new Set();
+  function gallery(images, title) {
+    const gallery = make("div", undefined, "showcase-gallery");
+    images.slice(0, 3).forEach((src, index) => {
+      const image = document.createElement("img");
+      image.src = src; image.alt = `${title}精選照片 ${index + 1}`; image.loading = "lazy";
+      gallery.append(image);
+    });
+    return gallery;
+  }
+  function renderShowcase(kind, records) {
+    const target = document.getElementById(`${kind}-content`);
+    target.replaceChildren();
+    const isActivity = kind === "activities";
+    if (!records.length) {
+      return;
+    }
+    const list = make("div", undefined, `showcase-list ${kind}-list`);
+    records.forEach((record) => {
+      const card = make("article", undefined, "showcase-card");
+      const header = make("header");
+      if (isActivity && record.eventDate) { const date = make("time", record.eventDate, "showcase-date"); date.dateTime = record.eventDate; header.append(date); }
+      header.append(make("h2", record.title));
+      if (isActivity && record.location) header.append(make("p", `📍 ${record.location}`, "showcase-meta"));
+      if (!isActivity && record.studentName) header.append(make("p", record.studentName, "showcase-meta"));
+      card.append(header);
+      if (record.description) card.append(make("p", record.description, "showcase-description"));
+      if (!isActivity && record.designIdea) {
+        const idea = make("section", undefined, "showcase-idea"); idea.append(make("h3", "設計理念"), make("p", record.designIdea)); card.append(idea);
+      }
+      if (record.images?.length) card.append(gallery(record.images, record.title));
+      if (isActivity && record.albumUrl) { const link = make("a", "查看完整相簿 ↗", "experiment-button"); link.href = record.albumUrl; link.target = "_blank"; link.rel = "noopener noreferrer"; card.append(link); }
+      list.append(card);
+    });
+    target.append(list);
+  }
+  async function loadShowcase(kind) {
+    if (showcaseLoaded.has(kind) || showcasePending.has(kind)) return;
+    const target = document.getElementById(`${kind}-content`); showcasePending.add(kind);
+    target.replaceChildren(make("p", "正在載入內容…", "page-empty"));
+    try {
+      const response = await fetch(`/api/${kind}`, { cache: "no-store" }); if (!response.ok) throw new Error();
+      const data = await response.json(); const records = data[kind]; if (!Array.isArray(records)) throw new Error();
+      renderShowcase(kind, records); showcaseLoaded.add(kind);
+    } catch {
+      const retry = make("button", "重新載入", "experiment-button"); retry.type = "button"; retry.addEventListener("click", () => loadShowcase(kind));
+      target.replaceChildren(make("p", "內容暫時無法載入，請稍後再試。", "page-empty"), retry);
+    } finally { showcasePending.delete(kind); }
+  }
   async function loadUpdates() {
     if (updatesLoaded) return;
     updatesLoaded = true;

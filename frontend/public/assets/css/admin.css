@@ -399,23 +399,16 @@ h1 {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
   margin: 24px 0;
 }
 
 .stat {
-  padding: 23px;
+  min-height: 132px;
+  padding: 17px 18px;
   border-radius: 15px;
   border: 1px solid var(--line);
-  background: #fffefa;
-}
-
-.stat:nth-child(2) {
-  background: #fff9e9;
-}
-
-.stat:nth-child(3) {
   background: #f0edf8;
 }
 
@@ -431,8 +424,8 @@ h1 {
 
 .stat strong {
   display: block;
-  font-size: 38px;
-  margin: 8px 0 2px;
+  font-size: 34px;
+  margin: 6px 0 0;
   line-height: 1.3;
 }
 
@@ -1560,17 +1553,15 @@ pre {
 }
 
 .page-save-bar {
-  position: sticky;
-  bottom: 0;
+  position: static;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 20px;
-  background: #f7faf1f5;
-  border: 1px solid #c6d4bf;
-  padding: 18px 24px;
-  border-radius: 14px;
-  z-index: 3;
+  background: transparent;
+  border: 0;
+  padding: 18px 0 0;
+  border-radius: 0;
   margin-top: 24px;
 }
 
@@ -1580,9 +1571,19 @@ pre {
   font-size: 13px;
 }
 
+.page-photo-field { display: grid; gap: 9px; }
+.page-photo-preview { display: flex; align-items: center; gap: 12px; }
+.page-photo-preview img { width: 112px; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 12px; object-fit: cover; }
+
 .page-save-bar button {
   flex-shrink: 0;
 }
+
+.image-upload-field { display: grid; gap: 9px; }
+.image-upload-field input { max-width: 100%; }
+.image-upload-preview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.image-upload-preview figure { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: #eef5f2; }
+.image-upload-preview img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 
 @media (max-width: 760px) {
   .page-editor-top {
@@ -1600,4 +1601,6 @@ pre {
   .page-save-bar {
     padding: 14px;
   }
+
+  .image-upload-preview { grid-template-columns: 1fr; max-width: 360px; }
 }

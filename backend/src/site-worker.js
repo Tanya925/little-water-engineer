@@ -17,6 +17,8 @@ import {
 } from "./d1-materials.js";
 import {
   gradeQuestion,
+  listActivities,
+  listHonors,
   listResources,
   listUpdates,
   listVideos,
@@ -108,15 +110,23 @@ export default {
         const session = await sessionFor(request, env.DB);
         if (!session) return json({ error: "登入已逾時，請重新登入。" }, 401);
         if (pathname === "/api/admin/overview" && request.method === "GET") {
-          const tables = { experiments: "experiment_videos", resources: "teaching_resources", questions: "quiz_questions" };
+          const tables = {
+            experiments: "experiment_videos",
+            resources: "teaching_resources",
+            questions: "quiz_questions",
+            honors: "honor_showcases",
+            activities: "activity_records",
+          };
           const collections = await Promise.all(
             Object.entries(tables).map(async ([kind, table]) => {
               const row = await env.DB.prepare(
                 `SELECT sum(status = 'published') AS published, sum(status = 'draft') AS draft FROM ${table}`,
               ).first();
-              return { kind, published: Number(row?.published || 0), draft: Number(row?.draft || 0) };
+              return { kind, count: Number(row?.published || 0) + Number(row?.draft || 0) };
             }),
           );
+          // 文章與遊戲尚未有可管理的內容表，總覽保留數量位置，之後接上資料表即可取代 0。
+          collections.push({ kind: "knowledge", count: 0 }, { kind: "games", count: 0 });
           const topics = await Promise.all(
             quizTopics.map(async (topic) => ({
               topic,
@@ -155,7 +165,7 @@ export default {
           }
           if (request.method === "PUT") {
             if (!sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
-            return json({ item: await savePage(env.DB, page[1], await readJSON(request, 512000)) });
+            return json({ item: await savePage(env.DB, page[1], await readJSON(request, 5 * 1024 * 1024)) });
           }
           return json({ error: "Method not allowed" }, 405);
         }
@@ -192,19 +202,20 @@ export default {
           }
           return json({ error: "Method not allowed" }, 405);
         }
-        const list = /^\/api\/admin\/(experiments|resources|questions|updates)$/.exec(pathname);
+        const list = /^\/api\/admin\/(experiments|resources|questions|updates|honors|activities)$/.exec(pathname);
         if (list && request.method === "GET") {
           return json({ items: await adminList(env.DB, list[1]) });
         }
-        const item = /^\/api\/admin\/(experiments|resources|questions|updates)(?:\/([^/]+))?$/.exec(pathname);
+        const item = /^\/api\/admin\/(experiments|resources|questions|updates|honors|activities)(?:\/([^/]+))?$/.exec(pathname);
         if (item) {
           const [, kind, id] = item;
           if (request.method !== "GET" && !sameOrigin(request, url.origin)) return json({ error: "Forbidden" }, 403);
           if (request.method === "GET" && id) { const found = await adminFind(env.DB, kind, id); return found ? json({ item: found }) : json({ error: "Not found" }, 404); }
-          if (request.method === "POST" && !id) return json({ item: await adminSave(env.DB, kind, null, await readJSON(request, 512000)) }, 201);
+          const maxBody = ["honors", "activities"].includes(kind) ? 5 * 1024 * 1024 : 512000;
+          if (request.method === "POST" && !id) return json({ item: await adminSave(env.DB, kind, null, await readJSON(request, maxBody)) }, 201);
           if (request.method === "PUT" && id) {
             const before = kind === "resources" ? await adminFind(env.DB, kind, id) : null;
-            const saved = await adminSave(env.DB, kind, id, await readJSON(request, 512000));
+            const saved = await adminSave(env.DB, kind, id, await readJSON(request, maxBody));
             if (kind === "resources" && before && (before.title !== saved.title || before.status !== saved.status)) {
               await syncResourceMetadata(env.DB, env, saved, context);
             }
@@ -221,6 +232,8 @@ export default {
         // 前端維持既有的 { videos } 契約，避免畫面把正確資料誤判為載入失敗。
         return json({ videos: await listVideos(env.DB) });
       }
+      if (pathname === "/api/honors" && request.method === "GET") return json({ honors: await listHonors(env.DB) });
+      if (pathname === "/api/activities" && request.method === "GET") return json({ activities: await listActivities(env.DB) });
       if (pathname === "/api/ai/status" && request.method === "GET") {
         const row = await env.DB.prepare("SELECT count(*) AS count FROM ai_materials WHERE deleted=0 AND status='published' AND index_state='ready'").first();
         return json({ configured: true, hasMaterials: Number(row?.count || 0) > 0 });

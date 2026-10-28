@@ -1,5 +1,5 @@
 /*
- * 科普實驗影片的公開控制器。清單來自 /api/experiments，搜尋只在已取得的公開資料
+ * 實驗影片的公開控制器。清單來自 /api/experiments，搜尋只在已取得的公開資料
  * 上執行；封面由本站資產提供，Drive 播放器只在學生點選後才建立 iframe。關閉視窗
  * 或離開頁面必須移除 iframe，避免背景播放與不必要的第三方連線持續存在。
  */
@@ -88,7 +88,7 @@ function renderExperiments() {
       body.className = "experiment-card-body";
       const label = document.createElement("span");
       label.className = "experiment-label";
-      label.textContent = "科普實驗影片";
+      label.textContent = "實驗影片";
       const title = document.createElement("h2");
       title.textContent = video.title;
       body.append(label, title);

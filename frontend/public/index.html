@@ -13,8 +13,8 @@
     <title>小小水利工程師養成計畫</title>
     <link rel="stylesheet" href="assets/css/styles.css" />
     <link rel="stylesheet" href="assets/css/learning.css" />
-    <link rel="stylesheet" href="assets/css/quiz-friends.css" />
-    <link rel="stylesheet" href="assets/css/pages.css" />
+    <link rel="stylesheet" href="assets/css/quiz-friends.css?v=20261028-12" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20261028-11" />
     <link rel="stylesheet" href="assets/css/ai.css" />
     <script src="assets/js/app.js" defer></script>
     <script src="assets/js/experiments.js" defer></script>
@@ -57,7 +57,7 @@
         </span>
       </a>
       <nav class="quick-nav" aria-label="常用功能">
-        <a href="#experiments">科普實驗影片</a>
+        <a href="#experiments">實驗影片</a>
         <a href="#resources">教材下載</a>
         <a href="#quiz">知識小學堂</a>
         <a href="#games">互動小遊戲</a>
@@ -306,7 +306,6 @@
         <div id="quiz-content" hidden>
           <div class="quiz-map-decor" aria-hidden="true"><span>☁</span><span>🪁</span><span>🌿</span><span>✦</span><span>☁</span><span>🌼</span></div>
           <div class="quiz-welcome quiz-friends-grove">
-            <p>答題結果會匿名統計，幫助老師改進題目與教材。</p>
             <div class="quiz-friends-stage" aria-label="土風水探險夥伴">
             <button id="quiz-earth-friend" class="quiz-walking-friend friend-earth" type="button" aria-label="和土土聊天" aria-pressed="false"><span class="earth-character" aria-hidden="true"><span class="earth-sprout">🌱</span><span class="character-eyes"><i></i><i></i></span><span class="character-smile"></span><span class="character-feet"><i></i><i></i></span></span><span class="friend-name">土土</span></button>
             <button id="quiz-water-friend" class="quiz-walking-friend friend-water" type="button" aria-label="和小水滴聊天" aria-pressed="true">
@@ -402,6 +401,8 @@
           <button id="experiments-retry" type="button" class="experiment-button" hidden>重新載入</button>
           <div id="experiments-grid" class="experiments-grid"></div>
         </div>
+        <div id="activities-content" class="showcase-page" hidden aria-live="polite"></div>
+        <div id="honors-content" class="showcase-page" hidden aria-live="polite"></div>
       </section>
     </main>
     <dialog id="experiment-player" class="experiment-player" aria-labelledby="player-title">

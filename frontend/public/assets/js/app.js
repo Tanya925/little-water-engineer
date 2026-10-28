@@ -5,7 +5,7 @@
  * 的 features 白名單，避免任意 hash 值造成不存在頁面或未預期的 DOM 操作。
  */
 const features = [
-  { id: "experiments", title: "科普實驗影片", icon: "🧪", color: "mint" },
+  { id: "experiments", title: "實驗影片", icon: "🧪", color: "mint" },
   { id: "resources", title: "教材下載中心", icon: "📚", color: "peach" },
   { id: "activities", title: "活動紀錄", icon: "📷", color: "blue" },
   { id: "honors", title: "小小工程師榮譽榜", icon: "🏆", color: "yellow" },

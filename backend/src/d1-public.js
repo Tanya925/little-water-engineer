@@ -138,6 +138,24 @@ export async function listUpdates(db) {
   return results;
 }
 
+/** 榮譽榜只傳回已發布的作品與已同意公開的文字、照片。 */
+export async function listHonors(db) {
+  const { results } = await db.prepare(
+    `SELECT id,title,student_name AS studentName,description,design_idea AS designIdea,images_json AS images
+     FROM honor_showcases WHERE status='published' ORDER BY sort_order,id`,
+  ).all();
+  return results.map(({ images, ...item }) => ({ ...item, images: parseJSON(images, []) }));
+}
+
+/** 活動紀錄與首頁最新消息分離，完整相簿只在有填寫時才顯示。 */
+export async function listActivities(db) {
+  const { results } = await db.prepare(
+    `SELECT id,title,description,event_date AS eventDate,location,images_json AS images,album_url AS albumUrl
+     FROM activity_records WHERE status='published' ORDER BY event_date DESC,sort_order,id`,
+  ).all();
+  return results.map(({ images, ...item }) => ({ ...item, images: parseJSON(images, []) }));
+}
+
 export async function publicPage(db, id) {
   const page = await db
     .prepare("SELECT title, sections_json FROM site_pages WHERE id = ? AND status = 'published'")

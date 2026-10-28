@@ -401,18 +401,22 @@
   gap: 20px;
   max-width: 850px;
   margin: 36px auto 48px;
-  padding: 25px;
-  background: #e6f1e9;
-  border-radius: 30px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
 }
 
 .team-map > div {
-  background: #fff;
-  border: 1px solid #b9d1c6;
+  background: #f1eefb;
+  border: 1px solid #c9c1e3;
   border-radius: 16px;
   padding: 20px 14px;
   text-align: center;
 }
+
+.team-map > div:nth-child(2) { background: #eaf4f5; border-color: #b8d6d8; }
+.team-map > div:nth-child(3) { background: #fff2e4; border-color: #e1c8a9; }
+.team-map > div:nth-child(4) { background: #f1f6e9; border-color: #c8d8b6; }
 
 .team-map small,
 .team-map strong {
@@ -507,11 +511,13 @@
 }
 
 .expected-note {
-  padding: 13px 18px;
-  color: #776841;
-  border-left: 4px solid #c6ac6a;
-  background: #f8f0d9;
-  border-radius: 0 12px 12px 0;
+  padding: 0;
+  color: #71827d;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  font-size: 15px;
+  font-style: italic;
 }
 
 .layout-benefits .editorial-item {
@@ -3233,6 +3239,673 @@ body:has(#about-content:not([hidden])) {
 }
 
 /* Each functional page opens into its own illustrated water-science setting. */
+.about-editorial .editorial-item:has(.about-item-photo) { display: grid; grid-template-columns: minmax(0, 1fr) 132px; align-items: start; gap: 18px; }
+.about-item-photo { grid-column: 2; width: 132px; aspect-ratio: 1; border: 4px solid #fffdf7; border-radius: 18px; object-fit: cover; box-shadow: 0 8px 18px #41675d24; }
+@media (max-width: 600px) { .about-editorial .editorial-item:has(.about-item-photo) { grid-template-columns: 1fr; } .about-item-photo { grid-column: 1; grid-row: 1; width: 104px; } }
+
+/* 關於我們沿用首頁計畫介紹的標題層級：每個主要章節都有連續編號，不使用膠囊。 */
+.about-editorial { counter-reset: about-chapter; }
+.about-editorial .editorial-chapter { counter-increment: about-chapter; }
+.about-editorial .about-major-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 0 0 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #46716f;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.about-editorial .about-major-heading::before {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #9fc6bf;
+  border-radius: 50%;
+  background: #e2f0ea;
+  color: #5d918e;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+.about-editorial .about-major-heading::before { content: counter(about-chapter, decimal-leading-zero); }
+.about-editorial .about-minor-heading,
+.about-editorial .editorial-item-body > h4 {
+  margin: 0 0 14px;
+  padding: 0 0 0 13px;
+  border: 0;
+  border-left: 4px solid #9fc6bf;
+  border-radius: 0;
+  background: transparent;
+  color: #46716f;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+.about-editorial .about-minor-heading { margin-top: 0; margin-bottom: 26px; color: #5f7f79; font-size: 24px; }
+@media (max-width: 600px) { .about-editorial .about-major-heading { font-size: 24px; } .about-editorial .about-major-heading::before { flex-basis: 38px; width: 38px; height: 38px; font-size: 13px; } .about-editorial .about-minor-heading, .about-editorial .editorial-item-body > h4 { font-size: 20px; } }
+
+/* 計畫介紹統一為帶水感的藍色卡片；只改底色，保留各區原有的圖文層次。 */
+#project-content .layout-goals .editorial-item,
+#project-content .layout-students .editorial-item,
+#project-content .layout-cooperation .editorial-item,
+#project-content .layout-benefits .editorial-item,
+#project-content .layout-stats .editorial-item,
+#project-content .layout-kpi .editorial-item,
+#project-content .layout-partners .editorial-item,
+#project-content .layout-contact .chapter-items,
+#project-content .team-map > div,
+#project-content .archive-flow li {
+  background: #dcecf8;
+  border-color: #adcde2;
+}
+
+#project-content .layout-kpi .editorial-item:nth-last-child(-n + 2),
+#project-content .team-map > div:nth-child(2),
+#project-content .team-map > div:nth-child(3),
+#project-content .team-map > div:nth-child(4) {
+  background: #dcecf8;
+  border-color: #adcde2;
+}
+
+#project-content .layout-benefits .editorial-art {
+  background: #dceef8;
+}
+
+#project-content .archive-flow li:not(:last-child)::after {
+  color: #6797ae;
+}
+
+/* 目標卡彼此留出呼吸感，讓桌機與平板版面都更容易閱讀。 */
+#project-content .layout-goals .chapter-items {
+  column-gap: clamp(96px, 8vw, 156px);
+  row-gap: clamp(64px, 5vw, 86px);
+  padding: 12px 0 34px;
+}
+
+@media (min-width: 1180px) {
+  #home-page .home-section.introduction {
+    max-width: 1540px;
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+}
+
+/* 只讓目標卡延展；計畫名稱、緣由與其他說明維持原本舒適的閱讀行寬。 */
+@media (min-width: 1180px) {
+  #project-content > .editorial-chapter:not(.layout-goals) {
+    width: min(100%, 1220px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  #home-page .home-section.introduction > .section-heading {
+    width: min(100%, 1220px);
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+#project-content .layout-goals .editorial-item {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(34px, 3vw, 46px);
+  background-image:
+    radial-gradient(150px 88px at 100% 0%, #ffffff70 0 48%, transparent 49%),
+    radial-gradient(122px 72px at 0% 100%, #b9d9ea54 0 48%, transparent 49%);
+}
+
+#project-content .layout-goals .editorial-item:nth-child(even) {
+  transform: translateY(clamp(20px, 2.5vw, 42px));
+}
+
+@media (max-width: 760px) {
+  #project-content .layout-goals .chapter-items {
+    gap: 24px;
+    padding: 0;
+  }
+
+  #project-content .layout-goals .editorial-item:nth-child(even) {
+    transform: none;
+  }
+}
+
+/* 實驗與挑戰採霧藍混一點灰土的漸層，和水岸背景協調而不顯得冰冷。 */
+#project-content .module-marquee li {
+  background: linear-gradient(135deg, #d5e7f5 0%, #e5edf2 52%, #dcebe4 100%);
+  border-color: #b7d2df;
+}
+
+/* 關於我們所有可見的內容框也落在相同藍色家族。 */
+.about-editorial .layout-students .editorial-item,
+.about-editorial .layout-partners .editorial-item,
+.about-editorial .layout-cooperation .editorial-item,
+.about-editorial .layout-stats .editorial-item,
+.about-editorial .layout-benefits .editorial-item,
+.about-editorial .layout-contact .chapter-items,
+.about-editorial .team-map > div,
+.about-editorial .archive-flow li {
+  background: #eef6fb;
+  border-color: #c6dde9;
+}
+
+.about-editorial .team-map > div:nth-child(2),
+.about-editorial .team-map > div:nth-child(3),
+.about-editorial .team-map > div:nth-child(4) {
+  background: #e9f4fb;
+  border-color: #c0dbe8;
+}
+
+.about-editorial .layout-benefits .editorial-art {
+  background: #cfe5f3;
+}
+
+/* 關於我們以錯落、分欄與節奏分組；卡片外型保持低調一致。 */
+.about-editorial .layout-students .editorial-item {
+  border-width: 1px 1px 3px;
+  border-radius: 18px;
+  border-bottom-color: #a9cfe4;
+}
+
+.about-editorial .layout-partners .editorial-item {
+  border-radius: 18px;
+  border-left: 4px solid #b0d4e7;
+}
+
+.about-editorial .layout-students .chapter-items {
+  gap: 30px;
+}
+
+.about-editorial .layout-students .editorial-item:nth-child(2) {
+  transform: translateY(28px);
+}
+
+.about-editorial .layout-cooperation .editorial-item {
+  border-width: 1px 1px 1px 5px;
+  border-radius: 18px;
+  border-left-color: #9fc9e1;
+  box-shadow: 0 10px 22px #79a9c31a;
+}
+
+.about-editorial .layout-stats .editorial-item {
+  border-radius: 18px;
+  border-top: 4px solid #b0d6e9;
+}
+
+.about-editorial .layout-benefits .editorial-item {
+  border-radius: 18px;
+  border-top: 4px solid #b1d4e7;
+}
+
+.about-editorial .layout-contact .chapter-items {
+  border-width: 1px 5px 1px 1px;
+  border-radius: 18px;
+  border-right-color: #b0d4e7;
+}
+
+.about-editorial .team-map > div,
+.about-editorial .archive-flow li { border-radius: 16px; }
+
+@media (min-width: 761px) {
+  /* 合作單位採三段式推進，三張卡各自有位置但保持同一閱讀方向。 */
+  .about-editorial .layout-partners .editorial-item:nth-child(1) {
+    width: calc(100% - 96px);
+  }
+
+  .about-editorial .layout-partners .editorial-item:nth-child(2) {
+    width: calc(100% - 152px);
+    margin-left: 96px;
+  }
+
+  .about-editorial .layout-partners .editorial-item:nth-child(3) {
+    width: calc(100% - 116px);
+    margin-left: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .about-editorial .layout-students .editorial-item:nth-child(2) {
+    transform: none;
+  }
+}
+
+/* 數位典藏改為清楚的三步驟，縮短橫向空白並凸顯閱讀順序。 */
+.about-editorial .archive-flow {
+  counter-reset: archive-step;
+  max-width: 1180px;
+  margin: 32px auto;
+  gap: 54px;
+}
+
+.about-editorial .archive-flow li {
+  counter-increment: archive-step;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 108px;
+  padding: 20px 22px;
+  border-left: 4px solid #9fc8df;
+  box-shadow: 0 9px 18px #79a9c315;
+}
+
+.about-editorial .archive-flow li::before {
+  content: counter(archive-step, decimal-leading-zero);
+  color: #6b9bb5;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+/* 聯絡資訊拆為三張資訊卡，避免單一大框留出大片空白。 */
+.about-editorial .layout-contact .chapter-items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.about-editorial .layout-contact .editorial-item {
+  min-height: 190px;
+  padding: 26px;
+  border: 1px solid #c6dde9;
+  border-top: 4px solid #b0d4e7;
+  border-radius: 18px;
+  background: #eef6fb;
+}
+
+.about-editorial .layout-contact .editorial-item:nth-child(2) {
+  background: #e9f4fb;
+}
+
+.about-editorial .layout-contact .editorial-item:nth-child(3) {
+  background: #e5f1fa;
+}
+
+@media (max-width: 760px) {
+  .about-editorial .layout-contact .chapter-items {
+    grid-template-columns: 1fr;
+  }
+
+  .about-editorial .layout-contact .editorial-item {
+    min-height: 0;
+  }
+}
+
+/* 關於我們改用編輯式資訊分區：色帶與分隔線取代反覆出現的膠囊外框。 */
+.about-editorial .layout-students .editorial-item {
+  border: 0;
+  border-top: 5px solid #a9cfe4;
+  border-radius: 0;
+  background: linear-gradient(180deg, #eef6fb 0 76%, #e5f1fa 76% 100%);
+}
+
+.about-editorial .layout-partners .editorial-item {
+  border: 0;
+  border-bottom: 1px solid #bcd8e7;
+  border-radius: 0;
+  background: transparent;
+}
+
+.about-editorial .layout-partners .editorial-item:last-child {
+  border-bottom: 0;
+}
+
+.about-editorial .layout-cooperation .editorial-item {
+  border: 0;
+  border-left: 7px solid #9fc9e1;
+  border-radius: 0;
+  background: linear-gradient(90deg, #e3f1fa, #eff7fb 72%);
+  box-shadow: none;
+}
+
+.about-editorial .layout-stats .editorial-item {
+  border: 0;
+  border-top: 5px solid #acd0e4;
+  border-radius: 0;
+  background: #eef6fb;
+}
+
+.about-editorial .layout-benefits .editorial-item {
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid #b9d7e7;
+  border-bottom: 1px solid #b9d7e7;
+  background: transparent;
+}
+
+.about-editorial .layout-archive .archive-flow li {
+  border: 0;
+  border-bottom: 3px solid #a9cde1;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.about-editorial .layout-contact .chapter-items {
+  gap: 0;
+  border: 0;
+}
+
+.about-editorial .layout-contact .editorial-item,
+.about-editorial .layout-contact .editorial-item:nth-child(2),
+.about-editorial .layout-contact .editorial-item:nth-child(3) {
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  border-top: 5px solid #b0d4e7;
+  background: #eef6fb;
+}
+
+.about-editorial .layout-contact .editorial-item:nth-child(2) {
+  background: #e8f3fa;
+}
+
+.about-editorial .layout-contact .editorial-item:nth-child(3) {
+  background: #e2f0fa;
+}
+
+/* 合作單位以斜切色塊串連三個場域，保留內容閱讀的平整感。 */
+.about-editorial .layout-partners .editorial-item {
+  position: relative;
+  isolation: isolate;
+  padding: 34px 42px;
+  border-bottom: 0;
+}
+
+.about-editorial .layout-partners .editorial-item::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(100deg, #e1f0fa, #eff7fb 72%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 54px) 100%, 0 100%);
+}
+
+.about-editorial .layout-partners .editorial-item:nth-child(even)::before {
+  background: linear-gradient(80deg, #eef7fb, #dceefa 100%);
+  clip-path: polygon(54px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* 質化效益以一張雙欄資訊版呈現，讓兩個面向有共同的視覺重心。 */
+.about-editorial .layout-benefits .chapter-items {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid #c6dde9;
+  border-top: 5px solid #b0d4e7;
+  border-radius: 12px;
+  background: #edf6fb;
+}
+
+.about-editorial .layout-benefits .editorial-item {
+  min-height: 100%;
+  padding: 34px clamp(28px, 3vw, 48px);
+  border: 0;
+  background: transparent;
+}
+
+.about-editorial .layout-benefits .editorial-item + .editorial-item {
+  border-left: 1px solid #bfd9e8;
+  background: #e7f2fa;
+}
+
+.about-editorial .layout-archive .archive-flow li {
+  font-size: clamp(19px, 1.45vw, 26px);
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .about-editorial .layout-benefits .chapter-items {
+    grid-template-columns: 1fr;
+  }
+
+  .about-editorial .layout-benefits .editorial-item + .editorial-item {
+    border-top: 1px solid #bfd9e8;
+    border-left: 0;
+  }
+}
+
+/* 合作單位以左右交替的圖文段落建立層次，而非只改變外框形狀。 */
+@media (min-width: 761px) {
+  .about-editorial .layout-partners .chapter-items {
+    gap: 48px;
+  }
+
+  .about-editorial .layout-partners .editorial-item,
+  .about-editorial .layout-partners .editorial-item:nth-child(1),
+  .about-editorial .layout-partners .editorial-item:nth-child(2),
+  .about-editorial .layout-partners .editorial-item:nth-child(3) {
+    width: 100%;
+    margin-left: 0;
+    padding: 22px 0 38px;
+    grid-template-columns: minmax(240px, .75fr) minmax(0, 1.55fr);
+  }
+
+  .about-editorial .layout-partners .editorial-item:nth-child(even) {
+    grid-template-columns: minmax(0, 1.55fr) minmax(240px, .75fr);
+  }
+
+  .about-editorial .layout-partners .editorial-item:nth-child(even) .editorial-art {
+    order: 2;
+  }
+}
+
+.about-editorial .layout-partners .editorial-item::before {
+  content: none;
+}
+
+/* 質化效益是兩座有機資訊島，保留圓潤但不再用單一大方框包覆。 */
+.about-editorial .layout-benefits .chapter-items {
+  gap: 34px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.about-editorial .layout-benefits .editorial-item,
+.about-editorial .layout-benefits .editorial-item + .editorial-item {
+  min-height: 0;
+  padding: 34px clamp(28px, 3vw, 48px);
+  border: 1px solid #c6dde9;
+  border-top: 6px solid #b0d4e7;
+  border-radius: 58px 18px 54px 18px;
+  background: #edf6fb;
+}
+
+.about-editorial .layout-benefits .editorial-item + .editorial-item {
+  border-left: 1px solid #c6dde9;
+  border-top-color: #9fc9e1;
+  border-radius: 18px 58px 18px 54px;
+  background: #e5f2fa;
+}
+
+@media (max-width: 760px) {
+  .about-editorial .layout-benefits .editorial-item + .editorial-item {
+    border-left: 1px solid #c6dde9;
+  }
+}
+
+/* 數位典藏的圖示直接成為段落標記，不再重複顯示一列流程導覽。 */
+.about-editorial .layout-archive .editorial-item-body > h4 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+}
+
+.about-editorial .archive-item-icon {
+  display: grid;
+  place-items: center;
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  background: transparent;
+  font-size: 28px;
+}
+
+/* 計畫成果：一項主指標與六項清楚的資訊列。 */
+.about-editorial .layout-kpi .expected-note {
+  margin: 0 0 30px;
+  color: #668390;
+  font-size: 15px;
+  font-style: normal;
+  letter-spacing: .02em;
+}
+
+.about-editorial .layout-kpi .chapter-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 48px;
+  padding: 0;
+}
+
+.about-editorial .layout-kpi .editorial-item {
+  grid-column: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 26px 6px;
+  border: 0;
+  border-top: 1px solid #bfd8e5;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.about-editorial .layout-kpi .editorial-item:first-child {
+  grid-column: 1 / -1;
+  margin-bottom: 12px;
+  padding: 32px clamp(26px, 4vw, 54px);
+  border: 1px solid #c3dce9;
+  border-radius: 18px;
+  background: linear-gradient(110deg, #ddecf6, #eff7fb 80%);
+}
+
+.about-editorial .layout-kpi .editorial-item:nth-last-child(-n + 2) {
+  background: linear-gradient(90deg, #e9f4fa 0%, transparent 90%);
+}
+
+.about-editorial .layout-kpi .editorial-item-body {
+  display: grid;
+  grid-template-columns: clamp(120px, 11vw, 166px) minmax(0, 1fr);
+  column-gap: clamp(20px, 2.4vw, 34px);
+  align-items: center;
+  min-width: 0;
+  text-align: left;
+}
+
+.about-editorial .layout-kpi .editorial-number {
+  display: flex;
+  grid-row: 1 / span 2;
+  grid-column: 1;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0 8px;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.about-editorial .layout-kpi .editorial-number strong {
+  color: #497b8d;
+  font-size: clamp(42px, 4.4vw, 66px);
+  line-height: 1.08;
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
+
+.about-editorial .layout-kpi .editorial-number span {
+  margin: 0;
+  color: #668e9e;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.about-editorial .layout-kpi .editorial-item-body > h4,
+.about-editorial .layout-kpi .editorial-item-body > p {
+  grid-column: 2;
+  width: auto;
+  min-width: 0;
+}
+
+.about-editorial .layout-kpi .editorial-item-body > h4 {
+  margin: 0 0 7px;
+  padding: 0;
+  border: 0;
+  color: #436b71;
+  font-size: clamp(19px, 1.7vw, 24px);
+  line-height: 1.35;
+}
+
+.about-editorial .layout-kpi .editorial-item-body > p {
+  margin: 0;
+  color: #5b7480;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+@media (max-width: 1050px) {
+  .about-editorial .layout-kpi .chapter-items {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .about-editorial .layout-kpi .editorial-item:first-child {
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-editorial .layout-kpi .editorial-item-body {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .about-editorial .layout-kpi .editorial-number {
+    grid-row: auto;
+    grid-column: 1;
+  }
+
+  .about-editorial .layout-kpi .editorial-item-body > h4,
+  .about-editorial .layout-kpi .editorial-item-body > p {
+    grid-column: 1;
+  }
+}
+
+.showcase-page { width: min(100%, 980px); margin: 0 auto; padding: 0 20px 72px; }
+.showcase-list { display: grid; gap: 28px; }
+.showcase-card { overflow: hidden; padding: clamp(22px, 4vw, 38px); border: 1px solid #c9ddd9; border-radius: 24px; background: #fffdf8e8; box-shadow: 0 12px 28px #557d7514; }
+.showcase-card header { margin-bottom: 14px; }
+.showcase-card h2 { margin: 0; color: #31586a; font-size: clamp(24px, 3vw, 34px); }
+.showcase-date, .showcase-meta { display: block; margin: 0 0 7px; color: #638585; font-size: .92rem; font-weight: 700; }
+.showcase-description { margin: 0 0 18px; line-height: 1.85; white-space: pre-line; }
+.showcase-idea { margin: 20px 0; padding: 16px 18px; border-left: 4px solid #81c9bd; border-radius: 0 14px 14px 0; background: #eef8f4; }
+.showcase-idea h3 { margin: 0 0 7px; color: #386b64; font-size: 1rem; }
+.showcase-idea p { margin: 0; line-height: 1.75; white-space: pre-line; }
+.showcase-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 22px 0; }
+.showcase-gallery img { width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; object-fit: cover; background: #e8f1ef; }
+@media (max-width: 600px) { .showcase-page { padding-right: 12px; padding-left: 12px; } .showcase-gallery { grid-template-columns: 1fr; } }
+
 .feature-banner {
   --scene-tint: #e4f3f7;
   --scene-shore: #d1e9e3;
@@ -3481,4 +4154,462 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
     width: calc(100% - 24px);
     overflow-wrap: anywhere;
   }
+}
+
+/* 成果區改為「主題核心＋外圍指標」：閱讀順序仍是標題後接各項資料，視覺上則像
+   從中心延展的水波。這組規則放在檔尾，避免舊版卡片格線覆蓋新的斷點設定。 */
+.layout-kpi .kpi-hub {
+  display: grid;
+  place-items: center;
+  width: min(100%, 280px);
+  min-height: 190px;
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0 auto;
+  padding: 28px 24px;
+  border: 7px solid #eaf7fb;
+  border-radius: 50%;
+  outline: 1px solid #9bc9d6;
+  background: radial-gradient(circle at 34% 27%, #ffffff 0 8%, #d8f0f4 52%, #b8dde8 100%);
+  box-shadow: 0 14px 28px #4e899329, inset 0 0 0 1px #ffffffb8;
+  color: #315f70;
+  text-align: center;
+}
+
+.layout-kpi .kpi-hub-kicker {
+  color: #568c9a;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .13em;
+}
+
+.layout-kpi .kpi-hub h4 {
+  margin: 4px 0 2px;
+  padding: 0;
+  border: 0;
+  color: #315f70;
+  font-size: 25px;
+  line-height: 1.25;
+}
+
+.layout-kpi .kpi-hub .expected-note {
+  margin: 0;
+  color: #5c7f88;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.55;
+}
+
+.layout-kpi .chapter-items {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(142px, auto));
+  gap: 18px;
+  max-width: 1120px;
+  margin: 8px auto 0;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 50% 50%, #d9eef2aa 0 13%, transparent 13.3%),
+    linear-gradient(90deg, transparent 49.8%, #a9d2db99 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, #a9d2db99 50%, transparent 50.2%);
+}
+
+.layout-kpi .editorial-item,
+.about-editorial .layout-kpi .editorial-item,
+#project-content .layout-kpi .editorial-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 142px;
+  margin: 0;
+  padding: clamp(18px, 2.2vw, 28px);
+  border: 1px solid #b7d7e1;
+  border-top: 5px solid #83bdcc;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #ffffffed, #e6f4f7e8);
+  box-shadow: 0 10px 22px #47727a16;
+}
+
+.layout-kpi .kpi-item-1 { grid-column: 1 / 2; grid-row: 1; }
+.layout-kpi .kpi-item-2 { grid-column: 2; grid-row: 1; }
+.layout-kpi .kpi-item-3 { grid-column: 3; grid-row: 1; }
+.layout-kpi .kpi-item-4 { grid-column: 3; grid-row: 2; }
+.layout-kpi .kpi-item-5 { grid-column: 3; grid-row: 3; }
+.layout-kpi .kpi-item-6 { grid-column: 2; grid-row: 3; }
+.layout-kpi .kpi-item-7 { grid-column: 1; grid-row: 3; }
+
+.layout-kpi .editorial-item-body,
+.about-editorial .layout-kpi .editorial-item-body {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+.layout-kpi .editorial-number,
+.about-editorial .layout-kpi .editorial-number {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin: 0 0 8px;
+}
+
+.layout-kpi .editorial-number strong,
+.about-editorial .layout-kpi .editorial-number strong {
+  color: #39788a;
+  font-size: clamp(38px, 4vw, 60px);
+  line-height: 1;
+}
+
+.layout-kpi .editorial-number span,
+.about-editorial .layout-kpi .editorial-number span { color: #668a94; }
+
+.layout-kpi .editorial-item-body > h4,
+.about-editorial .layout-kpi .editorial-item-body > h4 {
+  margin: 0 0 7px;
+  padding: 0;
+  border: 0;
+  color: #38616a;
+  font-size: clamp(17px, 1.7vw, 21px);
+  line-height: 1.35;
+}
+
+.layout-kpi .editorial-item-body > p,
+.about-editorial .layout-kpi .editorial-item-body > p {
+  margin: 0;
+  color: #5d7880;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+  .layout-kpi .chapter-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+    padding: 16px;
+    background: none;
+  }
+
+  .layout-kpi .editorial-item { grid-column: auto; grid-row: auto; }
+
+  .layout-kpi .kpi-hub {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .layout-kpi .kpi-hub { grid-column: 1; width: min(100%, 238px); min-height: 160px; margin-top: 0; }
+  .layout-kpi .kpi-hub h4 { font-size: 22px; }
+  .layout-kpi .chapter-items { grid-template-columns: minmax(0, 1fr); padding: 12px 0; gap: 13px; }
+  .layout-kpi .editorial-item { min-height: 0; padding: 20px; }
+  .layout-kpi .editorial-item-body > p { font-size: 13px; }
+}
+
+/* 人物資料卡在任何寬度都保有可放置照片的版位；窄螢幕不再把照片縮成難以辨識的圖示。 */
+@media (max-width: 600px) {
+  .about-editorial .editorial-item:has(.about-item-photo) { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .about-editorial .about-item-photo { grid-column: 1; grid-row: 1; width: min(100%, 240px); border-radius: 20px; }
+
+  /* 跑馬式活動卡保留動態效果，但每張卡不得超出小手機的安全寬度。 */
+  #project-content .module-marquee { max-width: 100%; overflow: hidden; }
+  #project-content .module-marquee li {
+    flex-basis: min(82vw, 330px);
+    width: min(82vw, 330px);
+    min-width: min(82vw, 330px);
+    font-size: clamp(20px, 7vw, 27px);
+  }
+}
+
+/* 成果指標採單一重心與整齊的資料卡：不再使用會在寬螢幕失衡的九宮格定位。 */
+#project-content .layout-kpi .chapter-items {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-template-rows: none !important;
+  gap: 20px !important;
+  max-width: 1080px;
+  margin: 10px auto 0;
+  padding: 0 !important;
+  background: none !important;
+}
+
+#project-content .layout-kpi .kpi-hub {
+  grid-column: 1 / -1 !important;
+  grid-row: auto !important;
+  width: min(100%, 460px);
+  min-height: 0;
+  margin: 0 auto 10px;
+  padding: 22px 32px;
+  border: 1px solid #9fcbd8;
+  border-radius: 28px;
+  outline: 0;
+  background: linear-gradient(135deg, #dff2f5, #edf8f7);
+  box-shadow: 0 10px 24px #47727a18;
+}
+
+#project-content .layout-kpi .kpi-hub h4 { font-size: 27px; }
+
+#project-content .layout-kpi .editorial-item {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  min-height: 208px;
+  padding: 22px 20px;
+  border-top-width: 4px;
+  border-radius: 18px;
+}
+
+#project-content .layout-kpi .editorial-number strong { font-size: clamp(42px, 4vw, 58px); }
+#project-content .layout-kpi .editorial-item-body > h4 { font-size: clamp(17px, 1.55vw, 20px); }
+#project-content .layout-kpi .editorial-item-body > p { font-size: 13px; line-height: 1.65; }
+
+/* 實際照片維持原本的圖文配置。 */
+.about-editorial .editorial-item:has(.about-item-photo) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 132px;
+  align-items: start;
+  gap: 18px;
+}
+
+.about-editorial .about-item-photo {
+  grid-column: 2;
+  width: 132px;
+  aspect-ratio: 1;
+  border: 4px solid #fffdf7;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 8px 18px #41675d24;
+}
+
+
+@media (max-width: 980px) {
+  #project-content .layout-kpi .chapter-items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  #project-content .layout-kpi .kpi-hub { grid-column: 1 / -1 !important; }
+}
+
+@media (max-width: 600px) {
+  #project-content .layout-kpi .chapter-items { grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; }
+  #project-content .layout-kpi .kpi-hub { grid-column: 1 !important; width: 100%; padding: 19px 22px; }
+  #project-content .layout-kpi .kpi-hub h4 { font-size: 23px; }
+  #project-content .layout-kpi .editorial-item { min-height: 0; }
+
+  .about-editorial .editorial-item:has(.about-item-photo) { grid-template-columns: minmax(0, 1fr) 116px; gap: 14px; }
+  .about-editorial .about-item-photo { grid-column: 2; grid-row: 1; width: 116px; border-radius: 16px; }
+}
+
+@media (max-width: 420px) {
+  .about-editorial .editorial-item:has(.about-item-photo) { grid-template-columns: minmax(0, 1fr); }
+  .about-editorial .about-item-photo { grid-column: 1; grid-row: 1; width: min(150px, 100%); }
+}
+
+/* 首頁三項摘要使用比較安靜的字級，讓數字仍是第一閱讀重點。 */
+#project-content .layout-stats .editorial-item-body > h4 { font-size: clamp(16px, 1.55vw, 20px) !important; }
+#project-content .layout-stats .editorial-item-body > p { font-size: 13px; line-height: 1.6; }
+
+/* 手機只保留一位頁面導覽夥伴；平板與桌機可保留一到三位同行。 */
+@media (max-width: 600px) {
+  .page-companion .companion-walking-track { height: 272px; --guide-start: 38px; --guide-end: calc(100% - 122px); }
+  .page-companion .companion-walking-track .companion-road { display: block; top: 224px; }
+  .page-companion .companion-walking-track .companion-walker { top: 136px; }
+  .companion-walking-track .companion-walker-secondary,
+  .companion-walking-track .companion-walker-tertiary { display: none; }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+  .feature-banner > .back { margin-left: 0; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .feature-banner > .page-heading { width: min(100%, 560px); margin-left: 0; }
+}
+
+/* 成果指標改為閱讀順序清楚的成果卡，而不是以定位座標拼出的環狀圖。
+   同一份規則同時套用首頁與「關於我們」資料，避免資料來源不同又長出兩種版面。 */
+.layout-kpi > .chapter-heading { display: none; }
+
+.layout-kpi .chapter-intro {
+  max-width: 720px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+.layout-kpi .chapter-items,
+#project-content .layout-kpi .chapter-items,
+.about-editorial .layout-kpi .chapter-items {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-template-rows: none !important;
+  gap: 18px !important;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 !important;
+  background: none !important;
+}
+
+.layout-kpi .kpi-hub { display: none !important; }
+
+.layout-kpi .editorial-item,
+#project-content .layout-kpi .editorial-item,
+.about-editorial .layout-kpi .editorial-item {
+  position: relative;
+  display: flex;
+  min-height: 224px;
+  padding: 26px 24px 24px;
+  overflow: hidden;
+  border: 1px solid #c7dfe2;
+  border-top: 6px solid #75adb8;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fffefb 0%, #eef8f7 100%);
+  box-shadow: 0 12px 28px #42727a16;
+}
+
+.layout-kpi .editorial-item::before {
+  content: "";
+  position: absolute;
+  right: -22px;
+  bottom: -28px;
+  width: 104px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #cfe8df80;
+}
+
+.layout-kpi .editorial-item:nth-child(3n + 2) { border-top-color: #d2a86c; background: linear-gradient(145deg, #fffdf7, #fbf3df); }
+.layout-kpi .editorial-item:nth-child(3n) { border-top-color: #88bfa7; background: linear-gradient(145deg, #fbfff8, #e8f4e7); }
+.layout-kpi .editorial-item:nth-child(3n + 2)::before { background: #f1ddb380; }
+.layout-kpi .editorial-item:nth-child(3n)::before { background: #cee6c780; }
+
+.layout-kpi .editorial-item-body,
+.about-editorial .layout-kpi .editorial-item-body {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+}
+
+.layout-kpi .editorial-number,
+.about-editorial .layout-kpi .editorial-number { justify-content: flex-start; margin-bottom: 12px; }
+.layout-kpi .editorial-number strong,
+.about-editorial .layout-kpi .editorial-number strong { font-size: clamp(42px, 5vw, 66px); }
+.layout-kpi .editorial-item-body > h4,
+.about-editorial .layout-kpi .editorial-item-body > h4 { margin: 0 0 9px; font-size: clamp(18px, 1.8vw, 22px); }
+.layout-kpi .editorial-item-body > p,
+.about-editorial .layout-kpi .editorial-item-body > p { margin-top: auto; }
+
+@media (max-width: 900px) {
+  .layout-kpi .chapter-items,
+  #project-content .layout-kpi .chapter-items,
+  .about-editorial .layout-kpi .chapter-items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 560px) {
+  .layout-kpi .chapter-intro { margin-bottom: 20px; text-align: left; }
+  .layout-kpi .chapter-items,
+  #project-content .layout-kpi .chapter-items,
+  .about-editorial .layout-kpi .chapter-items { grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; }
+  .layout-kpi .editorial-item,
+  #project-content .layout-kpi .editorial-item,
+  .about-editorial .layout-kpi .editorial-item { min-height: 0; padding: 22px 21px; }
+}
+
+/* 對話框的寬度也計入人物的活動範圍；任何寬度下都不會把角色或泡泡推到畫面外。 */
+.page-companion { overflow: hidden; }
+.companion-walking-track {
+  height: 326px;
+  --guide-width: 104px;
+  --guide-speech-width: min(290px, calc(100vw - 28px));
+  --safe-left: max(14px, calc((var(--guide-speech-width) - var(--guide-width)) / 2 + 14px));
+  --safe-right: calc(100% - var(--guide-width) - var(--safe-left));
+  --walk-distance: calc(100vw - var(--guide-width) - var(--safe-left) - var(--safe-left));
+}
+
+.companion-walking-track .companion-walker {
+  left: var(--safe-left) !important;
+  width: var(--guide-width);
+  /* 只移動位置；不翻轉含有文字的整個容器。 */
+  animation: companion-safe-walk var(--walk-duration, 24s) ease-in-out infinite var(--walk-delay, 0s) !important;
+}
+
+.page-companion .companion-walking-track .companion-speech {
+  width: var(--guide-speech-width);
+  /* 寬度由步道本身的安全範圍計算；不能再以人物容器寬度裁切。 */
+  max-width: none;
+}
+
+@keyframes companion-safe-walk {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(max(0px, var(--walk-distance))); }
+}
+
+@media (max-width: 700px) {
+  .page-companion .companion-walking-track {
+    height: 308px;
+    --guide-width: 88px;
+    --guide-speech-width: min(250px, calc(100vw - 28px));
+  }
+  .page-companion .companion-walking-track .companion-road { display: block; top: 258px; }
+  .page-companion .companion-walking-track .companion-walker { top: 118px; }
+  .companion-walking-track .companion-walker-secondary,
+  .companion-walking-track .companion-walker-tertiary { display: none; }
+}
+
+/* 舊版環狀 KPI 使用了逐卡 grid 座標；這一層明確覆蓋每個座標，
+   避免資料載入到「關於我們」時重新回到不等寬的軌道版。 */
+#about-content.about-editorial .layout-kpi .chapter-items,
+#project-content .layout-kpi .chapter-items {
+  display: grid !important;
+  grid-template: none !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  grid-auto-rows: minmax(224px, auto) !important;
+  gap: 18px !important;
+  width: min(100%, 1120px) !important;
+  max-width: 1120px !important;
+  margin-inline: auto !important;
+  padding: 0 !important;
+}
+
+#about-content.about-editorial .layout-kpi .editorial-item,
+#project-content .layout-kpi .editorial-item {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 224px !important;
+  padding: 26px 24px 24px !important;
+}
+
+@media (max-width: 900px) {
+  #about-content.about-editorial .layout-kpi .chapter-items,
+  #project-content .layout-kpi .chapter-items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 560px) {
+  #about-content.about-editorial .layout-kpi .chapter-items,
+  #project-content .layout-kpi .chapter-items { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+/* 導覽夥伴與步道以同一個安全場景定位：名稱、腳和對話框都有完整留白。 */
+.page-companion { overflow: visible; }
+.page-companion .companion-walking-track { height: 340px; }
+.page-companion .companion-walking-track .companion-road { top: 288px; }
+.page-companion .companion-walking-track .companion-walker { top: 150px; }
+.page-companion .companion-walker .friend-name { position: relative; z-index: 2; white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .page-companion .companion-walking-track { height: 326px; }
+  .page-companion .companion-walking-track .companion-road { top: 274px; }
+  .page-companion .companion-walking-track .companion-walker { top: 132px; }
+}
+
+/* 角色腳底貼近同一條步道；名稱保留在步道下方而不被裁切。 */
+.page-companion .companion-walking-track { height: 390px; }
+.page-companion .companion-walking-track .companion-road { top: 316px; }
+.page-companion .companion-walking-track .companion-walker { top: 226px; }
+@media (max-width: 700px) {
+  .page-companion .companion-walking-track { height: 356px; }
+  .page-companion .companion-walking-track .companion-road { top: 286px; }
+  .page-companion .companion-walking-track .companion-walker { top: 194px; }
 }

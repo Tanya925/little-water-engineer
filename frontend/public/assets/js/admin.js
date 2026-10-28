@@ -8,14 +8,14 @@ const $ = (id) => document.getElementById(id);
 const sections = [
   ["overview", "◈", "內容總覽", ""],
   ["home", "🏠", "首頁最新活動管理", "計畫介紹為固定內容；這裡管理首頁的最新活動。"],
-  ["experiments", "🧪", "科普實驗影片管理", "管理影片連結、簡介與顯示順序。"],
+  ["experiments", "🧪", "實驗影片管理", "管理影片連結、簡介與顯示順序。"],
   ["resources", "📚", "教材管理", "管理章節資料夾與章節內的小教材；每筆小教材各自建立 AI 問答索引。"],
   ["activities", "📷", "活動紀錄管理", ""],
   ["honors", "🏆", "小小工程師榮譽榜管理", ""],
   ["knowledge", "💡", "科普知識專區管理", ""],
   ["questions", "❔", "知識小學堂管理", "維護五個冒險主題的題目、答案與解析。"],
   ["games", "🎮", "互動小遊戲管理", ""],
-  ["about", "👋", "關於我們管理", ""],
+  ["about", "👋", "關於我們管理", "管理計畫介紹、團隊與合作單位等可能調整的文字與照片網址。"],
   ["export", "↧", "資料庫備份", "下載資料庫備份，方便日後還原。"],
 ];
 const states = { published: "發布", draft: "下架" };
@@ -26,7 +26,7 @@ const indexStates = {
   failed: "AI 索引失敗",
   deleted: "索引已移除",
 };
-const labels = { experiments: "影片", resources: "教材", questions: "題目", updates: "最新活動" };
+const labels = { experiments: "影片", resources: "教材", questions: "題目", honors: "榮譽榜作品", activities: "活動紀錄", knowledge: "科普文章", games: "互動小遊戲", updates: "最新活動" };
 let topics = [];
 let currentSection = "overview";
 let records = [];
@@ -185,12 +185,6 @@ async function renderRoute() {
       }
       topics = (overview.topics || []).map((item) => item.topic);
       renderOverview(overview);
-    } else if (currentSection === "about") {
-      const result = await request(`/api/admin/pages/${currentSection}`);
-      if (serial !== loadNumber) {
-        return;
-      }
-      renderPageEditor(result.item);
     } else if (currentSection === "home") {
       const result = await request("/api/admin/updates");
       if (serial !== loadNumber) {
@@ -201,8 +195,15 @@ async function renderRoute() {
       Object.assign(filters, { keyword: "", status: "", topic: "", type: "", difficulty: "" });
       $("page-actions").append(action("＋ 新增最新活動", () => openEditor("updates"), "primary"));
       renderList();
+    } else if (currentSection === "about") {
+      const result = await request("/api/admin/pages/about");
+      if (serial !== loadNumber) return;
+      renderPageEditor(result.item);
     } else if (currentSection === "export") {
       renderExport();
+    } else if (["knowledge", "games"].includes(currentSection)) {
+      const feature = currentSection === "knowledge" ? "科普文章" : "互動小遊戲";
+      $("admin-view").replaceChildren(node("p", `${feature}內容管理尚未建立；目前僅在內容總覽中統計為 0。`, "empty"));
     } else if (!Object.hasOwn(labels, currentSection)) {
       $("admin-view").replaceChildren(node("p", "管理區已保留，功能尚未開放。", "empty"));
     } else {
@@ -309,17 +310,17 @@ function renderQuizAnalytics(questions) {
   return panel;
 }
 
-/** 將總覽 API 的發布／下架數量建立成摘要卡片。 */
+/** 將各功能的內容總量建立成純數字摘要卡片，不在總覽顯示發布狀態。 */
 function renderOverview(data) {
   const stats = node("div", undefined, "stats");
-  for (const [index, item] of data.collections.entries()) {
+  const icons = { experiments: "🧪", resources: "📚", questions: "❔", honors: "🏆", activities: "📷", knowledge: "💡", games: "🎮" };
+  for (const item of data.collections) {
     const stat = node("article", undefined, "stat");
     const heading = node("div", labels[item.kind], "stat-heading");
-    heading.append(node("span", ["🧪", "📚", "❔"][index]));
+    heading.append(node("span", icons[item.kind] || "◈"));
     stat.append(
       heading,
-      node("strong", item.published),
-      node("small", `已發布 · ${item.draft} 筆下架`),
+      node("strong", item.count),
     );
     stats.append(stat);
   }
@@ -452,11 +453,12 @@ function drawTable() {
         ),
       );
     }
-    if (kind === "updates" && item.eventDate) {
+    if (["updates", "activities"].includes(kind) && item.eventDate) {
       title.append(node("small", item.eventDate));
     }
+    if (kind === "honors" && item.studentName) title.append(node("small", item.studentName));
     const sourceUrl =
-      kind === "updates" ? item.linkUrl : kind === "experiments" ? item.viewUrl : item.folderUrl;
+      kind === "updates" ? item.linkUrl : kind === "activities" ? item.albumUrl : kind === "experiments" ? item.viewUrl : item.folderUrl;
     if (kind !== "questions" && sourceUrl) {
       const view = link("查看來源 ↗", sourceUrl, "table-action");
       view.target = "_blank";
@@ -467,6 +469,7 @@ function drawTable() {
     statusCell.append(node("span", states[item.status], `badge ${item.status}`));
     const controls = node("td");
     controls.append(action(kind === "resources" ? "編輯章節" : "編輯", () => openEditor(kind, item.id), "table-action"));
+    if (["honors", "activities"].includes(kind)) controls.append(action("刪除", () => deleteRecord(kind, item), "danger"));
     if (kind === "resources") {
       controls.append(action("＋ 新增小教材", () => openResourceMaterialEditor(item.id), "table-action"));
     }
@@ -528,6 +531,19 @@ function drawTable() {
   buttons.append(prev, next);
   pagination.append(buttons);
   $("content-table").replaceChildren(wrap, pagination);
+}
+
+/** 榮譽榜與活動都是獨立紀錄，刪除前明確確認，避免誤移除已發布成果。 */
+async function deleteRecord(kind, item) {
+  if (!confirm(`確定要刪除「${item.title}」嗎？此操作無法復原。`)) return;
+  try {
+    await managed(`/api/admin/${kind}/${item.id}`, {}, "DELETE");
+    records = records.filter((record) => record.id !== item.id);
+    drawTable();
+    message($("admin-message"), "內容已刪除。");
+  } catch (error) {
+    message($("admin-message"), error.message, true);
+  }
 }
 
 /** 將教材以章節卡片呈現，避免父子教材被表格欄位切得零散難讀。 */
@@ -819,6 +835,53 @@ function value(name) {
   return $("editor-form").elements.namedItem(name)?.value || "";
 }
 
+/** 圖片在瀏覽器端縮小後才存進 D1；每筆最多三張，避免後台一次上傳原始相機檔。 */
+async function compactImages(files) {
+  const selected = [...files].slice(0, 3);
+  return Promise.all(selected.map((file) => new Promise((resolve, reject) => {
+    if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return reject(new Error("請選擇 JPG、PNG 或 WebP 圖片。"));
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("圖片讀取失敗。"));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("圖片格式無法讀取。"));
+      image.onload = () => {
+        const scale = Math.min(1, 1280 / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
+        const data = canvas.toDataURL("image/jpeg", 0.78);
+        if (data.length > 1_500_000) return reject(new Error("圖片壓縮後仍過大，請換一張較小的照片。"));
+        resolve(data);
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  })));
+}
+
+function imageUploadField(images = []) {
+  const holder = node("div", undefined, "field wide image-upload-field");
+  holder.append(node("label", "精選照片（最多 3 張）"));
+  const input = document.createElement("input");
+  input.type = "file"; input.accept = "image/jpeg,image/png,image/webp"; input.multiple = true;
+  const hint = node("small", "選取新照片會取代目前照片；系統會縮小後直接儲存於資料庫。", "field-hint");
+  const preview = node("div", undefined, "image-upload-preview");
+  let saved = images;
+  const draw = () => preview.replaceChildren(...saved.map((src, index) => {
+    const wrap = node("figure"); const image = document.createElement("img"); image.src = src; image.alt = `已選照片 ${index + 1}`;
+    wrap.append(image); return wrap;
+  }));
+  input.addEventListener("change", async () => {
+    try { saved = input.files.length ? await compactImages(input.files) : saved; draw(); editorDirty = true; }
+    catch (error) { input.value = ""; message($("editor-message"), error.message, true); }
+  });
+  holder.images = () => saved;
+  holder.append(input, hint, preview); draw();
+  return holder;
+}
+
 /** 將 textarea 的多行文字整理成去除前後空白與空行的字串陣列。 */
 function lines(value) {
   return value
@@ -849,7 +912,7 @@ async function openEditor(kind, id = null) {
     fields.append(
       field("發布狀態", "status", item.status || "draft", { values: Object.entries(states) }),
     );
-    if (["experiments", "updates"].includes(kind)) {
+    if (["experiments", "updates", "honors", "activities"].includes(kind)) {
       fields.append(
         field("顯示順序", "sortOrder", item.sortOrder ?? records.length + 1, {
           type: "number",
@@ -907,6 +970,21 @@ async function openEditor(kind, id = null) {
           wide: true,
           max: 5000,
         }),
+      );
+    } else if (kind === "honors") {
+      fields.append(
+        field("學生姓名或團隊名稱", "studentName", item.studentName || "", { wide: true, max: 200, hint: "請只填已取得公開同意的名稱；也可留白。" }),
+        field("作品介紹", "description", item.description || "", { textarea: true, wide: true, max: 5000 }),
+        field("設計理念", "designIdea", item.designIdea || "", { textarea: true, wide: true, max: 5000 }),
+        imageUploadField(item.images || []),
+      );
+    } else if (kind === "activities") {
+      fields.append(
+        field("活動日期", "eventDate", item.eventDate || "", { type: "date" }),
+        field("活動地點", "location", item.location || "", { max: 200 }),
+        field("活動介紹", "description", item.description || "", { textarea: true, wide: true, max: 5000 }),
+        imageUploadField(item.images || []),
+        field("完整相簿連結", "albumUrl", item.albumUrl || "", { type: "url", wide: true, max: 1500, hint: "選填，填入完整相簿或雲端相簿網址。" }),
       );
       fields.append(
         field("活動連結", "linkUrl", item.linkUrl || "", {
@@ -1146,6 +1224,10 @@ $("editor-form").addEventListener("submit", async (event) => {
         description: value("description"),
         linkUrl: value("linkUrl"),
       });
+    } else if (kind === "honors") {
+      Object.assign(payload, { studentName: value("studentName"), description: value("description"), designIdea: value("designIdea"), images: document.querySelector(".image-upload-field")?.images() || [] });
+    } else if (kind === "activities") {
+      Object.assign(payload, { eventDate: value("eventDate"), location: value("location"), description: value("description"), albumUrl: value("albumUrl"), images: document.querySelector(".image-upload-field")?.images() || [] });
     } else {
       Object.assign(payload, {
         topic: value("topic"),
@@ -1343,11 +1425,7 @@ initialize();
 function renderPageEditor(item) {
   const draft = structuredClone(item);
   const form = node("form", undefined, "page-editor");
-  const top = node("section", undefined, "panel page-editor-top");
-  top.append(
-    node("h2", "關於我們"),
-    node("p", "依區塊編輯完整內容。段落之間留一空行，儲存後重新整理前台即可看到更新。"),
-  );
+  const editableSections = new Set(["teachers", "students", "partners", "cooperation", "contact"]);
 
   function inputField(label, object, key, options = {}) {
     const holder = field(label, key, object[key] || "", { ...options, max: options.max || 300 });
@@ -1376,26 +1454,51 @@ function renderPageEditor(item) {
     return holder;
   }
 
-  top.append(
-    inputField("頁面標題", draft, "title", { required: true, max: 200 }),
-    inputField("發布狀態", draft, "status", { values: Object.entries(states) }),
-  );
-  const preview = link("查看前台 ↗", "index.html#about", "secondary");
-  preview.target = "_blank";
-  preview.rel = "noopener noreferrer";
-  top.append(preview);
-  form.append(top);
+  /** 團隊與合作單位照片直接縮小後存入頁面內容；新檔會取代原照片。 */
+  function photoField(entry) {
+    const holder = node("div", undefined, "field wide page-photo-field");
+    holder.append(node("label", "人物／學校照片"));
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/jpeg,image/png,image/webp";
+    const hint = node("small", "選填；上傳後會直接儲存在資料庫，並取代目前照片。", "field-hint");
+    const preview = node("div", undefined, "page-photo-preview");
+    const draw = () => {
+      preview.replaceChildren();
+      if (!entry.imageUrl) return;
+      const image = document.createElement("img");
+      image.src = entry.imageUrl;
+      image.alt = `${entry.title || "項目"}照片預覽`;
+      preview.append(image, action("移除照片", () => { entry.imageUrl = ""; input.value = ""; pageDirty = true; draw(); }, "table-action"));
+    };
+    input.addEventListener("change", async () => {
+      if (!input.files.length) return;
+      try {
+        const [image] = await compactImages([input.files[0]]);
+        entry.imageUrl = image;
+        pageDirty = true;
+        draw();
+      } catch (error) {
+        input.value = "";
+        message($("admin-message"), error.message, true);
+      }
+    });
+    holder.append(input, hint, preview);
+    draw();
+    return holder;
+  }
   const sectionList = node("div", undefined, "page-section-list");
+  let editableNumber = 0;
   draft.sections.forEach((section, sectionIndex) => {
     const group = node("details", undefined, "page-edit-section");
-    group.append(node("summary", section.title));
     const fields = node("div", undefined, "page-edit-fields");
-    fields.append(
-      inputField("區塊標題", section, "title", { required: true }),
-      inputField("英文小標", section, "kicker"),
-      inputField("副標題", section, "label"),
-      paragraphField(section),
-    );
+    if (!editableSections.has(section.id)) {
+      return;
+    }
+    editableNumber += 1;
+    const plainTitle = String(section.title).replace(/^(?:[一二三四五六七八九十]+[、．.]|\d+[.．、])\s*/, "");
+    group.append(node("summary", `${String(editableNumber).padStart(2, "0")}　${plainTitle}`));
+    fields.append(paragraphField(section));
     const items = node("div", undefined, "page-edit-items");
 
     function drawItems() {
@@ -1406,6 +1509,9 @@ function renderPageEditor(item) {
         block.append(inputField("項目標題", entry, "title"));
         if (section.layout !== "challenges") {
           block.append(inputField("身分／分類／工作項目", entry, "label"));
+        }
+        if (["team", "partners", "cooperation", "students"].includes(section.layout)) {
+          block.append(photoField(entry));
         }
         if (["stats", "kpi"].includes(section.layout)) {
           block.append(

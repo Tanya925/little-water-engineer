@@ -57,13 +57,23 @@ const quizFriendNames = { earth: "土土", water: "小水滴", wind: "風咻咻"
 const quizFriendVisits = { earth: 0, water: 0, wind: 0 };
 function speakQuizFriend(friend, message) {
   const actor = learningElement(`quiz-${friend}-friend`);
-  actor.append(document.querySelector(".quiz-friend-speech"));
+  const speech = document.querySelector(".quiz-friend-speech");
+  if (matchMedia("(max-width: 900px)").matches) document.querySelector(".quiz-friends-stage").append(speech);
+  else actor.append(speech);
   learningElement("quiz-speech-speaker").textContent = quizFriendNames[friend];
   learningElement("quiz-buddy-message").textContent = message;
   document.querySelectorAll(".quiz-walking-friend").forEach(button => button.setAttribute("aria-pressed", String(button.id === `quiz-${friend}-friend`)));
   animateQuiz(document.querySelector(".quiz-friend-speech"), [{ transform: "translateY(8px)", opacity: .5 }, { transform: "translateY(0)", opacity: 1 }], { duration: 260, easing: "ease-out" });
 }
 learningElement("quiz-water-friend").append(document.querySelector(".quiz-friend-speech"));
+function placeQuizSpeech() {
+  const speech = document.querySelector(".quiz-friend-speech");
+  const selected = document.querySelector(".quiz-walking-friend[aria-pressed='true']") || learningElement("quiz-water-friend");
+  if (matchMedia("(max-width: 900px)").matches) document.querySelector(".quiz-friends-stage").append(speech);
+  else selected.append(speech);
+}
+placeQuizSpeech();
+window.addEventListener("resize", placeQuizSpeech);
 // One shared trail beneath the three walking friends.
 const friendStage = document.querySelector(".quiz-friends-stage");
 function updateQuizViewportWidth() {
