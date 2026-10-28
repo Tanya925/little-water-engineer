@@ -3011,7 +3011,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
      separately positioned stage element. */
   #quiz-content .quiz-friends-stage .friend-water .quiz-friend-speech {
     position: absolute !important;
-    top: -176px !important;
+    top: -142px !important;
     bottom: auto !important;
     left: 50% !important;
     right: auto !important;
@@ -3038,7 +3038,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area .quiz-prep-type,
   #quiz-setup .quiz-departure-area .quiz-prep-difficulty,
   #quiz-setup .quiz-departure-area .quiz-prep-count {
-    grid-column: auto !important;
+    grid-column: span 1 !important;
     grid-row: auto !important;
     margin: 0 !important;
   }
@@ -3051,6 +3051,13 @@ body:has(#quiz-content:not([hidden])) .site-header {
     width: auto !important;
     min-width: 0;
     margin: 0 !important;
+  }
+
+  /* Keep the two compact preparation cards visually level even though their
+     option grids contain different numbers of choices. */
+  #quiz-setup .quiz-departure-area .quiz-prep-type,
+  #quiz-setup .quiz-departure-area .quiz-prep-difficulty {
+    min-height: 332px;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters legend {
@@ -3069,6 +3076,15 @@ body:has(#quiz-content:not([hidden])) .site-header {
     height: 420px !important;
     aspect-ratio: 1.2 / 1 !important;
     margin: 30px auto 0 !important;
+  }
+
+  /* Restore the large central tree as scenery behind the preparation area. */
+  #quiz-setup .quiz-departure-area::before {
+    display: block !important;
+    background:
+      url("../images/quiz-forest-center.svg") center 8% / auto 720px no-repeat,
+      linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
+    opacity: .9 !important;
   }
 
   #quiz-setup .quiz-pass-content {
@@ -3125,6 +3141,11 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
     padding: 16px 9px 18px !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-prep-type,
+  #quiz-setup .quiz-departure-area .quiz-prep-difficulty {
+    min-height: 288px;
   }
 
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,

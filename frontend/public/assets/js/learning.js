@@ -107,6 +107,9 @@ function walkMobileFriend(timestamp) {
   const compactScene = matchMedia("(max-width: 900px)").matches;
   const visible = friendStage.offsetParent !== null;
   if (compactScene && visible && !quizMotionPreference.matches) {
+    // A hidden companion can have owned the bubble after a tap; phone view
+    // always presents the moving water drop as the active guide.
+    if (mobileFriendSpeech.parentElement !== mobileWalkingFriend) mobileWalkingFriend.append(mobileFriendSpeech);
     const sidePadding = 20;
     const routeWidth = Math.max(0, friendStage.clientWidth - mobileWalkingFriend.offsetWidth - sidePadding * 2);
     const progress = (Math.sin(timestamp / 1432 - Math.PI / 2) + 1) / 2;
