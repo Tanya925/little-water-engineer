@@ -3957,3 +3957,59 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   .quiz-friends-stage { height: 330px !important; }
 }
+
+/* Narrow devices: never reserve a fake fixed-height backpack.  Its content
+   determines its height, so the following departure step cannot overlap it. */
+@media (max-width: 900px) {
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: min(calc(100% - 68px), 440px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+    margin: 18px auto 0 !important;
+  }
+
+  #quiz-setup .quiz-pass-content { min-height: 0 !important; }
+
+  #quiz-setup .quiz-departure-area .quiz-launch-row {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 42px !important;
+  }
+
+  #quiz-setup .quiz-final-step {
+    position: static !important;
+    display: flex !important;
+    clear: both;
+    margin: 0 !important;
+    padding: 0 0 16px !important;
+  }
+
+  /* Keep the original scenery visible behind content, without placing a
+     flower strip over any text or controls. */
+  #quiz-topic-picks::before {
+    background:
+      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
+      linear-gradient(180deg, #e7f2e5, #d2e6ce) !important;
+    opacity: .9 !important;
+  }
+
+  #quiz-setup .quiz-departure-area::before {
+    background:
+      url("../images/quiz-river-garden.svg") center bottom / auto 650px no-repeat,
+      url("../images/quiz-forest-center.svg") center 18% / auto 780px no-repeat,
+      url("../images/quiz-forest.svg") center bottom / cover no-repeat,
+      linear-gradient(180deg, #dceccf, #b9d99f) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(calc(100% - 52px), 360px) !important;
+  }
+}
