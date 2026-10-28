@@ -3838,3 +3838,79 @@ body:has(#quiz-content:not([hidden])) .site-header {
   0%, 100% { transform: translate3d(-10px, 0, 0); }
   50% { transform: translate3d(10px, -12px, 0); }
 }
+
+/* Phone finishing pass: one clear companion, proportionate backpack, and
+   decorative scenery behind—not on top of—the reading and controls. */
+@media (max-width: 900px) {
+  #quiz-topic-picks {
+    position: relative;
+    isolation: isolate;
+  }
+
+  #quiz-topic-picks::before {
+    content: "";
+    display: block !important;
+    position: absolute;
+    inset: 0 auto 0 50%;
+    width: 100vw;
+    translate: -50% 0;
+    z-index: -1;
+    background: url("../images/quiz-forest.svg") center bottom / cover no-repeat;
+    opacity: .76;
+    pointer-events: none;
+  }
+
+  #quiz-setup .quiz-departure-area::before {
+    background:
+      url("../images/quiz-forest-center.svg") center bottom / cover no-repeat,
+      linear-gradient(180deg, #d9ebcc 0%, #b9d99f 100%) !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    flex: 0 0 auto !important;
+    width: min(calc(100% - 68px), 440px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 5 !important;
+    margin: 14px auto 0 !important;
+  }
+
+  #quiz-setup .quiz-pass-content {
+    box-sizing: border-box;
+    min-height: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  /* A single character has enough room to hop, and its message remains above it. */
+  .quiz-friends-stage .friend-earth,
+  .quiz-friends-stage .friend-wind { display: none !important; }
+
+  .quiz-friends-stage .friend-water {
+    display: flex !important;
+    width: 108px !important;
+    animation: quiz-water-hop 2.7s ease-in-out infinite !important;
+  }
+
+  .quiz-friends-stage {
+    justify-content: center !important;
+    height: 250px !important;
+  }
+
+  .quiz-friend-speech {
+    width: min(calc(100% - 32px), 360px) !important;
+    margin-bottom: -4px !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(calc(100% - 52px), 360px) !important;
+    aspect-ratio: 4 / 5 !important;
+  }
+}
+
+@keyframes quiz-water-hop {
+  0%, 100% { transform: translate3d(-16px, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(16px, -18px, 0) rotate(2deg); }
+}
