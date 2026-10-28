@@ -2981,7 +2981,20 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-content .quiz-friends-stage {
     height: 350px !important;
     overflow: visible !important;
-    background-size: cover !important;
+    /* Preserve the illustration's proportions instead of stretching clouds. */
+    background-size: auto 100% !important;
+    background-repeat: repeat-x !important;
+    background-color: #e9f5ff;
+  }
+
+  #quiz-content .quiz-map-decor span:nth-child(1),
+  #quiz-content .quiz-map-decor span:nth-child(5) {
+    display: none;
+  }
+
+  #quiz-content .quiz-friends-stage .friend-earth,
+  #quiz-content .quiz-friends-stage .friend-wind {
+    display: none !important;
   }
 
   #quiz-content .quiz-friends-stage .friend-water {
@@ -3024,9 +3037,9 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-filters {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     align-items: start;
-    gap: 14px !important;
+    gap: 28px !important;
     width: min(100%, 860px) !important;
     margin: 0 auto !important;
   }
@@ -3038,7 +3051,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area .quiz-prep-type,
   #quiz-setup .quiz-departure-area .quiz-prep-difficulty,
   #quiz-setup .quiz-departure-area .quiz-prep-count {
-    grid-column: span 1 !important;
+    grid-column: 1 !important;
     grid-row: auto !important;
     margin: 0 !important;
   }
@@ -3053,11 +3066,10 @@ body:has(#quiz-content:not([hidden])) .site-header {
     margin: 0 !important;
   }
 
-  /* Keep the two compact preparation cards visually level even though their
-     option grids contain different numbers of choices. */
+  /* Each setting gets one comfortably readable, balanced row. */
   #quiz-setup .quiz-departure-area .quiz-prep-type,
   #quiz-setup .quiz-departure-area .quiz-prep-difficulty {
-    min-height: 332px;
+    min-height: 0;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters legend {
@@ -3071,7 +3083,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
     box-sizing: border-box !important;
-    width: min(calc(100% - 32px), 500px) !important;
+    width: min(calc(100% - 64px), 450px) !important;
     min-height: 0 !important;
     height: 420px !important;
     aspect-ratio: 1.2 / 1 !important;
@@ -3135,8 +3147,8 @@ body:has(#quiz-content:not([hidden])) .site-header {
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters fieldset {
@@ -3145,13 +3157,13 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
   #quiz-setup .quiz-departure-area .quiz-prep-type,
   #quiz-setup .quiz-departure-area .quiz-prep-difficulty {
-    min-height: 288px;
+    min-height: 0;
   }
 
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(calc(100% - 28px), 480px) !important;
-    height: 390px !important;
+    width: min(calc(100% - 52px), 430px) !important;
+    height: 370px !important;
   }
 
   #quiz-setup .quiz-departure-area .quiz-filters legend {
