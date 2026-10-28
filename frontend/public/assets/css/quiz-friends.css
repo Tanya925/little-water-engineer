@@ -3209,7 +3209,13 @@ body:has(#quiz-content:not([hidden])) .site-header {
   #quiz-setup .quiz-departure-area {
     margin-top: -1px;
     padding-top: 58px !important;
-    background: linear-gradient(180deg, #d4e8ce 0%, #c7e0bb 22%, #b9d99f 100%) !important;
+    background: #d9ebcc !important;
+  }
+
+  /* The rotating typhoon card needs extra clearance from the mountain card
+     directly beneath it; keep every other topic position unchanged. */
+  #quiz-setup .quiz-topic-pick[data-world="4"] {
+    margin-bottom: 78px;
   }
 
   /* The white learning-panel background created a hard break between the
