@@ -4211,3 +4211,53 @@ body:has(#quiz-content:not([hidden])) .site-header {
     max-width: 340px !important;
   }
 }
+
+/* Final narrow-layout safeguards: preserve illustration proportions, keep
+   cards separate, and let the bag take only the space its contents need. */
+@media (max-width: 900px) {
+  #quiz-content .quiz-friends-stage {
+    background-color: #e9f5ff !important;
+    background-position: center bottom !important;
+    background-size: auto 100% !important;
+  }
+
+  #quiz-topic-picks {
+    gap: 28px !important;
+  }
+
+  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) {
+    min-height: 164px !important;
+    margin: 0 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(68vw, 340px) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+  }
+
+  #quiz-setup .quiz-pass-content {
+    min-height: 0 !important;
+    padding-bottom: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  #quiz-topic-picks {
+    gap: 24px !important;
+  }
+
+  #quiz-topic-picks > .quiz-topic-pick:nth-child(n) {
+    min-height: 156px !important;
+  }
+
+  #quiz-setup .quiz-departure-area .quiz-adventure-pass,
+  #quiz-setup .quiz-departure-area .quiz-backpack {
+    width: min(76vw, 290px) !important;
+  }
+}

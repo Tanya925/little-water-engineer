@@ -95,6 +95,29 @@ function drawFriendTrails() {
   friendTrail.replaceChildren(path);
 }
 new ResizeObserver(drawFriendTrails).observe(friendStage);
+
+// CSS from earlier scene versions used !important positioning, which prevents
+// a CSS keyframe from changing `left` on some small screens.  Drive the
+// mobile guide with an inline important value instead, so the little water
+// drop always walks from side to side just like the guides on other pages.
+const mobileWalkingFriend = learningElement("quiz-water-friend");
+function walkMobileFriend(timestamp) {
+  const compactScene = matchMedia("(max-width: 600px)").matches;
+  const visible = friendStage.offsetParent !== null;
+  if (compactScene && visible && !quizMotionPreference.matches) {
+    const sidePadding = 20;
+    const routeWidth = Math.max(0, friendStage.clientWidth - mobileWalkingFriend.offsetWidth - sidePadding * 2);
+    const progress = (Math.sin(timestamp / 1432 - Math.PI / 2) + 1) / 2;
+    const hop = Math.sin(timestamp / 358) * 7;
+    mobileWalkingFriend.style.setProperty("left", `${sidePadding + routeWidth * progress}px`, "important");
+    mobileWalkingFriend.style.setProperty("transform", `translateY(${-Math.abs(hop)}px) rotate(${hop / 7 * 2}deg)`, "important");
+  } else {
+    mobileWalkingFriend.style.removeProperty("left");
+    mobileWalkingFriend.style.removeProperty("transform");
+  }
+  requestAnimationFrame(walkMobileFriend);
+}
+requestAnimationFrame(walkMobileFriend);
 const headingKite = document.querySelector(".quiz-map-decor span:nth-child(2)");
 headingKite.className = "quiz-heading-kite";
 headingKite.setAttribute("aria-hidden", "true");
