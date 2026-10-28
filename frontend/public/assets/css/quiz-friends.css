@@ -3914,3 +3914,46 @@ body:has(#quiz-content:not([hidden])) .site-header {
   0%, 100% { transform: translate3d(-16px, 0, 0) rotate(-2deg); }
   50% { transform: translate3d(16px, -18px, 0) rotate(2deg); }
 }
+
+/* The quiz route uses the same calm solid path as the other feature pages. */
+.quiz-walking-trails path { stroke-dasharray: none !important; }
+
+/* learning.js nests the speech bubble in the stage.  Tablet and phone both
+   need the same centred anchor; otherwise the desktop speech offset wins. */
+@media (max-width: 900px) {
+  .quiz-friends-stage .quiz-friend-speech {
+    position: absolute !important;
+    top: 14px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    width: min(calc(100% - 40px), 440px) !important;
+    max-width: none !important;
+    margin: 0 !important;
+    translate: -50% 0 !important;
+    transform: none !important;
+  }
+
+  /* Reserve an upper speech lane so it never covers the companions. */
+  .quiz-friends-stage {
+    height: clamp(320px, 48vw, 370px) !important;
+  }
+}
+
+/* The dialogue node is moved into the stage by learning.js.  Pin it to the
+   stage centre on phones so old left/right offsets cannot push it off-screen. */
+@media (max-width: 600px) {
+  .quiz-friends-stage .quiz-friend-speech {
+    position: absolute !important;
+    top: 12px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    width: min(calc(100% - 28px), 320px) !important;
+    margin: 0 !important;
+    translate: -50% 0 !important;
+    transform: none !important;
+  }
+
+  .quiz-friends-stage { height: 330px !important; }
+}
