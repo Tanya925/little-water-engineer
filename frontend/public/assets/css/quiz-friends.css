@@ -202,19 +202,14 @@ body:has(#quiz-content:not([hidden])) .site-header {
 
 .quiz-friends-stage {
   position: relative;
-  height: 350px;
-  margin: 0;
+  height: 420px;
+  width: var(--quiz-page-width, 100vw);
+  margin: 0 0 0 calc(50% - var(--quiz-page-width, 100vw) / 2);
   background: url("../images/quiz-sky.svg") center bottom / 100% 100% no-repeat;
   --actor-width: 130px;
   --left-stop: clamp(50px, 5%, 90px);
   --middle-stop: calc(50% - var(--actor-width) / 2);
   --right-stop: calc(100% - var(--actor-width) - clamp(50px, 5%, 90px));
-}
-
-.quiz-friends-stage {
-  height: 420px;
-  width: var(--quiz-page-width, 100vw);
-  margin-left: calc(50% - var(--quiz-page-width, 100vw) / 2);
 }
 
 .quiz-friends-stage::after {
@@ -2208,11 +2203,6 @@ body:has(#quiz-content:not([hidden])) .site-header {
 }
 
 @media (max-width: 600px) {
-  #quiz-topic-picks::before {
-    background-size: auto 100%;
-    bottom: 0;
-  }
-
   .quiz-friends-grove {
     margin-top: -4px;
     margin-bottom: 30px;
@@ -3205,6 +3195,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
   /* The typhoon-world card itself continuously turns clockwise. */
   #quiz-setup .quiz-topic-pick[data-world="4"] {
     animation: map-cyclone var(--topic-period, 12s) linear infinite !important;
+    margin-bottom: 78px;
   }
 
   #quiz-setup .quiz-departure-area {
@@ -3213,14 +3204,7 @@ body:has(#quiz-content:not([hidden])) .site-header {
     background: #d9ebcc !important;
   }
 
-  /* The rotating typhoon card needs extra clearance from the mountain card
-     directly beneath it; keep every other topic position unchanged. */
-  #quiz-setup .quiz-topic-pick[data-world="4"] {
-    margin-bottom: 78px;
-  }
-
-  /* The white learning-panel background created a hard break between the
-     sky-blue heading and the garden.  One shared gradient keeps it seamless. */
+  /* Section backgrounds meet directly without a separate panel layer. */
   #quiz-setup.learning-panel {
     background: transparent !important;
   }
