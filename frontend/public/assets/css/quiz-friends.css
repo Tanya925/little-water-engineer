@@ -4289,8 +4289,64 @@ body:has(#quiz-content:not([hidden])) .site-header {
   /* This matches the laptop bag's broad silhouette, only at a smaller scale. */
   #quiz-setup .quiz-departure-area .quiz-adventure-pass,
   #quiz-setup .quiz-departure-area .quiz-backpack {
-    width: min(88vw, 360px) !important;
-    min-height: 315px !important;
-    aspect-ratio: 1 / 1.08 !important;
+    width: min(92vw, 390px) !important;
+    min-height: 0 !important;
+    aspect-ratio: 1.55 / 1 !important;
+  }
+
+  #quiz-setup .quiz-pass-content {
+    padding: 0 14px 16px !important;
+  }
+
+  #quiz-setup .quiz-bag-flap {
+    margin: -3px -17px 18px !important;
+    padding: 19px 12px 17px !important;
+  }
+
+  #quiz-setup .quiz-bag-flap h3 {
+    font-size: 20px;
+  }
+
+  #quiz-setup .quiz-backpack-topics {
+    min-height: 48px !important;
+    padding: 3px 0 9px !important;
+  }
+
+  #quiz-setup .quiz-backpack-empty {
+    font-size: 14px;
+  }
+
+  #quiz-setup .quiz-pass-settings {
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+    padding: 18px 4px 7px !important;
+  }
+
+  #quiz-setup .quiz-pass-settings span {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 3px !important;
+    font-size: clamp(11px, 3.5vw, 14px) !important;
+    white-space: nowrap;
+  }
+}
+
+/* Softly overlap the decorative scene layers, avoiding visible horizontal
+   seams between the map and preparation sections. */
+@media (max-width: 900px) {
+  #quiz-topic-picks {
+    margin-bottom: -1px !important;
+    padding-bottom: 70px !important;
+    background: linear-gradient(180deg, #e9f3ed 0%, #dcebd9 55%, #cfe4cf 100%) !important;
+  }
+
+  #quiz-setup .quiz-departure-area {
+    margin-top: -1px;
+    padding-top: 70px !important;
+    background: linear-gradient(180deg, #cfe4cf 0%, #c7dfbe 100%) !important;
+  }
+
+  #quiz-setup .quiz-departure-area::before {
+    opacity: .72 !important;
   }
 }

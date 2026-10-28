@@ -103,7 +103,7 @@ new ResizeObserver(drawFriendTrails).observe(friendStage);
 const mobileWalkingFriend = learningElement("quiz-water-friend");
 const mobileFriendSpeech = document.querySelector(".quiz-friend-speech");
 function walkMobileFriend(timestamp) {
-  const compactScene = matchMedia("(max-width: 600px)").matches;
+  const compactScene = matchMedia("(max-width: 900px)").matches;
   const visible = friendStage.offsetParent !== null;
   if (compactScene && visible && !quizMotionPreference.matches) {
     const sidePadding = 20;
@@ -112,7 +112,7 @@ function walkMobileFriend(timestamp) {
     const hop = Math.sin(timestamp / 358) * 7;
     mobileWalkingFriend.style.setProperty("left", `${sidePadding + routeWidth * progress}px`, "important");
     mobileWalkingFriend.style.setProperty("transform", `translateY(${-Math.abs(hop)}px) rotate(${hop / 7 * 2}deg)`, "important");
-    const speechWidth = Math.min(340, Math.max(0, friendStage.clientWidth - 28));
+    const speechWidth = Math.min(520, Math.max(0, friendStage.clientWidth - 36));
     const speechLeft = Math.max(14, Math.min(friendStage.clientWidth - speechWidth - 14, sidePadding + routeWidth * progress + mobileWalkingFriend.offsetWidth / 2 - speechWidth / 2));
     mobileFriendSpeech.style.setProperty("left", `${speechLeft}px`, "important");
     mobileFriendSpeech.style.setProperty("right", "auto", "important");
