@@ -63,6 +63,7 @@
         node.setAttribute("aria-expanded", "false");
         node.classList.remove("is-flipped");
       });
+      requestAnimationFrame(() => drawKpiLines(diagram));
     };
     items.forEach((item, index) => {
       const node = make("button", undefined, `kpi-radial-node kpi-node-${index + 1}`);
@@ -90,7 +91,9 @@
         if (wasOpen) return;
         node.setAttribute("aria-expanded", "true");
         node.classList.add("is-flipped");
+        requestAnimationFrame(() => drawKpiLines(diagram));
       });
+      node.addEventListener("transitionend", () => drawKpiLines(diagram));
       stage.append(node);
     });
     diagram.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });

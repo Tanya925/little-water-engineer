@@ -5320,3 +5320,60 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-node-back-title { font-size: 18px; }
   .kpi-node-back p { font-size: 14px; }
 }
+
+/* 翻牌展開區：保留所有原圖元，僅將已翻牌卡片移至圖表下方的安全空間。 */
+.kpi-radial-stage,
+.kpi-radial-benefits .kpi-radial-stage {
+  transition: height 260ms ease;
+}
+
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
+  height: 650px;
+}
+
+.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
+  height: 590px;
+}
+
+/* 展開高度增加時固定原放射圖座標，避免未翻牌圖元跟著百分比向下漂移。 */
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 214px; }
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-1:not(.is-flipped) { top: 50px; }
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-2:not(.is-flipped),
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-5:not(.is-flipped) { top: 210px; }
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-3:not(.is-flipped),
+.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-4:not(.is-flipped) { top: 353px; }
+.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 227px; }
+.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped) { top: 79px; }
+
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines {
+  opacity: 1;
+}
+
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub {
+  pointer-events: auto;
+}
+
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines { pointer-events: none; }
+
+.kpi-radial-stage .kpi-radial-node.is-flipped {
+  left: 50%;
+  top: calc(100% - 110px);
+  transform: translate(-50%, -50%) !important;
+}
+
+@media (max-width: 600px) {
+  .kpi-radial-stage:has(.kpi-radial-node.is-flipped),
+  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 640px; }
+  .kpi-radial-stage .kpi-radial-node.is-flipped { top: calc(100% - 115px); }
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 199px; }
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-1:not(.is-flipped) { top: 47px; }
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-2:not(.is-flipped),
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-5:not(.is-flipped) { top: 195px; }
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-3:not(.is-flipped),
+  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-4:not(.is-flipped) { top: 328px; }
+  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 208px; }
+  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped) { top: 73px; }
+}
