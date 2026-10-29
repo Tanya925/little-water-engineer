@@ -5284,9 +5284,22 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 .kpi-radial-node.is-flipped .kpi-node-inner { transform: rotateY(180deg); }
 .kpi-radial-node.is-flipped:focus-visible { transform: translate(-50%, -50%); }
 
+/* 放大後依節點所在位置向外移，避免碰到中心圓或鄰近卡片。 */
+.kpi-radial-delivery .kpi-node-1.is-flipped { transform: translate(-50%, calc(-50% - 74px)); }
+.kpi-radial-delivery .kpi-node-2.is-flipped { transform: translate(calc(-50% - 72px), -50%); }
+.kpi-radial-delivery .kpi-node-3.is-flipped { transform: translate(calc(-50% - 58px), calc(-50% + 66px)); }
+.kpi-radial-delivery .kpi-node-4.is-flipped { transform: translate(calc(-50% + 58px), calc(-50% + 66px)); }
+.kpi-radial-delivery .kpi-node-5.is-flipped { transform: translate(calc(-50% + 72px), calc(-50% - 74px)); }
+.kpi-radial-benefits .kpi-node-1.is-flipped { transform: translate(calc(-50% - 52px), calc(-50% - 66px)); }
+.kpi-radial-benefits .kpi-node-2.is-flipped { transform: translate(calc(-50% + 52px), calc(-50% - 66px)); }
+
 @media (max-width: 600px) {
   .kpi-radial-node { width: min(145px, 37vw); height: 75px; }
   .kpi-radial-node.is-flipped { width: min(300px, calc(100vw - 36px)); height: 210px; }
+  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
+  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
+  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines { opacity: 0; pointer-events: none; }
+  .kpi-radial-stage .kpi-radial-node.is-flipped { left: 50%; top: 50%; transform: translate(-50%, -50%); }
   .kpi-node-back { padding: 17px 18px; }
   .kpi-node-back-title { font-size: 18px; }
   .kpi-node-back p { font-size: 14px; }
