@@ -5079,3 +5079,105 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
   .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
 }
+
+/* KPI 對話框最終佈局：限制氣泡寬度；橫向展開時讓該圖獨占一列，杜絕跨欄遮擋。 */
+.kpi-directional-popover,
+.kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 36px)) !important;
+  min-width: 0;
+  justify-self: center;
+  align-self: center;
+}
+
+@media (min-width: 1100px) {
+  .kpi-radial-layout {
+    grid-template-columns: minmax(560px, 1.25fr) minmax(390px, 0.75fr) !important;
+    max-width: 1400px;
+  }
+
+  .kpi-radial-layout:has(.kpi-radial-diagram[data-open-direction="left"]),
+  .kpi-radial-layout:has(.kpi-radial-diagram[data-open-direction="right"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    max-width: 1120px;
+  }
+
+  .kpi-radial-diagram[data-open-direction="left"],
+  .kpi-radial-diagram[data-open-direction="right"] {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .kpi-radial-diagram[data-open-direction="left"] {
+    grid-template-columns: 320px minmax(560px, 760px) !important;
+    grid-template-rows: auto !important;
+  }
+
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-self: end;
+  }
+
+  .kpi-radial-diagram[data-open-direction="right"] {
+    grid-template-columns: minmax(560px, 760px) 320px !important;
+    grid-template-rows: auto !important;
+  }
+
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: start;
+  }
+
+  .kpi-radial-diagram[data-open-direction="top"],
+  .kpi-radial-diagram[data-open-direction="top-left"],
+  .kpi-radial-diagram[data-open-direction="top-right"],
+  .kpi-radial-diagram[data-open-direction="bottom-left"],
+  .kpi-radial-diagram[data-open-direction="bottom-right"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100%;
+  }
+
+  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
+  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
+  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
+}
+
+@media (max-width: 1099px) {
+  .kpi-radial-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+    max-width: 720px;
+  }
+
+  .kpi-radial-diagram[data-open-direction] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    width: 100%;
+  }
+
+  .kpi-radial-diagram[data-open-direction] .kpi-radial-stage {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  .kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: center !important;
+    margin-top: 12px;
+  }
+}
