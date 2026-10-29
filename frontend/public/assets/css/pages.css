@@ -4556,41 +4556,6 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .companion-walking-track .companion-walker-tertiary { display: none; }
 }
 
-/* 舊版環狀 KPI 使用了逐卡 grid 座標；這一層明確覆蓋每個座標，
-   避免資料載入到「關於我們」時重新回到不等寬的軌道版。 */
-#about-content.about-editorial .layout-kpi .chapter-items,
-#project-content .layout-kpi .chapter-items {
-  display: grid !important;
-  grid-template: none !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  grid-auto-rows: minmax(224px, auto) !important;
-  gap: 18px !important;
-  width: min(100%, 1120px) !important;
-  max-width: 1120px !important;
-  margin-inline: auto !important;
-  padding: 0 !important;
-}
-
-#about-content.about-editorial .layout-kpi .editorial-item,
-#project-content .layout-kpi .editorial-item {
-  grid-column: auto !important;
-  grid-row: auto !important;
-  width: auto !important;
-  height: auto !important;
-  min-height: 224px !important;
-  padding: 26px 24px 24px !important;
-}
-
-@media (max-width: 900px) {
-  #about-content.about-editorial .layout-kpi .chapter-items,
-  #project-content .layout-kpi .chapter-items { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-}
-
-@media (max-width: 560px) {
-  #about-content.about-editorial .layout-kpi .chapter-items,
-  #project-content .layout-kpi .chapter-items { grid-template-columns: minmax(0, 1fr) !important; }
-}
-
 /* 導覽夥伴與步道以同一個安全場景定位：名稱、腳和對話框都有完整留白。 */
 .page-companion { overflow: visible; }
 .page-companion .companion-walking-track { height: 340px; }
@@ -4614,113 +4579,47 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .page-companion .companion-walking-track .companion-walker { top: 194px; }
 }
 
-/* 「關於我們」第五段的成果與效益：保留章節小標，並用水、植被與河岸沙色
-   區分數據卡。資料仍由後台提供，這裡只負責閱讀層次與視覺色彩。 */
+/* 「關於我們」第五段：成果與效益放射圖及原地翻牌。 */
 .about-editorial .layout-kpi > .chapter-heading {
   display: block;
   width: min(100%, 1120px);
-  margin: 0 auto 18px;
+  max-width: none;
+  margin: 0 0 26px;
+  text-align: left;
 }
 
 .about-editorial .layout-kpi > .chapter-heading .about-major-heading {
   color: #235f6b;
 }
 
-.about-editorial .layout-kpi .chapter-intro {
-  max-width: 760px;
-  margin-bottom: 30px;
-  color: #58767a;
-}
-
-.layout-kpi .editorial-item,
-#project-content .layout-kpi .editorial-item,
-.about-editorial .layout-kpi .editorial-item {
-  border-color: #b9dbe0;
-  border-top-color: #4d9cac;
-  background: linear-gradient(145deg, #faffff 0%, #e7f5f5 100%);
-  box-shadow: 0 12px 28px rgba(42, 100, 110, 0.1);
-}
-
-.layout-kpi .editorial-item::before {
-  background: rgba(159, 215, 210, 0.55);
-}
-
-.layout-kpi .editorial-item:nth-child(3n + 2) {
-  border-top-color: #bc9564;
-  background: linear-gradient(145deg, #fffefa 0%, #f7efdc 100%);
-}
-
-.layout-kpi .editorial-item:nth-child(3n) {
-  border-top-color: #72a994;
-  background: linear-gradient(145deg, #fbfffa 0%, #e7f3e9 100%);
-}
-
-.layout-kpi .editorial-item:nth-child(3n + 2)::before {
-  background: rgba(230, 202, 147, 0.52);
-}
-
-.layout-kpi .editorial-item:nth-child(3n)::before {
-  background: rgba(174, 215, 183, 0.55);
-}
-
-.layout-kpi .editorial-number strong,
-.about-editorial .layout-kpi .editorial-number strong {
-  color: #286b7b;
-}
-
-.layout-kpi .editorial-number span,
-.about-editorial .layout-kpi .editorial-number span,
-.layout-kpi .editorial-item-body > p,
-.about-editorial .layout-kpi .editorial-item-body > p {
-  color: #66838a;
-}
-
-.layout-kpi .editorial-item-body > h4,
-.about-editorial .layout-kpi .editorial-item-body > h4 {
-  color: #315f68;
-}
-
-@media (max-width: 560px) {
-  .about-editorial .layout-kpi > .chapter-heading { margin-bottom: 14px; }
-  .about-editorial .layout-kpi .chapter-intro { text-align: left; }
-}
-
-/* 成果與效益以可點選的放射圖呈現；每個節點只顯示關鍵數字，細節在對話框閱讀。 */
-.about-editorial .layout-kpi > .chapter-heading {
-  max-width: none;
-  margin-left: 0;
-  text-align: left;
-  margin-bottom: 26px;
-}
-
-.about-editorial .layout-kpi .chapter-intro {
-  display: none;
-}
-
+.about-editorial .layout-kpi .chapter-intro,
 .about-editorial .layout-kpi .about-minor-heading {
   display: none;
 }
 
 .kpi-radial-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  gap: 70px;
+  gap: 52px;
   width: min(100%, 1180px);
   margin: 0 auto;
 }
 
 .kpi-radial-diagram {
-  position: relative;
-  width: min(760px, 100%);
-  height: 620px;
+  width: 100%;
+  min-width: 0;
   margin: 0 auto;
   isolation: isolate;
 }
 
-.kpi-radial-benefits {
-  width: min(620px, 100%);
-  height: 500px;
+.kpi-radial-stage {
+  position: relative;
+  height: 420px;
+}
+
+.kpi-radial-benefits .kpi-radial-stage {
+  height: 360px;
 }
 
 .kpi-radial-lines {
@@ -4734,7 +4633,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 }
 
 .kpi-radial-lines line {
-  stroke: #7a9fc9;
+  stroke: #88a5c6;
   stroke-width: 2.5;
   stroke-linecap: round;
 }
@@ -4745,7 +4644,6 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   left: 50%;
   top: 51%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 142px;
@@ -4754,455 +4652,42 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   transform: translate(-50%, -50%);
   border: 5px solid #fff;
   border-radius: 50%;
-  background: linear-gradient(145deg, #345f8e, #628cbd);
+  background: linear-gradient(145deg, #5f84ad, #82a1c3);
+  box-shadow: 0 13px 28px rgba(75, 110, 148, 0.2);
   color: #fff;
-  box-shadow: 0 13px 28px rgba(58, 97, 143, 0.24);
   text-align: center;
 }
 
-.kpi-radial-benefits .kpi-radial-hub { top: 68%; }
-.kpi-radial-hub strong { font-size: 22px; line-height: 1.35; }
+.kpi-radial-benefits .kpi-radial-hub {
+  top: 66%;
+}
+
+.kpi-radial-hub strong {
+  font-size: 22px;
+  line-height: 1.35;
+}
 
 .kpi-radial-node {
   position: absolute;
   z-index: 3;
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  align-items: baseline;
-  column-gap: 5px;
   width: 160px;
-  min-height: 86px;
-  padding: 14px 13px;
+  height: 86px;
+  padding: 0;
   transform: translate(-50%, -50%);
-  border: 2px solid #c6d8e8;
+  border: 0;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 7px 15px rgba(62, 94, 126, 0.12);
+  background: transparent;
   color: #294662;
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  perspective: 900px;
+  transition: width 180ms ease, height 180ms ease;
 }
 
 .kpi-radial-node:hover,
-.kpi-radial-node:focus-visible,
-.kpi-radial-node[aria-expanded="true"] {
-  border-color: #7298c1;
-  box-shadow: 0 0 0 4px rgba(114, 152, 193, 0.18), 0 12px 24px rgba(62, 94, 126, 0.19);
+.kpi-radial-node:focus-visible {
   outline: 0;
-}
-
-.kpi-radial-node:focus-visible { transform: translate(-50%, -50%) scale(1.02); }
-.kpi-node-dot { grid-row: 1 / span 2; align-self: center; width: 13px; height: 13px; margin-right: 4px; border: 2px solid #dceaf2; border-radius: 50%; background: #6f98c2; box-shadow: 0 0 0 2px #f1f7fa; }
-.kpi-node-value { font-size: 28px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
-.kpi-node-unit { color: #708395; font-size: 13px; font-weight: 800; }
-.kpi-node-title { grid-column: 2 / -1; margin-top: 5px; color: #3a596f; font-size: 13px; font-weight: 900; line-height: 1.35; }
-
-.kpi-radial-delivery .kpi-node-1 { left: 50%; top: 31%; }
-.kpi-radial-delivery .kpi-node-2 { left: 12%; top: 50%; }
-.kpi-radial-delivery .kpi-node-3 { left: 26%; top: 64%; }
-.kpi-radial-delivery .kpi-node-4 { left: 74%; top: 64%; }
-.kpi-radial-delivery .kpi-node-5 { left: 88%; top: 50%; }
-.kpi-radial-benefits .kpi-node-1 { left: 24%; top: 38%; }
-.kpi-radial-benefits .kpi-node-2 { left: 76%; top: 38%; }
-
-.kpi-directional-popover {
-  position: absolute;
-  z-index: 10;
-  width: 300px;
-  padding: 21px 24px;
-  border: 1px solid #b8cfdf;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #f8fcff, #e7f1f8);
-  box-shadow: 0 12px 24px rgba(65, 100, 132, 0.14);
-  color: #294662;
-}
-
-.kpi-directional-popover::before { content: ""; position: absolute; width: 16px; height: 16px; background: #edf5fa; transform: rotate(45deg); }
-.kpi-directional-popover[data-direction="top"] { left: 50%; top: 1%; transform: translateX(-50%); }
-.kpi-directional-popover[data-direction="top"]::before { left: calc(50% - 8px); bottom: -8px; border-right: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="left"] { right: calc(100% - 6%); top: 42%; }
-.kpi-directional-popover[data-direction="left"]::before { right: -8px; top: calc(50% - 8px); border-top: 1px solid #b8cfdf; border-right: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="right"] { left: calc(100% - 6%); top: 42%; }
-.kpi-directional-popover[data-direction="right"]::before { left: -8px; top: calc(50% - 8px); border-left: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="bottom-left"] { right: 52%; bottom: 0; }
-.kpi-directional-popover[data-direction="bottom-left"]::before { right: 22px; top: -8px; border-top: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="bottom-right"] { left: 52%; bottom: 0; }
-.kpi-directional-popover[data-direction="bottom-right"]::before { left: 22px; top: -8px; border-top: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="top-left"] { right: 55%; top: 2%; }
-.kpi-directional-popover[data-direction="top-left"]::before { right: 28px; bottom: -8px; border-right: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
-.kpi-directional-popover[data-direction="top-right"] { left: 55%; top: 2%; }
-.kpi-directional-popover[data-direction="top-right"]::before { left: 28px; bottom: -8px; border-right: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
-.kpi-popover-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid #c5d9e6; }
-.kpi-popover-title { color: #3d6f9c; font-size: 20px; line-height: 1.3; }
-.kpi-popover-close { padding: 0; border: 0; background: transparent; color: #66839d; font: inherit; font-size: 32px; line-height: .8; cursor: pointer; }
-.kpi-popover-close:hover, .kpi-popover-close:focus-visible { color: #294662; outline: 0; }
-.kpi-popover-copy p { margin: 14px 0 0; color: #3f5f76; font-size: 17px; font-weight: 600; line-height: 1.65; }
-
-@media (max-width: 1020px) {
-  .kpi-radial-layout { gap: 48px; }
-}
-
-@media (max-width: 600px) {
-  .kpi-radial-diagram { height: 550px; }
-  .kpi-radial-benefits { height: 450px; }
-  .kpi-radial-hub { width: 116px; padding: 12px; }
-  .kpi-radial-hub strong { font-size: 17px; }
-  .kpi-radial-node { width: min(145px, 37vw); min-height: 75px; padding: 11px 9px; border-radius: 15px; }
-  .kpi-node-value { font-size: 23px; }
-  .kpi-node-unit, .kpi-node-title { font-size: 11px; }
-  .kpi-node-dot { width: 10px; height: 10px; }
-  .kpi-radial-delivery .kpi-node-2 { left: 18%; }
-  .kpi-radial-delivery .kpi-node-3 { left: 27%; top: 66%; }
-  .kpi-radial-delivery .kpi-node-4 { left: 73%; top: 66%; }
-  .kpi-radial-delivery .kpi-node-5 { left: 82%; }
-  .kpi-directional-popover { width: min(280px, 76vw); padding: 18px; }
-  .kpi-popover-title { font-size: 18px; }
-  .kpi-popover-copy p { font-size: 15px; }
-  .kpi-directional-popover[data-direction="left"], .kpi-directional-popover[data-direction="right"] { left: 50%; right: auto; top: 6%; transform: translateX(-50%); }
-  .kpi-directional-popover[data-direction="left"]::before, .kpi-directional-popover[data-direction="right"]::before { left: calc(50% - 8px); right: auto; bottom: -8px; top: auto; }
-}
-
-/* 展開資訊時以 CSS Grid 為對話框新增一格版位，而不是覆蓋在放射圖上。 */
-.kpi-radial-layout {
-  gap: 30px;
-}
-
-.kpi-radial-diagram,
-.kpi-radial-benefits {
-  display: grid;
-  width: fit-content;
-  height: auto;
-  margin: 0 auto;
-  isolation: isolate;
-}
-
-.kpi-radial-stage {
-  position: relative;
-  grid-area: 1 / 1;
-  width: min(760px, calc(100vw - 48px));
-  height: 430px;
-}
-
-.kpi-radial-benefits .kpi-radial-stage {
-  width: min(620px, calc(100vw - 48px));
-  height: 340px;
-}
-
-.kpi-radial-delivery .kpi-node-1 { top: 12%; }
-.kpi-radial-delivery .kpi-node-3,
-.kpi-radial-delivery .kpi-node-4 { top: 84%; }
-.kpi-radial-benefits .kpi-radial-hub { top: 66%; }
-.kpi-radial-benefits .kpi-node-1,
-.kpi-radial-benefits .kpi-node-2 { top: 22%; }
-
-.kpi-directional-popover {
-  position: static;
-  z-index: 1;
-  box-sizing: border-box;
-  width: 300px;
-  margin: 0;
-  align-self: center;
-}
-
-.kpi-directional-popover::before { display: none; }
-.kpi-radial-diagram[data-open-direction="left"] { grid-template-columns: 300px auto; }
-.kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage { grid-column: 2; }
-.kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover { grid-column: 1; grid-row: 1; }
-.kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: auto 300px; }
-.kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; }
-.kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 2; grid-row: 1; }
-.kpi-radial-diagram[data-open-direction="top"],
-.kpi-radial-diagram[data-open-direction="top-left"],
-.kpi-radial-diagram[data-open-direction="top-right"] { grid-template-rows: auto auto; }
-.kpi-radial-diagram[data-open-direction="top"] .kpi-radial-stage,
-.kpi-radial-diagram[data-open-direction="top-left"] .kpi-radial-stage,
-.kpi-radial-diagram[data-open-direction="top-right"] .kpi-radial-stage { grid-row: 2; }
-.kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover,
-.kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
-.kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { grid-row: 1; }
-.kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
-.kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover { justify-self: start; }
-.kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { justify-self: end; }
-.kpi-radial-diagram[data-open-direction="bottom-left"],
-.kpi-radial-diagram[data-open-direction="bottom-right"] { grid-template-rows: auto auto; }
-.kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover,
-.kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { grid-row: 2; align-self: start; }
-.kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
-.kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
-
-@media (max-width: 780px) {
-  .kpi-radial-stage { height: 400px; }
-  .kpi-radial-benefits .kpi-radial-stage { height: 320px; }
-  .kpi-directional-popover { width: min(300px, calc(100vw - 36px)); }
-  .kpi-radial-diagram[data-open-direction="left"],
-  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: 1fr; grid-template-rows: auto auto; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
-}
-
-/* 桌機以兩組圖並排閱讀；資訊以各自圖表下方的對話氣泡呈現，展開時不會跨欄遮蓋。 */
-.kpi-radial-layout {
-  grid-template-columns: minmax(520px, 1.2fr) minmax(360px, 0.8fr);
-  align-items: start;
-  gap: clamp(24px, 4vw, 64px);
-}
-
-.kpi-radial-diagram,
-.kpi-radial-benefits,
-.kpi-radial-diagram[data-open-direction="left"],
-.kpi-radial-diagram[data-open-direction="right"],
-.kpi-radial-diagram[data-open-direction="top"],
-.kpi-radial-diagram[data-open-direction="top-left"],
-.kpi-radial-diagram[data-open-direction="top-right"],
-.kpi-radial-diagram[data-open-direction="bottom-left"],
-.kpi-radial-diagram[data-open-direction="bottom-right"] {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  width: 100%;
-  margin: 0;
-}
-
-.kpi-radial-stage,
-.kpi-radial-benefits .kpi-radial-stage,
-.kpi-radial-diagram[data-open-direction] .kpi-radial-stage {
-  grid-column: 1;
-  grid-row: 1;
-  width: 100%;
-  height: 420px;
-}
-
-.kpi-radial-benefits .kpi-radial-stage { height: 360px; }
-.kpi-radial-benefits .kpi-radial-hub { top: 63%; }
-
-.kpi-directional-popover,
-.kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
-  position: relative;
-  inset: auto !important;
-  transform: none !important;
-  grid-column: 1;
-  grid-row: 2;
-  justify-self: stretch;
-  align-self: start;
-  width: auto;
-  margin: 4px 0 0;
-  padding: 19px 22px;
-  border: 1px solid #b8cfdf;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #fbfdff, #e7f1f8);
-  box-shadow: 0 12px 24px rgba(65, 100, 132, 0.12);
-}
-
-.kpi-directional-popover::before,
-.kpi-directional-popover[data-direction]::before {
-  display: block;
-  left: 32px;
-  right: auto;
-  top: -9px;
-  bottom: auto;
-  border-top: 1px solid #b8cfdf;
-  border-left: 1px solid #b8cfdf;
-  border-right: 0;
-  border-bottom: 0;
-}
-
-.kpi-popover-heading { padding-bottom: 9px; }
-.kpi-popover-title { color: #426f99; }
-
-@media (max-width: 980px) {
-  .kpi-radial-layout { grid-template-columns: minmax(0, 1fr); max-width: 680px; }
-}
-
-@media (max-width: 600px) {
-  .kpi-radial-stage,
-  .kpi-radial-benefits .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction] .kpi-radial-stage { height: 390px; }
-  .kpi-radial-benefits .kpi-radial-stage { height: 330px; }
-  .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction] .kpi-directional-popover { width: auto; padding: 17px 18px; }
-}
-
-/* 依節點方向讓出真正的對話空間：寬螢幕橫向延伸，窄螢幕先改為上下安全版位。 */
-@media (min-width: 1400px) {
-  .kpi-radial-layout {
-    grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
-    max-width: 1400px;
-  }
-
-  .kpi-radial-diagram[data-open-direction="left"] { grid-template-columns: 300px minmax(520px, 1fr); }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage { grid-column: 2; grid-row: 1; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: stretch; align-self: center; }
-  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: minmax(520px, 1fr) 300px; }
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 1; }
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 2; grid-row: 1; justify-self: stretch; align-self: center; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover::before { display: block; left: auto; right: -9px; top: calc(50% - 8px); bottom: auto; border: 0; border-top: 1px solid #b8cfdf; border-right: 1px solid #b8cfdf; }
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover::before { display: block; left: -9px; right: auto; top: calc(50% - 8px); bottom: auto; border: 0; border-bottom: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
-
-  .kpi-radial-diagram[data-open-direction="top"],
-  .kpi-radial-diagram[data-open-direction="top-left"],
-  .kpi-radial-diagram[data-open-direction="top-right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
-  .kpi-radial-diagram[data-open-direction="top"] .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
-  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; align-self: end; }
-  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
-  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover { justify-self: start; }
-  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { justify-self: end; }
-  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover::before,
-  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover::before,
-  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover::before { display: block; left: 32px; right: auto; top: auto; bottom: -9px; border: 0; border-right: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
-
-  .kpi-radial-diagram[data-open-direction="bottom-left"],
-  .kpi-radial-diagram[data-open-direction="bottom-right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
-  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-radial-stage { grid-column: 1; grid-row: 1; }
-  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { grid-column: 1; grid-row: 2; align-self: start; }
-  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
-  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
-  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover::before,
-  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover::before { display: block; left: 32px; right: auto; top: -9px; bottom: auto; border: 0; border-top: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
-}
-
-@media (max-width: 1399px) {
-  .kpi-radial-layout { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
-  .kpi-radial-diagram[data-open-direction="left"],
-  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage,
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
-}
-
-/* KPI 對話框最終佈局：限制氣泡寬度；橫向展開時讓該圖獨占一列，杜絕跨欄遮擋。 */
-.kpi-directional-popover,
-.kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
-  box-sizing: border-box;
-  width: min(320px, calc(100vw - 36px)) !important;
-  min-width: 0;
-  justify-self: center;
-  align-self: center;
-}
-
-@media (min-width: 1100px) {
-  .kpi-radial-layout {
-    grid-template-columns: minmax(560px, 1.25fr) minmax(390px, 0.75fr) !important;
-    max-width: 1400px;
-  }
-
-  .kpi-radial-layout:has(.kpi-radial-diagram[data-open-direction="left"]),
-  .kpi-radial-layout:has(.kpi-radial-diagram[data-open-direction="right"]) {
-    grid-template-columns: minmax(0, 1fr) !important;
-    max-width: 1120px;
-  }
-
-  .kpi-radial-diagram[data-open-direction="left"],
-  .kpi-radial-diagram[data-open-direction="right"] {
-    width: fit-content;
-    max-width: 100%;
-    margin-inline: auto;
-  }
-
-  .kpi-radial-diagram[data-open-direction="left"] {
-    grid-template-columns: 320px minmax(560px, 760px) !important;
-    grid-template-rows: auto !important;
-  }
-
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-
-  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-    justify-self: end;
-  }
-
-  .kpi-radial-diagram[data-open-direction="right"] {
-    grid-template-columns: minmax(560px, 760px) 320px !important;
-    grid-template-rows: auto !important;
-  }
-
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-
-  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    justify-self: start;
-  }
-
-  .kpi-radial-diagram[data-open-direction="top"],
-  .kpi-radial-diagram[data-open-direction="top-left"],
-  .kpi-radial-diagram[data-open-direction="top-right"],
-  .kpi-radial-diagram[data-open-direction="bottom-left"],
-  .kpi-radial-diagram[data-open-direction="bottom-right"] {
-    grid-template-columns: minmax(0, 1fr) !important;
-    width: 100%;
-  }
-
-  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
-  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
-  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover,
-  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
-}
-
-@media (max-width: 1099px) {
-  .kpi-radial-layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-    max-width: 720px;
-  }
-
-  .kpi-radial-diagram[data-open-direction] {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: auto auto !important;
-    width: 100%;
-  }
-
-  .kpi-radial-diagram[data-open-direction] .kpi-radial-stage {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-
-  .kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-    justify-self: center !important;
-    margin-top: 12px;
-  }
-}
-
-/* KPI 節點改為原地翻牌：正面保留數字摘要，背面以較大的卡片顯示完整說明。 */
-.kpi-radial-node {
-  display: block;
-  width: 160px;
-  height: 86px;
-  min-height: 0;
-  padding: 0;
-  overflow: visible;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  perspective: 1000px;
-  transition: width 220ms ease, height 220ms ease, transform 220ms ease;
-}
-
-.kpi-radial-node:hover,
-.kpi-radial-node:focus-visible,
-.kpi-radial-node[aria-expanded="true"] {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
 }
 
 .kpi-node-inner {
@@ -5211,19 +4696,27 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 520ms cubic-bezier(.2, .7, .2, 1);
+  transition: transform 360ms ease;
 }
 
 .kpi-node-face {
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  overflow: hidden;
-  backface-visibility: hidden;
   border: 2px solid #c6d8e8;
-  border-radius: 18px;
+  border-radius: inherit;
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 7px 15px rgba(62, 94, 126, 0.12);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.kpi-radial-node:hover .kpi-node-face,
+.kpi-radial-node:focus-visible .kpi-node-face,
+.kpi-radial-node[aria-expanded="true"] .kpi-node-face {
+  border-color: #7f9fc3;
+  box-shadow: 0 0 0 4px rgba(127, 159, 195, 0.16), 0 12px 24px rgba(62, 94, 126, 0.17);
 }
 
 .kpi-node-front {
@@ -5234,193 +4727,184 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   padding: 14px 13px;
 }
 
+.kpi-node-dot {
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 13px;
+  height: 13px;
+  margin-right: 4px;
+  border: 2px solid #dceaf2;
+  border-radius: 50%;
+  background: #7f9fc3;
+  box-shadow: 0 0 0 2px #f1f7fa;
+}
+
+.kpi-node-value {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.kpi-node-unit {
+  color: #708395;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.kpi-node-title {
+  grid-column: 2 / -1;
+  margin-top: 5px;
+  color: #3a596f;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
 .kpi-node-back {
   display: flex;
   flex-direction: column;
-  padding: 20px 22px;
+  padding: 13px 15px;
+  overflow: auto;
   transform: rotateY(180deg);
-  border-color: #8fafd0;
-  background: linear-gradient(145deg, #fbfdff, #e6f1f8);
-  color: #36556f;
-  text-align: left;
-  box-shadow: 0 16px 32px rgba(54, 86, 118, 0.2);
+  background: linear-gradient(145deg, #f8fbff, #eaf2f9);
+  scrollbar-width: thin;
 }
 
 .kpi-node-back-title {
   display: block;
-  margin-bottom: 10px;
-  padding-bottom: 9px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #c5d9e6;
-  color: #426f99;
-  font-size: 20px;
-  font-weight: 900;
+  color: #4b7098;
+  font-size: 16px;
+  line-height: 1.3;
 }
 
 .kpi-node-back p {
-  margin: 0;
-  overflow: auto;
-  color: #3f5f76;
-  font-size: 15px;
+  margin: 0 0 5px;
+  color: #466078;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.7;
+  line-height: 1.48;
 }
 
 .kpi-node-back-hint {
   display: block;
   margin-top: auto;
-  padding-top: 8px;
-  color: #7891a5;
-  font-size: 11px;
+  padding-top: 4px;
+  color: #7890a5;
+  font-size: 9px;
   font-weight: 700;
   text-align: right;
 }
 
 .kpi-radial-node.is-flipped {
-  z-index: 20;
-  width: 300px;
-  height: 200px;
+  z-index: 4;
+  width: 220px;
+  height: 148px;
 }
 
-.kpi-radial-node.is-flipped .kpi-node-inner { transform: rotateY(180deg); }
-.kpi-radial-node.is-flipped:focus-visible { transform: translate(-50%, -50%); }
-
-/* 放大後依節點所在位置向外移，避免碰到中心圓或鄰近卡片。 */
-.kpi-radial-delivery .kpi-node-1.is-flipped { transform: translate(-50%, calc(-50% - 74px)); }
-.kpi-radial-delivery .kpi-node-2.is-flipped { transform: translate(calc(-50% - 72px), -50%); }
-.kpi-radial-delivery .kpi-node-3.is-flipped { transform: translate(calc(-50% - 58px), calc(-50% + 66px)); }
-.kpi-radial-delivery .kpi-node-4.is-flipped { transform: translate(calc(-50% + 58px), calc(-50% + 66px)); }
-.kpi-radial-delivery .kpi-node-5.is-flipped { transform: translate(calc(-50% + 72px), calc(-50% - 74px)); }
-.kpi-radial-benefits .kpi-node-1.is-flipped { transform: translate(calc(-50% - 52px), calc(-50% - 66px)); }
-.kpi-radial-benefits .kpi-node-2.is-flipped { transform: translate(calc(-50% + 52px), calc(-50% - 66px)); }
-
-/* 任一翻牌開啟時，將其移到所屬放射圖中央並暫時收起其餘圖元，徹底避免碰撞。 */
-.kpi-radial-stage .kpi-radial-node,
-.kpi-radial-stage .kpi-radial-hub,
-.kpi-radial-stage .kpi-radial-lines {
-  transition: opacity 180ms ease, width 220ms ease, height 220ms ease, transform 220ms ease;
+.kpi-radial-node.is-flipped .kpi-node-inner {
+  transform: rotateY(180deg);
 }
 
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines {
-  opacity: 0;
-  pointer-events: none;
-}
+.kpi-radial-delivery .kpi-node-1 { left: 50%; top: 12%; }
+.kpi-radial-delivery .kpi-node-2 { left: 12%; top: 50%; }
+.kpi-radial-delivery .kpi-node-3 { left: 26%; top: 84%; }
+.kpi-radial-delivery .kpi-node-4 { left: 74%; top: 84%; }
+.kpi-radial-delivery .kpi-node-5 { left: 88%; top: 50%; }
 
-.kpi-radial-stage .kpi-radial-node.is-flipped {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) !important;
+.kpi-radial-benefits .kpi-node-1 { left: 22%; top: 22%; }
+.kpi-radial-benefits .kpi-node-2 { left: 78%; top: 22%; }
+
+@media (max-width: 900px) {
+  .kpi-radial-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    max-width: 680px;
+  }
 }
 
 @media (max-width: 600px) {
-  .kpi-radial-node { width: min(145px, 37vw); height: 75px; }
-  .kpi-radial-node.is-flipped { width: min(300px, calc(100vw - 36px)); height: 210px; }
-  .kpi-node-back { padding: 17px 18px; }
-  .kpi-node-back-title { font-size: 18px; }
-  .kpi-node-back p { font-size: 14px; }
+  .about-editorial .layout-kpi > .chapter-heading {
+    margin-bottom: 18px;
+  }
+
+  .kpi-radial-layout {
+    gap: 28px;
+  }
+
+  .kpi-radial-stage {
+    height: 390px;
+  }
+
+  .kpi-radial-benefits .kpi-radial-stage {
+    height: 330px;
+  }
+
+  .kpi-radial-hub {
+    width: 116px;
+    padding: 12px;
+  }
+
+  .kpi-radial-hub strong {
+    font-size: 17px;
+  }
+
+  .kpi-radial-node {
+    width: min(145px, 37vw);
+    height: 75px;
+    border-radius: 15px;
+  }
+
+  .kpi-node-front {
+    padding: 11px 9px;
+  }
+
+  .kpi-node-value {
+    font-size: 23px;
+  }
+
+  .kpi-node-unit,
+  .kpi-node-title {
+    font-size: 11px;
+  }
+
+  .kpi-node-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .kpi-radial-node.is-flipped {
+    width: min(200px, 51vw);
+    height: 145px;
+  }
+
+  .kpi-radial-delivery .kpi-node-2 { left: 18%; }
+  .kpi-radial-delivery .kpi-node-3 { left: 27%; }
+  .kpi-radial-delivery .kpi-node-4 { left: 73%; }
+  .kpi-radial-delivery .kpi-node-5 { left: 82%; }
+
+  .kpi-radial-benefits .kpi-node-1 { left: 24%; }
+  .kpi-radial-benefits .kpi-node-2 { left: 76%; }
+
+  .kpi-node-back {
+    padding: 12px 13px;
+  }
+
+  .kpi-node-back-title {
+    font-size: 15px;
+  }
+
+  .kpi-node-back p {
+    font-size: 11px;
+  }
 }
 
-/* 翻牌展開區：保留所有原圖元，僅將已翻牌卡片移至圖表下方的安全空間。 */
-.kpi-radial-stage,
-.kpi-radial-benefits .kpi-radial-stage {
-  transition: height 260ms ease;
-}
-
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
-  height: 650px;
-}
-
-.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
-  height: 590px;
-}
-
-/* 展開高度增加時固定原放射圖座標，避免未翻牌圖元跟著百分比向下漂移。 */
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 214px; }
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-1:not(.is-flipped) { top: 50px; }
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-2:not(.is-flipped),
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-5:not(.is-flipped) { top: 210px; }
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-3:not(.is-flipped),
-.kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-4:not(.is-flipped) { top: 353px; }
-.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 227px; }
-.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped) { top: 79px; }
-
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines {
-  opacity: 1;
-}
-
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub {
-  pointer-events: auto;
-}
-
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines { pointer-events: none; }
-
-.kpi-radial-stage .kpi-radial-node.is-flipped {
-  left: 50%;
-  top: calc(100% - 110px);
-  transform: translate(-50%, -50%) !important;
-}
-
-@media (max-width: 600px) {
-  .kpi-radial-stage:has(.kpi-radial-node.is-flipped),
-  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 640px; }
-  .kpi-radial-stage .kpi-radial-node.is-flipped { top: calc(100% - 115px); }
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 199px; }
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-1:not(.is-flipped) { top: 47px; }
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-2:not(.is-flipped),
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-5:not(.is-flipped) { top: 195px; }
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-3:not(.is-flipped),
-  .kpi-radial-delivery .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-node-4:not(.is-flipped) { top: 328px; }
-  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 208px; }
-  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped) { top: 73px; }
-}
-
-/* 最終翻牌行為：維持原節點位置，只略微放大卡片，不移動或隱藏任何其他圖元。 */
-.kpi-radial-stage:has(.kpi-radial-node.is-flipped),
-.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
-  height: 420px !important;
-}
-
-.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
-  height: 360px !important;
-}
-
-.kpi-radial-node.is-flipped {
-  width: 205px;
-  height: 138px;
-}
-
-.kpi-radial-delivery .kpi-node-1.is-flipped { left: 50%; top: 12%; }
-.kpi-radial-delivery .kpi-node-2.is-flipped { left: 12%; top: 50%; }
-.kpi-radial-delivery .kpi-node-3.is-flipped { left: 26%; top: 84%; }
-.kpi-radial-delivery .kpi-node-4.is-flipped { left: 74%; top: 84%; }
-.kpi-radial-delivery .kpi-node-5.is-flipped { left: 88%; top: 50%; }
-.kpi-radial-benefits .kpi-node-1.is-flipped { left: 24%; top: 22%; }
-.kpi-radial-benefits .kpi-node-2.is-flipped { left: 76%; top: 22%; }
-
-.kpi-radial-stage .kpi-radial-node.is-flipped {
-  transform: translate(-50%, -50%) !important;
-}
-
-.kpi-node-back { padding: 13px 15px; }
-.kpi-node-back-title { margin-bottom: 6px; padding-bottom: 6px; font-size: 16px; }
-.kpi-node-back p { font-size: 12px; line-height: 1.48; }
-.kpi-node-back-hint { padding-top: 4px; font-size: 9px; }
-
-@media (max-width: 600px) {
-  .kpi-radial-stage:has(.kpi-radial-node.is-flipped),
-  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 390px !important; }
-  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 330px !important; }
-  .kpi-radial-node.is-flipped { width: min(190px, 48vw); height: 136px; }
-  .kpi-radial-delivery .kpi-node-1.is-flipped { left: 50%; top: 12%; }
-  .kpi-radial-delivery .kpi-node-2.is-flipped { left: 18%; top: 50%; }
-  .kpi-radial-delivery .kpi-node-3.is-flipped { left: 27%; top: 84%; }
-  .kpi-radial-delivery .kpi-node-4.is-flipped { left: 73%; top: 84%; }
-  .kpi-radial-delivery .kpi-node-5.is-flipped { left: 82%; top: 50%; }
-  .kpi-node-back { padding: 12px 13px; }
-  .kpi-node-back-title { font-size: 15px; }
-  .kpi-node-back p { font-size: 11px; }
+@media (prefers-reduced-motion: reduce) {
+  .kpi-radial-node,
+  .kpi-node-inner {
+    transition: none;
+  }
 }
