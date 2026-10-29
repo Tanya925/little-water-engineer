@@ -5023,3 +5023,57 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-directional-popover,
   .kpi-radial-diagram[data-open-direction] .kpi-directional-popover { width: auto; padding: 17px 18px; }
 }
+
+/* 依節點方向讓出真正的對話空間：寬螢幕橫向延伸，窄螢幕先改為上下安全版位。 */
+@media (min-width: 1400px) {
+  .kpi-radial-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
+    max-width: 1400px;
+  }
+
+  .kpi-radial-diagram[data-open-direction="left"] { grid-template-columns: 300px minmax(520px, 1fr); }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage { grid-column: 2; grid-row: 1; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: stretch; align-self: center; }
+  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: minmax(520px, 1fr) 300px; }
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 1; }
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 2; grid-row: 1; justify-self: stretch; align-self: center; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover::before { display: block; left: auto; right: -9px; top: calc(50% - 8px); bottom: auto; border: 0; border-top: 1px solid #b8cfdf; border-right: 1px solid #b8cfdf; }
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover::before { display: block; left: -9px; right: auto; top: calc(50% - 8px); bottom: auto; border: 0; border-bottom: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
+
+  .kpi-radial-diagram[data-open-direction="top"],
+  .kpi-radial-diagram[data-open-direction="top-left"],
+  .kpi-radial-diagram[data-open-direction="top-right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
+  .kpi-radial-diagram[data-open-direction="top"] .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
+  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; align-self: end; }
+  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
+  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover { justify-self: start; }
+  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { justify-self: end; }
+  .kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover::before,
+  .kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover::before,
+  .kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover::before { display: block; left: 32px; right: auto; top: auto; bottom: -9px; border: 0; border-right: 1px solid #b8cfdf; border-bottom: 1px solid #b8cfdf; }
+
+  .kpi-radial-diagram[data-open-direction="bottom-left"],
+  .kpi-radial-diagram[data-open-direction="bottom-right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
+  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-radial-stage { grid-column: 1; grid-row: 1; }
+  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { grid-column: 1; grid-row: 2; align-self: start; }
+  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
+  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
+  .kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover::before,
+  .kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover::before { display: block; left: 32px; right: auto; top: -9px; bottom: auto; border: 0; border-top: 1px solid #b8cfdf; border-left: 1px solid #b8cfdf; }
+}
+
+@media (max-width: 1399px) {
+  .kpi-radial-layout { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+  .kpi-radial-diagram[data-open-direction="left"],
+  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
+}
