@@ -4620,6 +4620,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 
 .kpi-radial-benefits .kpi-radial-stage {
   height: 360px;
+  transform: translateX(18px);
 }
 
 .kpi-radial-lines {
@@ -4823,6 +4824,10 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
     grid-template-columns: minmax(0, 1fr);
     gap: 36px;
     max-width: 680px;
+  }
+
+  .kpi-radial-benefits .kpi-radial-stage {
+    transform: none;
   }
 }
 
