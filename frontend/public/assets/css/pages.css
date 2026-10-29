@@ -3389,7 +3389,6 @@ body:has(#about-content:not([hidden])) {
 .about-editorial .layout-cooperation .editorial-item,
 .about-editorial .layout-stats .editorial-item,
 .about-editorial .layout-benefits .editorial-item,
-.about-editorial .layout-contact .chapter-items,
 .about-editorial .team-map > div,
 .about-editorial .archive-flow li {
   background: #eef6fb;
@@ -3442,12 +3441,6 @@ body:has(#about-content:not([hidden])) {
 .about-editorial .layout-benefits .editorial-item {
   border-radius: 18px;
   border-top: 4px solid #b1d4e7;
-}
-
-.about-editorial .layout-contact .chapter-items {
-  border-width: 1px 5px 1px 1px;
-  border-radius: 18px;
-  border-right-color: #b0d4e7;
 }
 
 .about-editorial .team-map > div,
@@ -3504,32 +3497,28 @@ body:has(#about-content:not([hidden])) {
   letter-spacing: .08em;
 }
 
-/* 聯絡資訊拆為三張資訊卡，避免單一大框留出大片空白。 */
+/* 聯絡資訊改為輕量分欄，不再重複使用卡片外框。 */
 .about-editorial .layout-contact .chapter-items {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-  padding: 0;
+  gap: 0;
+  padding: 10px 0;
   border: 0;
   border-radius: 0;
   background: transparent;
 }
 
 .about-editorial .layout-contact .editorial-item {
-  min-height: 190px;
-  padding: 26px;
-  border: 1px solid #c6dde9;
-  border-top: 4px solid #b0d4e7;
-  border-radius: 18px;
-  background: #eef6fb;
+  min-height: 0;
+  padding: 10px 34px 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-.about-editorial .layout-contact .editorial-item:nth-child(2) {
-  background: #e9f4fb;
-}
-
-.about-editorial .layout-contact .editorial-item:nth-child(3) {
-  background: #e5f1fa;
+.about-editorial .layout-contact .editorial-item + .editorial-item {
+  border-left: 1px solid #c8dce4;
 }
 
 @media (max-width: 760px) {
@@ -3538,7 +3527,12 @@ body:has(#about-content:not([hidden])) {
   }
 
   .about-editorial .layout-contact .editorial-item {
-    min-height: 0;
+    padding: 20px 6px;
+  }
+
+  .about-editorial .layout-contact .editorial-item + .editorial-item {
+    border-top: 1px solid #c8dce4;
+    border-left: 0;
   }
 }
 
@@ -3590,29 +3584,6 @@ body:has(#about-content:not([hidden])) {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-}
-
-.about-editorial .layout-contact .chapter-items {
-  gap: 0;
-  border: 0;
-}
-
-.about-editorial .layout-contact .editorial-item,
-.about-editorial .layout-contact .editorial-item:nth-child(2),
-.about-editorial .layout-contact .editorial-item:nth-child(3) {
-  min-height: 0;
-  border: 0;
-  border-radius: 0;
-  border-top: 5px solid #b0d4e7;
-  background: #eef6fb;
-}
-
-.about-editorial .layout-contact .editorial-item:nth-child(2) {
-  background: #e8f3fa;
-}
-
-.about-editorial .layout-contact .editorial-item:nth-child(3) {
-  background: #e2f0fa;
 }
 
 /* 合作單位以斜切色塊串連三個場域，保留內容閱讀的平整感。 */
@@ -4653,7 +4624,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   transform: translate(-50%, -50%);
   border: 5px solid #fff;
   border-radius: 50%;
-  background: linear-gradient(145deg, #5f84ad, #82a1c3);
+  background: linear-gradient(145deg, #7394b9, #91abc8);
   box-shadow: 0 13px 28px rgba(75, 110, 148, 0.2);
   color: #fff;
   text-align: center;
