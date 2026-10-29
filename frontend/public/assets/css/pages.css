@@ -4751,7 +4751,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   box-sizing: border-box;
   border: 2px solid #c6d8e8;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.97);
+  background: linear-gradient(145deg, rgba(247, 250, 242, 0.98), rgba(237, 244, 235, 0.98));
   box-shadow: 0 7px 15px rgba(62, 94, 126, 0.12);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -4813,7 +4813,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   padding: 13px 15px;
   overflow: auto;
   transform: rotateY(180deg);
-  background: linear-gradient(145deg, #f8fbff, #eaf2f9);
+  background: linear-gradient(145deg, #f3f7f0, #e9f1ee);
   scrollbar-width: thin;
 }
 
