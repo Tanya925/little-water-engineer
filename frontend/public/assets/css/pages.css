@@ -3450,7 +3450,7 @@ body:has(#about-content:not([hidden])) {
 .about-editorial .layout-cooperation .editorial-item {
   min-width: 0;
   padding: 26px 28px 24px;
-  border: 3px solid #aec9d8;
+  border: 5px solid #9fbfce;
   border-radius: 16px;
   background: transparent;
   box-shadow: none;
