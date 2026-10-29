@@ -4863,3 +4863,83 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-directional-popover[data-direction="left"], .kpi-directional-popover[data-direction="right"] { left: 50%; right: auto; top: 6%; transform: translateX(-50%); }
   .kpi-directional-popover[data-direction="left"]::before, .kpi-directional-popover[data-direction="right"]::before { left: calc(50% - 8px); right: auto; bottom: -8px; top: auto; }
 }
+
+/* 展開資訊時以 CSS Grid 為對話框新增一格版位，而不是覆蓋在放射圖上。 */
+.kpi-radial-layout {
+  gap: 30px;
+}
+
+.kpi-radial-diagram,
+.kpi-radial-benefits {
+  display: grid;
+  width: fit-content;
+  height: auto;
+  margin: 0 auto;
+  isolation: isolate;
+}
+
+.kpi-radial-stage {
+  position: relative;
+  grid-area: 1 / 1;
+  width: min(760px, calc(100vw - 48px));
+  height: 430px;
+}
+
+.kpi-radial-benefits .kpi-radial-stage {
+  width: min(620px, calc(100vw - 48px));
+  height: 340px;
+}
+
+.kpi-radial-delivery .kpi-node-1 { top: 12%; }
+.kpi-radial-delivery .kpi-node-3,
+.kpi-radial-delivery .kpi-node-4 { top: 84%; }
+.kpi-radial-benefits .kpi-radial-hub { top: 66%; }
+.kpi-radial-benefits .kpi-node-1,
+.kpi-radial-benefits .kpi-node-2 { top: 22%; }
+
+.kpi-directional-popover {
+  position: static;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 300px;
+  margin: 0;
+  align-self: center;
+}
+
+.kpi-directional-popover::before { display: none; }
+.kpi-radial-diagram[data-open-direction="left"] { grid-template-columns: 300px auto; }
+.kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage { grid-column: 2; }
+.kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover { grid-column: 1; grid-row: 1; }
+.kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: auto 300px; }
+.kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; }
+.kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 2; grid-row: 1; }
+.kpi-radial-diagram[data-open-direction="top"],
+.kpi-radial-diagram[data-open-direction="top-left"],
+.kpi-radial-diagram[data-open-direction="top-right"] { grid-template-rows: auto auto; }
+.kpi-radial-diagram[data-open-direction="top"] .kpi-radial-stage,
+.kpi-radial-diagram[data-open-direction="top-left"] .kpi-radial-stage,
+.kpi-radial-diagram[data-open-direction="top-right"] .kpi-radial-stage { grid-row: 2; }
+.kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover,
+.kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover,
+.kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { grid-row: 1; }
+.kpi-radial-diagram[data-open-direction="top"] .kpi-directional-popover { justify-self: center; }
+.kpi-radial-diagram[data-open-direction="top-left"] .kpi-directional-popover { justify-self: start; }
+.kpi-radial-diagram[data-open-direction="top-right"] .kpi-directional-popover { justify-self: end; }
+.kpi-radial-diagram[data-open-direction="bottom-left"],
+.kpi-radial-diagram[data-open-direction="bottom-right"] { grid-template-rows: auto auto; }
+.kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover,
+.kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { grid-row: 2; align-self: start; }
+.kpi-radial-diagram[data-open-direction="bottom-left"] .kpi-directional-popover { justify-self: start; }
+.kpi-radial-diagram[data-open-direction="bottom-right"] .kpi-directional-popover { justify-self: end; }
+
+@media (max-width: 780px) {
+  .kpi-radial-stage { height: 400px; }
+  .kpi-radial-benefits .kpi-radial-stage { height: 320px; }
+  .kpi-directional-popover { width: min(300px, calc(100vw - 36px)); }
+  .kpi-radial-diagram[data-open-direction="left"],
+  .kpi-radial-diagram[data-open-direction="right"] { grid-template-columns: 1fr; grid-template-rows: auto auto; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-radial-stage { grid-column: 1; grid-row: 2; }
+  .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
+}

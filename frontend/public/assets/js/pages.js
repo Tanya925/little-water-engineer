@@ -27,14 +27,15 @@
     return visual;
   };
   const drawKpiLines = diagram => {
-    const svg = diagram.querySelector(".kpi-radial-lines");
-    const hub = diagram.querySelector(".kpi-radial-hub");
+    const stage = diagram.querySelector(".kpi-radial-stage");
+    const svg = stage?.querySelector(".kpi-radial-lines");
+    const hub = stage?.querySelector(".kpi-radial-hub");
     if (!svg || !hub) return;
-    const frame = diagram.getBoundingClientRect();
+    const frame = stage.getBoundingClientRect();
     const hubRect = hub.getBoundingClientRect();
     const hubX = hubRect.left + hubRect.width / 2 - frame.left;
     const hubY = hubRect.top + hubRect.height / 2 - frame.top;
-    diagram.querySelectorAll(".kpi-radial-node").forEach((node, index) => {
+    stage.querySelectorAll(".kpi-radial-node").forEach((node, index) => {
       const line = svg.children[index];
       const nodeRect = node.getBoundingClientRect();
       if (!line) return;
@@ -50,6 +51,7 @@
   function renderKpiDiagram(items, type) {
     const diagram = make("section", undefined, `kpi-radial-diagram kpi-radial-${type}`);
     diagram.setAttribute("aria-label", type === "delivery" ? "具體推動項目" : "預期效益指標");
+    const stage = make("div", undefined, "kpi-radial-stage");
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "kpi-radial-lines");
     svg.setAttribute("aria-hidden", "true");
@@ -67,7 +69,8 @@
     const copy = make("div", undefined, "kpi-popover-copy");
     const dismiss = () => {
       popover.hidden = true;
-      diagram.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
+      delete diagram.dataset.openDirection;
+      stage.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
     };
     close.addEventListener("click", dismiss);
     popover.append(make("div", undefined, "kpi-popover-heading"), copy);
@@ -92,13 +95,15 @@
         text(copy, item.paragraphs || []);
         if (!copy.childElementCount) copy.append(make("p", "暫無詳細說明。"));
         popover.dataset.direction = directions[index];
+        diagram.dataset.openDirection = directions[index];
         popover.hidden = false;
         node.setAttribute("aria-expanded", "true");
       });
-      diagram.append(node);
+      stage.append(node);
     });
     diagram.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });
-    diagram.append(svg, hub, popover);
+    stage.append(svg, hub);
+    diagram.append(stage, popover);
     requestAnimationFrame(() => drawKpiLines(diagram));
     return diagram;
   }
