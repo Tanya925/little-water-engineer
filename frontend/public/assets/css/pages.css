@@ -5377,3 +5377,50 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub { top: 208px; }
   .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped) { top: 73px; }
 }
+
+/* 最終翻牌行為：維持原節點位置，只略微放大卡片，不移動或隱藏任何其他圖元。 */
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped),
+.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
+  height: 420px !important;
+}
+
+.kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) {
+  height: 360px !important;
+}
+
+.kpi-radial-node.is-flipped {
+  width: 205px;
+  height: 138px;
+}
+
+.kpi-radial-delivery .kpi-node-1.is-flipped { left: 50%; top: 12%; }
+.kpi-radial-delivery .kpi-node-2.is-flipped { left: 12%; top: 50%; }
+.kpi-radial-delivery .kpi-node-3.is-flipped { left: 26%; top: 84%; }
+.kpi-radial-delivery .kpi-node-4.is-flipped { left: 74%; top: 84%; }
+.kpi-radial-delivery .kpi-node-5.is-flipped { left: 88%; top: 50%; }
+.kpi-radial-benefits .kpi-node-1.is-flipped { left: 24%; top: 22%; }
+.kpi-radial-benefits .kpi-node-2.is-flipped { left: 76%; top: 22%; }
+
+.kpi-radial-stage .kpi-radial-node.is-flipped {
+  transform: translate(-50%, -50%) !important;
+}
+
+.kpi-node-back { padding: 13px 15px; }
+.kpi-node-back-title { margin-bottom: 6px; padding-bottom: 6px; font-size: 16px; }
+.kpi-node-back p { font-size: 12px; line-height: 1.48; }
+.kpi-node-back-hint { padding-top: 4px; font-size: 9px; }
+
+@media (max-width: 600px) {
+  .kpi-radial-stage:has(.kpi-radial-node.is-flipped),
+  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 390px !important; }
+  .kpi-radial-benefits .kpi-radial-stage:has(.kpi-radial-node.is-flipped) { height: 330px !important; }
+  .kpi-radial-node.is-flipped { width: min(190px, 48vw); height: 136px; }
+  .kpi-radial-delivery .kpi-node-1.is-flipped { left: 50%; top: 12%; }
+  .kpi-radial-delivery .kpi-node-2.is-flipped { left: 18%; top: 50%; }
+  .kpi-radial-delivery .kpi-node-3.is-flipped { left: 27%; top: 84%; }
+  .kpi-radial-delivery .kpi-node-4.is-flipped { left: 73%; top: 84%; }
+  .kpi-radial-delivery .kpi-node-5.is-flipped { left: 82%; top: 50%; }
+  .kpi-node-back { padding: 12px 13px; }
+  .kpi-node-back-title { font-size: 15px; }
+  .kpi-node-back p { font-size: 11px; }
+}
