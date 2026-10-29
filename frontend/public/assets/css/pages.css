@@ -4943,3 +4943,83 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-radial-diagram[data-open-direction="left"] .kpi-directional-popover,
   .kpi-radial-diagram[data-open-direction="right"] .kpi-directional-popover { grid-column: 1; grid-row: 1; justify-self: center; }
 }
+
+/* 桌機以兩組圖並排閱讀；資訊以各自圖表下方的對話氣泡呈現，展開時不會跨欄遮蓋。 */
+.kpi-radial-layout {
+  grid-template-columns: minmax(520px, 1.2fr) minmax(360px, 0.8fr);
+  align-items: start;
+  gap: clamp(24px, 4vw, 64px);
+}
+
+.kpi-radial-diagram,
+.kpi-radial-benefits,
+.kpi-radial-diagram[data-open-direction="left"],
+.kpi-radial-diagram[data-open-direction="right"],
+.kpi-radial-diagram[data-open-direction="top"],
+.kpi-radial-diagram[data-open-direction="top-left"],
+.kpi-radial-diagram[data-open-direction="top-right"],
+.kpi-radial-diagram[data-open-direction="bottom-left"],
+.kpi-radial-diagram[data-open-direction="bottom-right"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  width: 100%;
+  margin: 0;
+}
+
+.kpi-radial-stage,
+.kpi-radial-benefits .kpi-radial-stage,
+.kpi-radial-diagram[data-open-direction] .kpi-radial-stage {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: 420px;
+}
+
+.kpi-radial-benefits .kpi-radial-stage { height: 360px; }
+.kpi-radial-benefits .kpi-radial-hub { top: 63%; }
+
+.kpi-directional-popover,
+.kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
+  position: relative;
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: stretch;
+  align-self: start;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 19px 22px;
+  border: 1px solid #b8cfdf;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fbfdff, #e7f1f8);
+  box-shadow: 0 12px 24px rgba(65, 100, 132, 0.12);
+}
+
+.kpi-directional-popover::before,
+.kpi-directional-popover[data-direction]::before {
+  display: block;
+  left: 32px;
+  right: auto;
+  top: -9px;
+  bottom: auto;
+  border-top: 1px solid #b8cfdf;
+  border-left: 1px solid #b8cfdf;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.kpi-popover-heading { padding-bottom: 9px; }
+.kpi-popover-title { color: #426f99; }
+
+@media (max-width: 980px) {
+  .kpi-radial-layout { grid-template-columns: minmax(0, 1fr); max-width: 680px; }
+}
+
+@media (max-width: 600px) {
+  .kpi-radial-stage,
+  .kpi-radial-benefits .kpi-radial-stage,
+  .kpi-radial-diagram[data-open-direction] .kpi-radial-stage { height: 390px; }
+  .kpi-radial-benefits .kpi-radial-stage { height: 330px; }
+  .kpi-directional-popover,
+  .kpi-radial-diagram[data-open-direction] .kpi-directional-popover { width: auto; padding: 17px 18px; }
+}
