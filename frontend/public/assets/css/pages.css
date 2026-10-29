@@ -4781,11 +4781,11 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   transform: rotateY(180deg);
 }
 
-.kpi-radial-delivery .kpi-node-1 { left: 50%; top: 12%; }
-.kpi-radial-delivery .kpi-node-2 { left: 12%; top: 50%; }
-.kpi-radial-delivery .kpi-node-3 { left: 26%; top: 84%; }
-.kpi-radial-delivery .kpi-node-4 { left: 74%; top: 84%; }
-.kpi-radial-delivery .kpi-node-5 { left: 88%; top: 50%; }
+.kpi-radial-delivery .kpi-node-1 { left: 50%; top: 8%; }
+.kpi-radial-delivery .kpi-node-2 { left: 8%; top: 50%; }
+.kpi-radial-delivery .kpi-node-3 { left: 22%; top: 88%; }
+.kpi-radial-delivery .kpi-node-4 { left: 78%; top: 88%; }
+.kpi-radial-delivery .kpi-node-5 { left: 92%; top: 50%; }
 
 .kpi-radial-benefits .kpi-node-1 { left: 19%; top: 22%; }
 .kpi-radial-benefits .kpi-node-2 { left: 81%; top: 22%; }
@@ -4861,9 +4861,10 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
     height: 145px;
   }
 
+  .kpi-radial-delivery .kpi-node-1 { top: 12%; }
   .kpi-radial-delivery .kpi-node-2 { left: 18%; }
-  .kpi-radial-delivery .kpi-node-3 { left: 27%; }
-  .kpi-radial-delivery .kpi-node-4 { left: 73%; }
+  .kpi-radial-delivery .kpi-node-3 { left: 27%; top: 84%; }
+  .kpi-radial-delivery .kpi-node-4 { left: 73%; top: 84%; }
   .kpi-radial-delivery .kpi-node-5 { left: 82%; }
 
   .kpi-radial-benefits .kpi-node-1 { left: 22%; }
