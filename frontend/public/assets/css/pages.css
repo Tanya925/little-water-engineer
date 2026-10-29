@@ -4613,3 +4613,74 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .page-companion .companion-walking-track .companion-road { top: 286px; }
   .page-companion .companion-walking-track .companion-walker { top: 194px; }
 }
+
+/* 「關於我們」第五段的成果與效益：保留章節小標，並用水、植被與河岸沙色
+   區分數據卡。資料仍由後台提供，這裡只負責閱讀層次與視覺色彩。 */
+.about-editorial .layout-kpi > .chapter-heading {
+  display: block;
+  width: min(100%, 1120px);
+  margin: 0 auto 18px;
+}
+
+.about-editorial .layout-kpi > .chapter-heading .about-major-heading {
+  color: #235f6b;
+}
+
+.about-editorial .layout-kpi .chapter-intro {
+  max-width: 760px;
+  margin-bottom: 30px;
+  color: #58767a;
+}
+
+.layout-kpi .editorial-item,
+#project-content .layout-kpi .editorial-item,
+.about-editorial .layout-kpi .editorial-item {
+  border-color: #b9dbe0;
+  border-top-color: #4d9cac;
+  background: linear-gradient(145deg, #faffff 0%, #e7f5f5 100%);
+  box-shadow: 0 12px 28px rgba(42, 100, 110, 0.1);
+}
+
+.layout-kpi .editorial-item::before {
+  background: rgba(159, 215, 210, 0.55);
+}
+
+.layout-kpi .editorial-item:nth-child(3n + 2) {
+  border-top-color: #bc9564;
+  background: linear-gradient(145deg, #fffefa 0%, #f7efdc 100%);
+}
+
+.layout-kpi .editorial-item:nth-child(3n) {
+  border-top-color: #72a994;
+  background: linear-gradient(145deg, #fbfffa 0%, #e7f3e9 100%);
+}
+
+.layout-kpi .editorial-item:nth-child(3n + 2)::before {
+  background: rgba(230, 202, 147, 0.52);
+}
+
+.layout-kpi .editorial-item:nth-child(3n)::before {
+  background: rgba(174, 215, 183, 0.55);
+}
+
+.layout-kpi .editorial-number strong,
+.about-editorial .layout-kpi .editorial-number strong {
+  color: #286b7b;
+}
+
+.layout-kpi .editorial-number span,
+.about-editorial .layout-kpi .editorial-number span,
+.layout-kpi .editorial-item-body > p,
+.about-editorial .layout-kpi .editorial-item-body > p {
+  color: #66838a;
+}
+
+.layout-kpi .editorial-item-body > h4,
+.about-editorial .layout-kpi .editorial-item-body > h4 {
+  color: #315f68;
+}
+
+@media (max-width: 560px) {
+  .about-editorial .layout-kpi > .chapter-heading { margin-bottom: 14px; }
+  .about-editorial .layout-kpi .chapter-intro { text-align: left; }
+}
