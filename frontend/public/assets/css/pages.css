@@ -4982,6 +4982,8 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 .kpi-directional-popover,
 .kpi-radial-diagram[data-open-direction] .kpi-directional-popover {
   position: relative;
+  inset: auto !important;
+  transform: none !important;
   grid-column: 1;
   grid-row: 2;
   justify-self: stretch;
