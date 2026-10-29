@@ -5181,3 +5181,113 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
     margin-top: 12px;
   }
 }
+
+/* KPI 節點改為原地翻牌：正面保留數字摘要，背面以較大的卡片顯示完整說明。 */
+.kpi-radial-node {
+  display: block;
+  width: 160px;
+  height: 86px;
+  min-height: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  perspective: 1000px;
+  transition: width 220ms ease, height 220ms ease, transform 220ms ease;
+}
+
+.kpi-radial-node:hover,
+.kpi-radial-node:focus-visible,
+.kpi-radial-node[aria-expanded="true"] {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.kpi-node-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 520ms cubic-bezier(.2, .7, .2, 1);
+}
+
+.kpi-node-face {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  backface-visibility: hidden;
+  border: 2px solid #c6d8e8;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 7px 15px rgba(62, 94, 126, 0.12);
+}
+
+.kpi-node-front {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  column-gap: 5px;
+  padding: 14px 13px;
+}
+
+.kpi-node-back {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px;
+  transform: rotateY(180deg);
+  border-color: #8fafd0;
+  background: linear-gradient(145deg, #fbfdff, #e6f1f8);
+  color: #36556f;
+  text-align: left;
+  box-shadow: 0 16px 32px rgba(54, 86, 118, 0.2);
+}
+
+.kpi-node-back-title {
+  display: block;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #c5d9e6;
+  color: #426f99;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.kpi-node-back p {
+  margin: 0;
+  overflow: auto;
+  color: #3f5f76;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.kpi-node-back-hint {
+  display: block;
+  margin-top: auto;
+  padding-top: 8px;
+  color: #7891a5;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.kpi-radial-node.is-flipped {
+  z-index: 20;
+  width: 300px;
+  height: 200px;
+}
+
+.kpi-radial-node.is-flipped .kpi-node-inner { transform: rotateY(180deg); }
+.kpi-radial-node.is-flipped:focus-visible { transform: translate(-50%, -50%); }
+
+@media (max-width: 600px) {
+  .kpi-radial-node { width: min(145px, 37vw); height: 75px; }
+  .kpi-radial-node.is-flipped { width: min(300px, calc(100vw - 36px)); height: 210px; }
+  .kpi-node-back { padding: 17px 18px; }
+  .kpi-node-back-title { font-size: 18px; }
+  .kpi-node-back p { font-size: 14px; }
+}

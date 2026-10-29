@@ -58,52 +58,44 @@
     items.forEach(() => svg.append(document.createElementNS("http://www.w3.org/2000/svg", "line")));
     const hub = make("div", undefined, "kpi-radial-hub");
     hub.append(make("strong", type === "delivery" ? "具體推動項目" : "預期效益指標"));
-    const popover = make("aside", undefined, "kpi-directional-popover");
-    popover.hidden = true;
-    popover.setAttribute("role", "dialog");
-    popover.setAttribute("aria-live", "polite");
-    const popoverTitle = make("strong", undefined, "kpi-popover-title");
-    const close = make("button", "×", "kpi-popover-close");
-    close.type = "button";
-    close.setAttribute("aria-label", "關閉詳細說明");
-    const copy = make("div", undefined, "kpi-popover-copy");
     const dismiss = () => {
-      popover.hidden = true;
-      delete diagram.dataset.openDirection;
-      stage.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
+      stage.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => {
+        node.setAttribute("aria-expanded", "false");
+        node.classList.remove("is-flipped");
+      });
     };
-    close.addEventListener("click", dismiss);
-    popover.append(make("div", undefined, "kpi-popover-heading"), copy);
-    popover.firstElementChild.append(popoverTitle, close);
-    const directions = type === "delivery" ? ["top", "left", "bottom-left", "bottom-right", "right"] : ["top-left", "top-right"];
     items.forEach((item, index) => {
       const node = make("button", undefined, `kpi-radial-node kpi-node-${index + 1}`);
       node.type = "button";
       node.setAttribute("aria-expanded", "false");
-      node.append(
+      node.setAttribute("aria-label", `${displayTitle(item.title || "成果項目")}，點擊查看詳細說明`);
+      const inner = make("span", undefined, "kpi-node-inner");
+      const front = make("span", undefined, "kpi-node-face kpi-node-front");
+      front.append(
         make("span", "", "kpi-node-dot"),
         make("strong", item.value || "—", "kpi-node-value"),
         make("small", item.unit || "", "kpi-node-unit"),
         make("span", displayTitle(item.title || "成果項目"), "kpi-node-title"),
       );
+      const back = make("span", undefined, "kpi-node-face kpi-node-back");
+      back.append(make("strong", displayTitle(item.title || "成果項目"), "kpi-node-back-title"));
+      text(back, item.paragraphs || []);
+      if (!back.querySelector("p")) back.append(make("p", "暫無詳細說明。"));
+      back.append(make("small", "再次點擊收合", "kpi-node-back-hint"));
+      inner.append(front, back);
+      node.append(inner);
       node.addEventListener("click", () => {
         const wasOpen = node.getAttribute("aria-expanded") === "true";
         dismiss();
         if (wasOpen) return;
-        popoverTitle.textContent = displayTitle(item.title || "成果項目");
-        copy.replaceChildren();
-        text(copy, item.paragraphs || []);
-        if (!copy.childElementCount) copy.append(make("p", "暫無詳細說明。"));
-        popover.dataset.direction = directions[index];
-        diagram.dataset.openDirection = directions[index];
-        popover.hidden = false;
         node.setAttribute("aria-expanded", "true");
+        node.classList.add("is-flipped");
       });
       stage.append(node);
     });
     diagram.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });
     stage.append(svg, hub);
-    diagram.append(stage, popover);
+    diagram.append(stage);
     requestAnimationFrame(() => drawKpiLines(diagram));
     return diagram;
   }
