@@ -4704,7 +4704,7 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   inset: 0;
   box-sizing: border-box;
   border: 2px solid #c6d8e8;
-  border-radius: inherit;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 7px 15px rgba(62, 94, 126, 0.12);
   backface-visibility: hidden;
@@ -4815,8 +4815,8 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 .kpi-radial-delivery .kpi-node-4 { left: 74%; top: 84%; }
 .kpi-radial-delivery .kpi-node-5 { left: 88%; top: 50%; }
 
-.kpi-radial-benefits .kpi-node-1 { left: 22%; top: 22%; }
-.kpi-radial-benefits .kpi-node-2 { left: 78%; top: 22%; }
+.kpi-radial-benefits .kpi-node-1 { left: 19%; top: 22%; }
+.kpi-radial-benefits .kpi-node-2 { left: 81%; top: 22%; }
 
 @media (max-width: 900px) {
   .kpi-radial-layout {
@@ -4858,6 +4858,10 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
     border-radius: 15px;
   }
 
+  .kpi-node-face {
+    border-radius: 15px;
+  }
+
   .kpi-node-front {
     padding: 11px 9px;
   }
@@ -4886,8 +4890,8 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
   .kpi-radial-delivery .kpi-node-4 { left: 73%; }
   .kpi-radial-delivery .kpi-node-5 { left: 82%; }
 
-  .kpi-radial-benefits .kpi-node-1 { left: 24%; }
-  .kpi-radial-benefits .kpi-node-2 { left: 76%; }
+  .kpi-radial-benefits .kpi-node-1 { left: 22%; }
+  .kpi-radial-benefits .kpi-node-2 { left: 78%; }
 
   .kpi-node-back {
     padding: 12px 13px;
