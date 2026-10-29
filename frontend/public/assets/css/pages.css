@@ -3386,7 +3386,6 @@ body:has(#about-content:not([hidden])) {
 /* 關於我們所有可見的內容框也落在相同藍色家族。 */
 .about-editorial .layout-students .editorial-item,
 .about-editorial .layout-partners .editorial-item,
-.about-editorial .layout-cooperation .editorial-item,
 .about-editorial .layout-stats .editorial-item,
 .about-editorial .layout-benefits .editorial-item,
 .about-editorial .team-map > div,
@@ -3426,11 +3425,71 @@ body:has(#about-content:not([hidden])) {
   transform: translateY(28px);
 }
 
+/* 團隊與合作單位以雙向協作流程呈現，避免再堆疊大面積卡片。 */
+.about-editorial .layout-cooperation .chapter-items {
+  position: relative;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 84px;
+  padding: 18px 0;
+}
+
+.about-editorial .layout-cooperation .chapter-items::after {
+  content: "↔";
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 42px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-50%);
+  border: 1px solid #bdd4e1;
+  border-radius: 50%;
+  background: #edf6fa;
+  color: #6f96ad;
+  font-size: 20px;
+  font-weight: 900;
+}
+
 .about-editorial .layout-cooperation .editorial-item {
-  border-width: 1px 1px 1px 5px;
-  border-radius: 18px;
-  border-left-color: #9fc9e1;
-  box-shadow: 0 10px 22px #79a9c31a;
+  min-width: 0;
+  padding: 26px 4px 22px;
+  border: 0;
+  border-top: 2px solid #b9d3e1;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.about-editorial .layout-cooperation .editorial-item-body {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  column-gap: 20px;
+  align-items: start;
+}
+
+.about-editorial .layout-cooperation .goal-icon {
+  grid-column: 1;
+  grid-row: 1 / span 10;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0;
+  border-radius: 50%;
+  background: #e2eff6;
+  font-size: 30px;
+}
+
+.about-editorial .layout-cooperation .editorial-item-body > :not(.goal-icon) {
+  grid-column: 2;
+}
+
+.about-editorial .layout-cooperation .editorial-item-body > h4 {
+  margin-bottom: 12px;
+  padding: 0;
+  border-left: 0;
 }
 
 .about-editorial .layout-stats .editorial-item {
@@ -3555,14 +3614,6 @@ body:has(#about-content:not([hidden])) {
   border-bottom: 0;
 }
 
-.about-editorial .layout-cooperation .editorial-item {
-  border: 0;
-  border-left: 7px solid #9fc9e1;
-  border-radius: 0;
-  background: linear-gradient(90deg, #e3f1fa, #eff7fb 72%);
-  box-shadow: none;
-}
-
 .about-editorial .layout-stats .editorial-item {
   border: 0;
   border-top: 5px solid #acd0e4;
@@ -3584,6 +3635,32 @@ body:has(#about-content:not([hidden])) {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .about-editorial .layout-cooperation .chapter-items {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 62px;
+  }
+
+  .about-editorial .layout-cooperation .chapter-items::after {
+    content: "↕";
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+  }
+
+  .about-editorial .layout-cooperation .editorial-item-body {
+    grid-template-columns: 54px minmax(0, 1fr);
+    column-gap: 14px;
+  }
+
+  .about-editorial .layout-cooperation .goal-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
 }
 
 /* 合作單位以斜切色塊串連三個場域，保留內容閱讀的平整感。 */
