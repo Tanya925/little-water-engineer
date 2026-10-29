@@ -5293,13 +5293,29 @@ body:has(#quiz-content:not([hidden])) .feature-banner #page-icon {
 .kpi-radial-benefits .kpi-node-1.is-flipped { transform: translate(calc(-50% - 52px), calc(-50% - 66px)); }
 .kpi-radial-benefits .kpi-node-2.is-flipped { transform: translate(calc(-50% + 52px), calc(-50% - 66px)); }
 
+/* 任一翻牌開啟時，將其移到所屬放射圖中央並暫時收起其餘圖元，徹底避免碰撞。 */
+.kpi-radial-stage .kpi-radial-node,
+.kpi-radial-stage .kpi-radial-hub,
+.kpi-radial-stage .kpi-radial-lines {
+  transition: opacity 180ms ease, width 220ms ease, height 220ms ease, transform 220ms ease;
+}
+
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
+.kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kpi-radial-stage .kpi-radial-node.is-flipped {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) !important;
+}
+
 @media (max-width: 600px) {
   .kpi-radial-node { width: min(145px, 37vw); height: 75px; }
   .kpi-radial-node.is-flipped { width: min(300px, calc(100vw - 36px)); height: 210px; }
-  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-node:not(.is-flipped),
-  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-hub,
-  .kpi-radial-stage:has(.kpi-radial-node.is-flipped) .kpi-radial-lines { opacity: 0; pointer-events: none; }
-  .kpi-radial-stage .kpi-radial-node.is-flipped { left: 50%; top: 50%; transform: translate(-50%, -50%); }
   .kpi-node-back { padding: 17px 18px; }
   .kpi-node-back-title { font-size: 18px; }
   .kpi-node-back p { font-size: 14px; }
