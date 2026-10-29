@@ -47,7 +47,7 @@
   const drawAllKpiLines = () => document.querySelectorAll(".kpi-radial-diagram").forEach(drawKpiLines);
   window.addEventListener("resize", drawAllKpiLines);
 
-  function renderKpiDiagram(items, type) {
+  function renderKpiDiagram(items, type, onItemSelect) {
     const diagram = make("section", undefined, `kpi-radial-diagram kpi-radial-${type}`);
     diagram.setAttribute("aria-label", type === "delivery" ? "具體推動項目" : "預期效益指標");
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -60,36 +60,6 @@
       make("strong", type === "delivery" ? "一、具體推動項目" : "二、預期效益指標"),
       make("small", type === "delivery" ? `${items.length} 項成果` : "雙向指標"),
     );
-    const popover = make("aside", undefined, "kpi-popover");
-    popover.hidden = true;
-    popover.setAttribute("role", "dialog");
-    popover.setAttribute("aria-live", "polite");
-    const popoverTitle = make("strong", undefined, "kpi-popover-title");
-    const close = make("button", "×", "kpi-popover-close");
-    close.type = "button";
-    close.setAttribute("aria-label", "關閉詳細說明");
-    const copy = make("div", undefined, "kpi-popover-copy");
-    const dismiss = () => {
-      popover.hidden = true;
-      diagram.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
-    };
-    close.addEventListener("click", dismiss);
-    popover.append(make("div", undefined, "kpi-popover-heading"), copy);
-    popover.firstElementChild.append(popoverTitle, close);
-
-    const placePopover = node => {
-      const nodeRect = node.getBoundingClientRect();
-      const popoverRect = popover.getBoundingClientRect();
-      const gap = 18;
-      const placeRight = nodeRect.left + nodeRect.width / 2 < window.innerWidth * 0.58;
-      let left = placeRight ? nodeRect.right + gap : nodeRect.left - popoverRect.width - gap;
-      let top = nodeRect.top + nodeRect.height / 2 - popoverRect.height / 2;
-      left = Math.max(12, Math.min(left, window.innerWidth - popoverRect.width - 12));
-      top = Math.max(12, Math.min(top, window.innerHeight - popoverRect.height - 12));
-      popover.dataset.side = placeRight ? "right" : "left";
-      popover.style.left = `${left}px`;
-      popover.style.top = `${top}px`;
-    };
     items.forEach((item, index) => {
       const node = make("button", undefined, `kpi-radial-node kpi-node-${index + 1}`);
       node.type = "button";
@@ -102,24 +72,11 @@
       );
       node.addEventListener("click", () => {
         const wasOpen = node.getAttribute("aria-expanded") === "true";
-        dismiss();
-        if (wasOpen) return;
-        popoverTitle.textContent = displayTitle(item.title || "成果項目");
-        copy.replaceChildren();
-        text(copy, item.paragraphs || []);
-        if (!copy.childElementCount) copy.append(make("p", "暫無詳細說明。"));
-        popover.hidden = false;
-        node.setAttribute("aria-expanded", "true");
-        placePopover(node);
+        onItemSelect(node, item, wasOpen);
       });
       diagram.append(node);
     });
-    diagram.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });
-    window.addEventListener("scroll", () => {
-      const active = diagram.querySelector(".kpi-radial-node[aria-expanded='true']");
-      if (active) placePopover(active);
-    }, { passive: true });
-    diagram.append(svg, hub, popover);
+    diagram.append(svg, hub);
     requestAnimationFrame(() => drawKpiLines(diagram));
     return diagram;
   }
@@ -127,8 +84,35 @@
     const layout = make("div", undefined, "kpi-radial-layout");
     const deliveryItems = section.items.slice(0, 5);
     const benefitItems = section.items.slice(5);
-    if (deliveryItems.length) layout.append(renderKpiDiagram(deliveryItems, "delivery"));
-    if (benefitItems.length) layout.append(renderKpiDiagram(benefitItems, "benefits"));
+    const details = make("aside", undefined, "kpi-details-panel");
+    details.hidden = true;
+    details.setAttribute("role", "status");
+    const detailTitle = make("strong", undefined, "kpi-details-title");
+    const close = make("button", "×", "kpi-details-close");
+    close.type = "button";
+    close.setAttribute("aria-label", "關閉詳細說明");
+    const detailCopy = make("div", undefined, "kpi-details-copy");
+    const dismiss = () => {
+      details.hidden = true;
+      layout.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
+    };
+    const selectItem = (node, item, wasOpen) => {
+      dismiss();
+      if (wasOpen) return;
+      detailTitle.textContent = displayTitle(item.title || "成果項目");
+      detailCopy.replaceChildren();
+      text(detailCopy, item.paragraphs || []);
+      if (!detailCopy.childElementCount) detailCopy.append(make("p", "暫無詳細說明。"));
+      details.hidden = false;
+      node.setAttribute("aria-expanded", "true");
+    };
+    close.addEventListener("click", dismiss);
+    details.append(make("div", undefined, "kpi-details-heading"), detailCopy);
+    details.firstElementChild.append(detailTitle, close);
+    layout.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });
+    if (deliveryItems.length) layout.append(renderKpiDiagram(deliveryItems, "delivery", selectItem));
+    if (benefitItems.length) layout.append(renderKpiDiagram(benefitItems, "benefits", selectItem));
+    layout.append(details);
     chapter.append(layout);
   }
   const reveal = root => {
