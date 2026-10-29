@@ -26,6 +26,111 @@
     visual.append(make("span", item.icon || ["🌱", "💧", "🌬️", "⛰️"][index % 4]));
     return visual;
   };
+  const drawKpiLines = diagram => {
+    const svg = diagram.querySelector(".kpi-radial-lines");
+    const hub = diagram.querySelector(".kpi-radial-hub");
+    if (!svg || !hub) return;
+    const frame = diagram.getBoundingClientRect();
+    const hubRect = hub.getBoundingClientRect();
+    const hubX = hubRect.left + hubRect.width / 2 - frame.left;
+    const hubY = hubRect.top + hubRect.height / 2 - frame.top;
+    diagram.querySelectorAll(".kpi-radial-node").forEach((node, index) => {
+      const line = svg.children[index];
+      const nodeRect = node.getBoundingClientRect();
+      if (!line) return;
+      line.setAttribute("x1", hubX);
+      line.setAttribute("y1", hubY);
+      line.setAttribute("x2", nodeRect.left + nodeRect.width / 2 - frame.left);
+      line.setAttribute("y2", nodeRect.top + nodeRect.height / 2 - frame.top);
+    });
+  };
+  const drawAllKpiLines = () => document.querySelectorAll(".kpi-radial-diagram").forEach(drawKpiLines);
+  window.addEventListener("resize", drawAllKpiLines);
+
+  function renderKpiDiagram(items, type) {
+    const diagram = make("section", undefined, `kpi-radial-diagram kpi-radial-${type}`);
+    diagram.setAttribute("aria-label", type === "delivery" ? "具體推動項目" : "預期效益指標");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "kpi-radial-lines");
+    svg.setAttribute("aria-hidden", "true");
+    items.forEach(() => svg.append(document.createElementNS("http://www.w3.org/2000/svg", "line")));
+    const hub = make("div", undefined, "kpi-radial-hub");
+    hub.append(
+      make("span", type === "delivery" ? "執行核心" : "效益驗證", "kpi-hub-kicker"),
+      make("strong", type === "delivery" ? "一、具體推動項目" : "二、預期效益指標"),
+      make("small", type === "delivery" ? `${items.length} 項成果` : "雙向指標"),
+    );
+    const popover = make("aside", undefined, "kpi-popover");
+    popover.hidden = true;
+    popover.setAttribute("role", "dialog");
+    popover.setAttribute("aria-live", "polite");
+    const popoverTitle = make("strong", undefined, "kpi-popover-title");
+    const close = make("button", "×", "kpi-popover-close");
+    close.type = "button";
+    close.setAttribute("aria-label", "關閉詳細說明");
+    const copy = make("div", undefined, "kpi-popover-copy");
+    const dismiss = () => {
+      popover.hidden = true;
+      diagram.querySelectorAll(".kpi-radial-node[aria-expanded='true']").forEach(node => node.setAttribute("aria-expanded", "false"));
+    };
+    close.addEventListener("click", dismiss);
+    popover.append(make("div", undefined, "kpi-popover-heading"), copy);
+    popover.firstElementChild.append(popoverTitle, close);
+
+    const placePopover = node => {
+      const nodeRect = node.getBoundingClientRect();
+      const popoverRect = popover.getBoundingClientRect();
+      const gap = 18;
+      const placeRight = nodeRect.left + nodeRect.width / 2 < window.innerWidth * 0.58;
+      let left = placeRight ? nodeRect.right + gap : nodeRect.left - popoverRect.width - gap;
+      let top = nodeRect.top + nodeRect.height / 2 - popoverRect.height / 2;
+      left = Math.max(12, Math.min(left, window.innerWidth - popoverRect.width - 12));
+      top = Math.max(12, Math.min(top, window.innerHeight - popoverRect.height - 12));
+      popover.dataset.side = placeRight ? "right" : "left";
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    };
+    items.forEach((item, index) => {
+      const node = make("button", undefined, `kpi-radial-node kpi-node-${index + 1}`);
+      node.type = "button";
+      node.setAttribute("aria-expanded", "false");
+      node.append(
+        make("span", "", "kpi-node-dot"),
+        make("strong", item.value || "—", "kpi-node-value"),
+        make("small", item.unit || "", "kpi-node-unit"),
+        make("span", displayTitle(item.title || "成果項目"), "kpi-node-title"),
+      );
+      node.addEventListener("click", () => {
+        const wasOpen = node.getAttribute("aria-expanded") === "true";
+        dismiss();
+        if (wasOpen) return;
+        popoverTitle.textContent = displayTitle(item.title || "成果項目");
+        copy.replaceChildren();
+        text(copy, item.paragraphs || []);
+        if (!copy.childElementCount) copy.append(make("p", "暫無詳細說明。"));
+        popover.hidden = false;
+        node.setAttribute("aria-expanded", "true");
+        placePopover(node);
+      });
+      diagram.append(node);
+    });
+    diagram.addEventListener("keydown", event => { if (event.key === "Escape") dismiss(); });
+    window.addEventListener("scroll", () => {
+      const active = diagram.querySelector(".kpi-radial-node[aria-expanded='true']");
+      if (active) placePopover(active);
+    }, { passive: true });
+    diagram.append(svg, hub, popover);
+    requestAnimationFrame(() => drawKpiLines(diagram));
+    return diagram;
+  }
+  function renderKpiRadial(chapter, section) {
+    const layout = make("div", undefined, "kpi-radial-layout");
+    const deliveryItems = section.items.slice(0, 5);
+    const benefitItems = section.items.slice(5);
+    if (deliveryItems.length) layout.append(renderKpiDiagram(deliveryItems, "delivery"));
+    if (benefitItems.length) layout.append(renderKpiDiagram(benefitItems, "benefits"));
+    chapter.append(layout);
+  }
   const reveal = root => {
     const items = root.querySelectorAll(".editorial-chapter, .editorial-item, .module-overview");
     if (!("IntersectionObserver" in window)) { items.forEach(item => item.classList.add("is-visible")); return; }
@@ -53,6 +158,11 @@
       }
       if (heading.childElementCount) chapter.append(heading);
       const intro = make("div", undefined, "chapter-intro"); text(intro, section.paragraphs); chapter.append(intro);
+      if (section.layout === "kpi") {
+        renderKpiRadial(chapter, section);
+        target.append(chapter);
+        continue;
+      }
       if (section.layout === "experiments") {
         const overview = make("div", undefined, "module-overview");
         for (const [layout, label] of [["experiments", "基礎流力試驗"], ["challenges", "防災工程挑戰"]]) {
